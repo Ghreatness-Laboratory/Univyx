@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, UserLoginSuccess, UserSignupSuccess, GoogleAuthSuccess } from '../types/api';
+import { User } from '../types/api';
 import apiService from '../services/api';
 
 interface AuthContextType {
@@ -7,7 +7,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (firstName: string, lastName: string, email: string, password: string) => Promise<void>;
+  register: (firstName: string, lastName: string, email: string, password: string) => Promise<any>;
   googleAuth: (token: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshProfile: () => Promise<void>;
