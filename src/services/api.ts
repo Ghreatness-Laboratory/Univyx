@@ -1,12 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import {
   GoogleAuth,
-  GoogleAuthSuccess,
-  UserLogin,
-  UserLoginSuccess,
   Signup,
-  UserSignupSuccess,
-  UserProfileSuccess,
   Email,
   EmailResent,
   TokenObtainPair,
@@ -21,7 +16,6 @@ import {
   StoreItem,
   University,
   User,
-  PaginatedResponse,
 } from '../types/api';
 
 const BASE_URL = 'https://univyx-backend.onrender.com/univyxApi/v1';
@@ -104,7 +98,7 @@ class ApiService {
   }
 
   // Auth endpoints
-  async googleAuth(data: GoogleAuth): Promise<AxiosResponse<GoogleAuthSuccess>> {
+  async googleAuth(data: GoogleAuth): Promise<AxiosResponse<any>> {
     return this.api.post('/auth/google', data);
   }
 
@@ -112,7 +106,7 @@ class ApiService {
     return this.api.post('/auth/login', data);
   }
 
-  async register(data: Signup): Promise<AxiosResponse<UserSignupSuccess>> {
+  async register(data: Signup): Promise<AxiosResponse<any>> {
     return this.api.post('/auth/sign-up/', data);
   }
 

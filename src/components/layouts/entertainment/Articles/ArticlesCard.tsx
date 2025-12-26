@@ -7,8 +7,7 @@ import {
   MessageCircle,
   User,
 } from "lucide-react";
-import { useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Article } from "../../../../types/api";
 
 interface ArticleCardProps {
@@ -26,11 +25,6 @@ export default function ArticleCard({
   onBookmark, 
   isAuthenticated = false 
 }: ArticleCardProps) {
-  const [, setSearchParams] = useSearchParams();
-  
-  const openModal = () => {
-    setSearchParams({ id: article.id?.toString() || '', section: "articles" });
-  };
   
   const handleLike = () => {
     if (isAuthenticated && onLike) {

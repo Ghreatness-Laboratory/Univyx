@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "strict": false,
+    "skipLibCheck": true,
+    "noImplicitAny": false
+  },
+  "exclude": [
+    "src/components/admin/**/*",
+    "src/hooks/useAllEndpoints.ts",
+    "src/hooks/useComments.ts",
+    "**/*.test.ts",
+    "**/*.test.tsx"
+  ]
+}

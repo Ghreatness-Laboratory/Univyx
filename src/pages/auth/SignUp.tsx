@@ -20,7 +20,7 @@ export default function SignUp() {
     formState: { errors },
   } = useForm<FormData>();
   
-  const { register: registerUser, googleAuth } = useAuth();
+  const { register: registerUser } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
