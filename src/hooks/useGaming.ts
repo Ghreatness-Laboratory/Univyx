@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import apiService from '../services/api';
+// import apiService from '../services/api';
 
 export const useTournaments = () => {
-  const [tournaments, setTournaments] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [tournaments] = useState<any[]>([]);
+  const [loading] = useState(true);
+  const [error] = useState<string | null>(null);
 
   const fetchTournaments = async () => {
     setLoading(false);
@@ -24,9 +24,9 @@ export const useTournaments = () => {
 };
 
 export const useLeaderboard = () => {
-  const [leaderboard, setLeaderboard] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [leaderboard] = useState<any[]>([]);
+  const [loading] = useState(true);
+  const [error] = useState<string | null>(null);
 
   const fetchLeaderboard = async () => {
     setLoading(false);
@@ -45,7 +45,7 @@ export const useLeaderboard = () => {
   };
 };
 
-export const useLeaderboardById = (id: string) => {
+export const useLeaderboardById = (_id: string) => {
   return {
     leaderboard: null,
     loading: false,
