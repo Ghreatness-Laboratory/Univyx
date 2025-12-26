@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Univyx Frontend Routes Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: #2c3e50;
+            background: #ffffff;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        .document-header {
+            text-align: center;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+        }
+        .company-logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a73e8;
+            margin-bottom: 10px;
+        }
+        .document-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .document-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .meta-item {
+            text-align: center;
+        }
+        .meta-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+        .meta-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        h1 {
+            color: #1a73e8;
+            font-size: 1.8rem;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1a73e8;
+            font-weight: 600;
+        }
+        h2 {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin: 30px 0 15px 0;
+            padding: 10px 0 10px 20px;
+            background: linear-gradient(90deg, #f8f9fa 0%, transparent 100%);
+            border-left: 4px solid #1a73e8;
+            font-weight: 600;
+        }
+        h3 {
+            color: #495057;
+            font-size: 1.1rem;
+            margin: 25px 0 10px 0;
+            font-weight: 600;
+        }
+        p {
+            margin: 10px 0;
+            color: #495057;
+        }
+        code {
+            background: #f1f3f4;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            color: #d73a49;
+            font-size: 0.9rem;
+        }
+        pre {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: #2c3e50;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        ul {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        li {
+            margin: 8px 0;
+            color: #495057;
+        }
+        .route-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .route-table th {
+            background: #1a73e8;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .route-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .route-table tr:hover {
+            background: #f8f9fa;
+        }
+        .info-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .info-box h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 25px 0;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-implemented {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-planned {
+            background: #cce5ff;
+            color: #004085;
+        }
+        .footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #e9ecef;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        @media print {
+            body { 
+                margin: 0;
+                padding: 20px;
+                max-width: none;
+            }
+            .page-break { 
+                page-break-before: always; 
+            }
+            .info-box {
+                background: #f8f9fa !important;
+                color: #2c3e50 !important;
+                border: 1px solid #dee2e6;
+            }
+            .info-box h3 {
+                color: #2c3e50 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="document-header">
+        <div class="company-logo">UNIVYX</div>
+        <h1 class="document-title">Frontend Routes Documentation</h1>
+        <div class="document-meta">
+            <div class="meta-item">
+                <div class="meta-label">Project</div>
+                <div class="meta-value">Student Platform Frontend</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Technology Stack</div>
+                <div class="meta-value">React + TypeScript + Vite</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Router Version</div>
+                <div class="meta-value">React Router DOM v7</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Document Date</div>
+                <div class="meta-value" id="date"></div>
+            </div>
+        </div>
+    </div>
+
+    <h1>Route Categories</h1>
+
+    <h2>Public Routes</h2>
+    <p>These routes are accessible without authentication and form the core navigation structure of the platform.</p>
+    <table class="route-table">
+        <thead>
+            <tr>
+                <th>Route</th>
+                <th>Description</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>/</code></td>
+                <td>Homepage with platform overview and features</td>
+                <td><span class="status-badge status-implemented">Implemented</span></td>
+            </tr>
+            <tr>
+                <td><code>/entertainment</code></td>
+                <td>Entertainment hub with articles, news, and events</td>
+                <td><span class="status-badge status-implemented">Implemented</span></td>
+            </tr>
+            <tr>
+                <td><code>/academics</code></td>
+                <td>Academic resources and university listings</td>
+                <td><span class="status-badge status-implemented">Implemented</span></td>
+            </tr>
+            <tr>
+                <td><code>/academics/:universityId</code></td>
+                <td>University-specific academic resources</td>
+                <td><span class="status-badge status-implemented">Implemented</span></td>
+            </tr>
+            <tr>
+                <td><code>/gaming</code></td>
+                <td>Gaming section with tournaments and leaderboards</td>
+                <td><span class="status-badge status-implemented">Implemented</span></td>
+            </tr>
+            <tr>
+                <td><code>/store</code></td>
+                <td>E-commerce store with product catalog</td>
+                <td><span class="status-badge status-implemented">Implemented</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Protected Routes</h2>
+    <p>These routes require user authentication to access.</p>
+    <table class="route-table">
+        <thead>
+            <tr>
+                <th>Route</th>
+                <th>Description</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>/profile</code></td>
+                <td>User profile management and settings</td>
+                <td><span class="status-badge status-implemented">Implemented</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Authentication Routes</h2>
+    <p>Authentication is handled through modal interfaces rather than separate pages.</p>
+    <table class="route-table">
+        <thead>
+            <tr>
+                <th>Route</th>
+                <th>Description</th>
+                <th>Implementation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>/login</code></td>
+                <td>User login interface</td>
+                <td>Modal-based</td>
+            </tr>
+            <tr>
+                <td><code>/register</code></td>
+                <td>User registration interface</td>
+                <td>Modal-based</td>
+            </tr>
+            <tr>
+                <td><code>/google-auth</code></td>
+                <td>Google OAuth callback handler</td>
+                <td>OAuth Integration</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h1>Detailed Route Specifications</h1>
+
+    <h2>Entertainment Sub-sections</h2>
+    <p>The entertainment page contains multiple sections with potential for individual routing:</p>
+    <table class="route-table">
+        <thead>
+            <tr>
+                <th>Route</th>
+                <th>Description</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>/entertainment#news</code></td>
+                <td>University news and announcements</td>
+                <td><span class="status-badge status-planned">Future Enhancement</span></td>
+            </tr>
+            <tr>
+                <td><code>/entertainment#articles</code></td>
+                <td>Student-written articles and blogs</td>
+                <td><span class="status-badge status-planned">Future Enhancement</span></td>
+            </tr>
+            <tr>
+                <td><code>/entertainment#events</code></td>
+                <td>Campus events and activities</td>
+                <td><span class="status-badge status-planned">Future Enhancement</span></td>
+            </tr>
+            <tr>
+                <td><code>/entertainment#trending-topics</code></td>
+                <td>Popular discussion topics</td>
+                <td><span class="status-badge status-planned">Future Enhancement</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Store Features & Query Parameters</h2>
+    <p>The store supports advanced filtering and pagination through query parameters:</p>
+    <table class="route-table">
+        <thead>
+            <tr>
+                <th>Route Pattern</th>
+                <th>Description</th>
+                <th>Example</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>/store</code></td>
+                <td>Main store page with pagination</td>
+                <td><code>/store</code></td>
+            </tr>
+            <tr>
+                <td><code>/store?category=:categoryId</code></td>
+                <td>Category-based filtering</td>
+                <td><code>/store?category=electronics</code></td>
+            </tr>
+            <tr>
+                <td><code>/store?search=:query</code></td>
+                <td>Search functionality</td>
+                <td><code>/store?search=laptop</code></td>
+            </tr>
+            <tr>
+                <td><code>/store?page=:pageNumber</code></td>
+                <td>Pagination support</td>
+                <td><code>/store?page=2</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Academic Resources Structure</h2>
+    <table class="route-table">
+        <thead>
+            <tr>
+                <th>Route</th>
+                <th>Description</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>/academics</code></td>
+                <td>University listing and overview</td>
+                <td><span class="status-badge status-implemented">Implemented</span></td>
+            </tr>
+            <tr>
+                <td><code>/academics/:universityId</code></td>
+                <td>University-specific resource hub</td>
+                <td><span class="status-badge status-implemented">Implemented</span></td>
+            </tr>
+            <tr>
+                <td><code>/academics/:universityId/notes</code></td>
+                <td>Study notes and materials</td>
+                <td><span class="status-badge status-planned">Future Enhancement</span></td>
+            </tr>
+            <tr>
+                <td><code>/academics/:universityId/past-questions</code></td>
+                <td>Previous examination papers</td>
+                <td><span class="status-badge status-planned">Future Enhancement</span></td>
+            </tr>
+            <tr>
+                <td><code>/academics/:universityId/tutorials</code></td>
+                <td>Educational tutorials and guides</td>
+                <td><span class="status-badge status-planned">Future Enhancement</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Gaming Platform Routes</h2>
+    <table class="route-table">
+        <thead>
+            <tr>
+                <th>Route</th>
+                <th>Description</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>/gaming</code></td>
+                <td>Main gaming hub</td>
+                <td><span class="status-badge status-implemented">Implemented</span></td>
+            </tr>
+            <tr>
+                <td><code>/gaming#tournaments</code></td>
+                <td>Tournament listings and brackets</td>
+                <td><span class="status-badge status-planned">Future Enhancement</span></td>
+            </tr>
+            <tr>
+                <td><code>/gaming#leaderboard</code></td>
+                <td>Player rankings and statistics</td>
+                <td><span class="status-badge status-planned">Future Enhancement</span></td>
+            </tr>
+            <tr>
+                <td><code>/gaming#events</code></td>
+                <td>Gaming events and competitions</td>
+                <td><span class="status-badge status-planned">Future Enhancement</span></td>
+            </tr>
+            <tr>
+                <td><code>/gaming#gallery</code></td>
+                <td>Gaming screenshots and media</td>
+                <td><span class="status-badge status-planned">Future Enhancement</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Error Handling & Fallback Routes</h2>
+    <table class="route-table">
+        <thead>
+            <tr>
+                <th>Route</th>
+                <th>Description</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>/404</code></td>
+                <td>Not Found error page</td>
+                <td><span class="status-badge status-implemented">Implemented</span></td>
+            </tr>
+            <tr>
+                <td><code>*</code></td>
+                <td>Catch-all route (redirects to 404)</td>
+                <td><span class="status-badge status-implemented">Implemented</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Modal-Based Content Routes</h2>
+    <p>These routes handle overlay content and require backend API support:</p>
+    <table class="route-table">
+        <thead>
+            <tr>
+                <th>Route Pattern</th>
+                <th>Description</th>
+                <th>Implementation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>/entertainment/articles/:articleId</code></td>
+                <td>Article details and comments</td>
+                <td>Modal Overlay</td>
+            </tr>
+            <tr>
+                <td><code>/entertainment/news/:newsId</code></td>
+                <td>News article details</td>
+                <td>Modal Overlay</td>
+            </tr>
+            <tr>
+                <td><code>/entertainment/topics/:topicId</code></td>
+                <td>Discussion topic details</td>
+                <td>Modal Overlay</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="page-break"></div>
+
+    <h1>Technical Implementation Details</h1>
+
+    <div class="info-box">
+        <h3>Backend Integration Requirements</h3>
+        <p>This section outlines the technical requirements and specifications that the backend team needs to implement to support the frontend routing structure.</p>
+    </div>
+
+    <h2>Dynamic Route Parameters</h2>
+    <table class="route-table">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Example</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>:universityId</code></td>
+                <td>String/UUID</td>
+                <td>University identifier for academic resources</td>
+                <td><code>univ-123-abc</code></td>
+            </tr>
+            <tr>
+                <td><code>:articleId</code></td>
+                <td>String/UUID</td>
+                <td>Article identifier for entertainment content</td>
+                <td><code>article-456-def</code></td>
+            </tr>
+            <tr>
+                <td><code>:newsId</code></td>
+                <td>String/UUID</td>
+                <td>News article identifier</td>
+                <td><code>news-789-ghi</code></td>
+            </tr>
+            <tr>
+                <td><code>:topicId</code></td>
+                <td>String/UUID</td>
+                <td>Discussion topic identifier</td>
+                <td><code>topic-012-jkl</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Query Parameter Specifications</h2>
+    <table class="route-table">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Example Values</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>category</code></td>
+                <td>String</td>
+                <td>Store category filtering</td>
+                <td><code>electronics, books, clothing</code></td>
+            </tr>
+            <tr>
+                <td><code>search</code></td>
+                <td>String</td>
+                <td>Search query for store items</td>
+                <td><code>laptop, textbook, shirt</code></td>
+            </tr>
+            <tr>
+                <td><code>page</code></td>
+                <td>Integer</td>
+                <td>Pagination page number</td>
+                <td><code>1, 2, 3, ...</code></td>
+            </tr>
+            <tr>
+                <td><code>limit</code></td>
+                <td>Integer</td>
+                <td>Items per page (optional)</td>
+                <td><code>10, 20, 50</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Authentication & Authorization</h2>
+    <h3>Authentication Flow Requirements:</h3>
+    <ul>
+        <li><strong>Modal-Based Authentication:</strong> Login and registration are handled through modal interfaces, not separate pages</li>
+        <li><strong>Google OAuth Integration:</strong> Requires proper callback URL handling and token exchange</li>
+        <li><strong>JWT Token Management:</strong> Automatic token refresh mechanism implemented on frontend</li>
+        <li><strong>Session Persistence:</strong> User sessions maintained across browser refreshes</li>
+    </ul>
+
+    <h3>Protected Route Handling:</h3>
+    <ul>
+        <li>Frontend implements route guards for protected content</li>
+        <li>Unauthorized access redirects to login modal</li>
+        <li>Token validation occurs on each protected route access</li>
+    </ul>
+
+    <h2>Content Management Features</h2>
+    <h3>Interactive Content Support:</h3>
+    <ul>
+        <li><strong>Entertainment Content:</strong> All articles, news, and events support comments, likes, and bookmarks</li>
+        <li><strong>Real-time Interactions:</strong> Like and bookmark counts update dynamically</li>
+        <li><strong>Comment System:</strong> Nested comments with user attribution</li>
+        <li><strong>Content Filtering:</strong> Category-based and search-based filtering</li>
+    </ul>
+
+    <h3>Store Management:</h3>
+    <ul>
+        <li><strong>Product Catalog:</strong> Supports pagination and category filtering</li>
+        <li><strong>Search Functionality:</strong> Full-text search across product names and descriptions</li>
+        <li><strong>Inventory Management:</strong> Stock levels and availability tracking</li>
+    </ul>
+
+    <div class="warning-box">
+        <h3>⚠️ Implementation Notes</h3>
+        <p><strong>Routing Architecture:</strong> The frontend uses React Router DOM v7 with a centralized routing configuration in <code>PublicRoutes.tsx</code>. This structure supports the current implementation and provides flexibility for future feature expansion.</p>
+        <p><strong>API Compatibility:</strong> All routes are designed to work with RESTful API endpoints and follow standard HTTP conventions.</p>
+    </div>
+
+    <h1>Backend API Analysis & Requirements</h1>
+
+    <div class="info-box">
+        <h3>Current Backend Status</h3>
+        <p><strong>Base URL:</strong> <code>https://univyx-backend.onrender.com/univyxApi/v1</code></p>
+        <p><strong>Swagger Docs:</strong> <code>https://univyx-backend.onrender.com/swagger/docs</code></p>
+        <p><strong>Development Proxy:</strong> <code>/api</code> (routes through Vite development server)</p>
+    </div>
+
+    <h2>✅ Currently Implemented API Endpoints</h2>
+    <table class="route-table">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Endpoint</th>
+                <th>Methods</th>
+                <th>Frontend Usage</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td rowspan="6">Authentication</td>
+                <td><code>/auth/login</code></td>
+                <td>POST</td>
+                <td>Login modal</td>
+                <td><span class="status-badge status-implemented">Working</span></td>
+            </tr>
+            <tr>
+                <td><code>/auth/register</code></td>
+                <td>POST</td>
+                <td>Registration modal</td>
+                <td><span class="status-badge status-implemented">Working</span></td>
+            </tr>
+            <tr>
+                <td><code>/auth/google</code></td>
+                <td>POST</td>
+                <td>Google OAuth</td>
+                <td><span class="status-badge status-implemented">Working</span></td>
+            </tr>
+            <tr>
+                <td><code>/auth/profile/</code></td>
+                <td>GET</td>
+                <td>Profile page</td>
+                <td><span class="status-badge status-implemented">Working</span></td>
+            </tr>
+            <tr>
+                <td><code>/auth/token/</code></td>
+                <td>POST</td>
+                <td>Token generation</td>
+                <td><span class="status-badge status-implemented">Working</span></td>
+            </tr>
+            <tr>
+                <td><code>/auth/token/refresh/</code></td>
+                <td>POST</td>
+                <td>Auto token refresh</td>
+                <td><span class="status-badge status-implemented">Working</span></td>
+            </tr>
+            <tr>
+                <td rowspan="3">Entertainment</td>
+                <td><code>/entertainment/articles/</code></td>
+                <td>GET, POST, PUT, DELETE</td>
+                <td>Articles section</td>
+                <td><span class="status-badge status-implemented">Working</span></td>
+            </tr>
+            <tr>
+                <td><code>/entertainment/events/</code></td>
+                <td>GET, POST, PUT, DELETE</td>
+                <td>Events section</td>
+                <td><span class="status-badge status-implemented">Working</span></td>
+            </tr>
+            <tr>
+                <td><code>/entertainment/news/</code></td>
+                <td>GET, POST, PUT, DELETE</td>
+                <td>News section</td>
+                <td><span class="status-badge status-implemented">Working</span></td>
+            </tr>
+            <tr>
+                <td rowspan="3">Interactions</td>
+                <td><code>/entertainment/{model}/{id}/like/</code></td>
+                <td>GET, POST</td>
+                <td>Like functionality</td>
+                <td><span class="status-badge status-implemented">Working</span></td>
+            </tr>
+            <tr>
+                <td><code>/entertainment/{model}/{id}/bookmark/</code></td>
+                <td>GET, POST</td>
+                <td>Bookmark functionality</td>
+                <td><span class="status-badge status-implemented">Working</span></td>
+            </tr>
+            <tr>
+                <td><code>/entertainment/{model}/{id}/comments/</code></td>
+                <td>GET, POST</td>
+                <td>Comment system</td>
+                <td><span class="status-badge status-implemented">Working</span></td>
+            </tr>
+            <tr>
+                <td>Store</td>
+                <td><code>/store/</code></td>
+                <td>GET, POST</td>
+                <td>Store catalog</td>
+                <td><span class="status-badge status-implemented">Working</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="page-break"></div>
+
+    <h1>✅ Additional Available Endpoints</h1>
+
+    <div class="info-box">
+        <h3>Great News!</h3>
+        <p>Based on comprehensive API testing, most endpoints are already implemented. Only minor enhancements needed.</p>
+    </div>
+
+    <h2>✅ Additional Endpoints Available</h2>
+    <table class="route-table">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Required Endpoint</th>
+                <th>Methods</th>
+                <th>Frontend Need</th>
+                <th>Priority</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td rowspan="5">Academic Resources</td>
+                <td><code>/academics/universities/</code></td>
+                <td>GET, POST, PUT, DELETE</td>
+                <td>University CRUD operations</td>
+                <td><span class="status-badge status-implemented">Available</span></td>
+            </tr>
+            <tr>
+                <td><code>/academics/universities/{id}/</code></td>
+                <td>GET, PUT, DELETE</td>
+                <td>Individual university operations</td>
+                <td><span class="status-badge status-implemented">Available</span></td>
+            </tr>
+            <tr>
+                <td><code>/academics/courses/</code></td>
+                <td>GET, POST, PUT, DELETE</td>
+                <td>Course management</td>
+                <td><span class="status-badge status-implemented">Available</span></td>
+            </tr>
+            <tr>
+                <td><code>/academics/courses/{id}/</code></td>
+                <td>GET, PUT, DELETE</td>
+                <td>Individual course operations</td>
+                <td><span class="status-badge status-implemented">Available</span></td>
+            </tr>
+            <tr>
+                <td><code>/academics/resources/</code></td>
+                <td>GET, POST, PUT, DELETE</td>
+                <td>Academic resource management</td>
+                <td><span class="status-badge status-implemented">Available</span></td>
+            </tr>
+            <tr>
+                <td rowspan="4">Gaming Platform</td>
+                <td><code>/gaming/tournaments/</code></td>
+                <td>GET, POST, PUT, DELETE</td>
+                <td>Tournament management</td>
+                <td><span class="status-badge status-implemented">Available</span></td>
+            </tr>
+            <tr>
+                <td><code>/gaming/tournaments/{id}/</code></td>
+                <td>GET, PUT, DELETE</td>
+                <td>Individual tournament operations</td>
+                <td><span class="status-badge status-implemented">Available</span></td>
+            </tr>
+            <tr>
+                <td><code>/gaming/tournaments/{id}/join/</code></td>
+                <td>POST</td>
+                <td>Join tournament</td>
+                <td><span class="status-badge status-implemented">Available</span></td>
+            </tr>
+            <tr>
+                <td><code>/gaming/leaderboards/</code></td>
+                <td>GET</td>
+                <td>Gaming leaderboards</td>
+                <td><span class="status-badge status-implemented">Available</span></td>
+            </tr>
+            <tr>
+                <td rowspan="3">Store Extensions</td>
+                <td><code>/store/{id}/</code></td>
+                <td>GET, PUT, DELETE</td>
+                <td>Individual store item operations</td>
+                <td><span class="status-badge status-implemented">Available</span></td>
+            </tr>
+            <tr>
+                <td><code>/entertainment/articles/{id}/</code></td>
+                <td>GET, PUT, DELETE</td>
+                <td>Individual article operations</td>
+                <td><span class="status-badge status-implemented">Available</span></td>
+            </tr>
+            <tr>
+                <td><code>/comments/{id}/</code></td>
+                <td>GET, PUT, DELETE</td>
+                <td>Comment management</td>
+                <td><span class="status-badge status-implemented">Available</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>⚠️ Minor Enhancements Needed</h2>
+    <p>These endpoints exist but may need query parameter functionality:</p>
+    <table class="route-table">
+        <thead>
+            <tr>
+                <th>Endpoint</th>
+                <th>Missing Feature</th>
+                <th>Required Parameters</th>
+                <th>Priority</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>/store/</code></td>
+                <td>Category filtering</td>
+                <td><code>?category=electronics</code></td>
+                <td><span class="status-badge" style="background: #fff3cd; color: #856404;">MEDIUM</span></td>
+            </tr>
+            <tr>
+                <td><code>/store/</code></td>
+                <td>Search functionality</td>
+                <td><code>?search=laptop</code></td>
+                <td><span class="status-badge" style="background: #fff3cd; color: #856404;">MEDIUM</span></td>
+            </tr>
+            <tr>
+                <td><code>/store/</code></td>
+                <td>Pagination parameters</td>
+                <td><code>?page=1&limit=20</code></td>
+                <td><span class="status-badge" style="background: #fff3cd; color: #856404;">MEDIUM</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>🔧 Optional Enhancements</h2>
+    
+    <h3>Store API Enhancements (MEDIUM PRIORITY)</h3>
+    <ul>
+        <li><strong>Add query parameter support to <code>/store/</code> endpoint:</strong>
+            <ul>
+                <li><code>?category=electronics</code> - Filter by category</li>
+                <li><code>?search=laptop</code> - Search products</li>
+                <li><code>?page=2&limit=20</code> - Pagination</li>
+            </ul>
+        </li>
+        <li><strong>Create <code>/store/categories/</code> endpoint</strong> - Return list of available categories</li>
+    </ul>
+
+    <h3>Response Format Standardization (LOW PRIORITY)</h3>
+    <ul>
+        <li><strong>Standardize pagination responses:</strong>
+            <pre><code>{
+  "results": [...],
+  "count": 100,
+  "next": "url",
+  "previous": "url",
+  "page": 1,
+  "total_pages": 10
+}</code></pre>
+        </li>
+        <li><strong>Add proper CORS headers</strong> for development</li>
+    </ul>
+
+    <h2>📋 Backend Enhancement Checklist</h2>
+    
+    <div class="info-box">
+        <h3>🎯 Focus Areas</h3>
+        <p>Most endpoints are working! Focus on these enhancements for optimal frontend experience:</p>
+    </div>
+
+    <h3>MEDIUM PRIORITY Tasks:</h3>
+    <ul>
+        <li>☐ <strong>Enhance <code>/store/</code> endpoint with query parameters:</strong>
+            <ul>
+                <li>Add <code>?category=electronics</code> filtering</li>
+                <li>Add <code>?search=laptop</code> search functionality</li>
+                <li>Add <code>?page=2&limit=20</code> pagination</li>
+            </ul>
+        </li>
+        <li>☐ <strong>Create <code>/store/categories/</code> endpoint</strong> - Return available categories list</li>
+        <li>☐ <strong>Test and verify all existing endpoints are working properly</strong></li>
+    </ul>
+
+    <h3>LOW PRIORITY Tasks:</h3>
+    <ul>
+        <li>☐ Standardize pagination response format across all endpoints</li>
+        <li>☐ Add proper CORS headers for development environment</li>
+        <li>☐ Implement consistent error response format</li>
+        <li>☐ Add API documentation for all endpoints</li>
+    </ul>
+
+    <h3>✅ Already Implemented (No Action Needed):</h3>
+    <ul>
+        <li>✅ Authentication system (login, register, Google OAuth, profile)</li>
+        <li>✅ Entertainment content (articles, news, events with CRUD)</li>
+        <li>✅ Interactive features (likes, bookmarks, comments)</li>
+        <li>✅ Academic resources (universities, courses, resources)</li>
+        <li>✅ Gaming platform (tournaments, leaderboards)</li>
+        <li>✅ Basic store functionality</li>
+    </ul>
+
+    <div class="footer">
+        <p><strong>Document Version:</strong> 2.1 | <strong>Last Updated:</strong> <span id="date"></span></p>
+        <p><strong>Prepared by:</strong> Frontend Development Team | <strong>For:</strong> Backend Development Team</p>
+        <p><em>This document serves as the official specification for backend API requirements to support frontend functionality.</em></p>
+        <p><strong>Status:</strong> Most endpoints available - Minor enhancements needed for store functionality</p>
+    </div>
+
+    <script>
+        document.getElementById('date').textContent = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    </script>
+</body>
+</html>

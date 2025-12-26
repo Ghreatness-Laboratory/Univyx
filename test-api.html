@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick API Test</title>
+</head>
+<body>
+    <h1>Testing Univyx API</h1>
+    <div id="results"></div>
+    
+    <script>
+        const API_BASE = 'https://univyx-backend.onrender.com/univyxApi/v1';
+        
+        async function testEndpoint(url, method = 'GET', body = null) {
+            try {
+                const options = {
+                    method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                if (body) options.body = JSON.stringify(body);
+                
+                const response = await fetch(API_BASE + url, options);
+                return {
+                    url,
+                    status: response.status,
+                    ok: response.ok,
+                    data: response.status === 404 ? 'NOT FOUND' : await response.text()
+                };
+            } catch (error) {
+                return { url, error: error.message };
+            }
+        }
+        
+        async function runTests() {
+            const results = document.getElementById('results');
+            results.innerHTML = 'Testing endpoints...<br>';
+            
+            const tests = [
+                '/auth/register/',
+                '/auth/login/', 
+                '/entertainment/articles/',
+                '/entertainment/events/',
+                '/entertainment/news/',
+                '/store/',
+                '/academics/universities/'
+            ];
+            
+            for (const url of tests) {
+                const result = await testEndpoint(url);
+                const color = result.ok ? 'green' : 'red';
+                results.innerHTML += `<div style="color: ${color}">${result.status} - ${url}</div>`;
+            }
+        }
+        
+        runTests();
+    </script>
+</body>
+</html>
