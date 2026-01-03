@@ -352,7 +352,7 @@ export default function Navbar() {
 
       {mobileNavbar && (
         <nav
-          className="fixed lg:hidden top-0 h-[100vh] w-full bg-white z-50"
+          className="fixed lg:hidden top-0 left-0 h-[100vh] w-full bg-white z-50 overflow-y-auto"
           aria-label="Mobile navigation"
         >
           <div className="flex items-center justify-end gap-2 py-3 px-6 font-bold leading-6">
