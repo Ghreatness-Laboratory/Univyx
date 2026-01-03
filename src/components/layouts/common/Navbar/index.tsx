@@ -123,8 +123,12 @@ export default function Navbar() {
     setMobileNavbar(!mobileNavbar);
     if (!mobileNavbar) {
       document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.width = "100%";
     } else {
       document.body.style.overflow = "unset";
+      document.body.style.position = "unset";
+      document.body.style.width = "unset";
     }
   };
 
@@ -136,6 +140,8 @@ export default function Navbar() {
     navigate(href);
     setMobileNavbar(false);
     document.body.style.overflow = "unset";
+    document.body.style.position = "unset";
+    document.body.style.width = "unset";
   };
 
   return (
@@ -352,7 +358,8 @@ export default function Navbar() {
 
       {mobileNavbar && (
         <nav
-          className="fixed lg:hidden top-0 left-0 h-[100vh] w-full bg-white z-50 overflow-y-auto"
+          className="fixed lg:hidden top-0 left-0 h-screen w-screen bg-white z-50 overflow-y-auto"
+          style={{ minWidth: '100vw', maxWidth: '100vw' }}
           aria-label="Mobile navigation"
         >
           <div className="flex items-center justify-end gap-2 py-3 px-6 font-bold leading-6">
@@ -508,6 +515,8 @@ export default function Navbar() {
                   logout();
                   setMobileNavbar(false);
                   document.body.style.overflow = "unset";
+                  document.body.style.position = "unset";
+                  document.body.style.width = "unset";
                   navigate('/');
                 }}
                 className="py-4 pl-6 font-medium text-left border-t text-red-600"
