@@ -452,6 +452,70 @@ export default function Navbar() {
               );
             })}
           </ul>
+          
+          {/* Mobile Auth Buttons */}
+          {!isAuthenticated && (
+            <div className="flex flex-col gap-4 p-6 border-t">
+              <Button
+                href="?auth=login"
+                className="w-full py-3 px-4 bg-transparent text-primary border border-primary hover:bg-primary hover:text-white text-center"
+                isIconOnly={false}
+                ariaLabel="Go to Login page"
+                onClick={() => setMobileNavbar(false)}
+              >
+                <p>Login</p>
+              </Button>
+              <Button
+                href="?auth=signup"
+                className="w-full py-3 px-4 bg-primary text-white hover:bg-primary-dark text-center"
+                isIconOnly={false}
+                ariaLabel="Go to Signup page"
+                onClick={() => setMobileNavbar(false)}
+              >
+                <p>Join Us</p>
+              </Button>
+            </div>
+          )}
+          
+          {/* Mobile User Menu */}
+          {isAuthenticated && (
+            <div className="flex flex-col border-t">
+              <div className="flex items-center gap-3 p-6 border-b">
+                <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
+                  {user?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                </div>
+                <div>
+                  <p className="font-medium">{user?.full_name || user?.email?.split('@')[0] || 'User'}</p>
+                  <p className="text-sm text-gray-500">{user?.email}</p>
+                </div>
+              </div>
+              <Link
+                to="/profile"
+                onClick={() => handleMobileLinkClick('/profile')}
+                className="py-4 pl-6 font-medium border-t"
+              >
+                Profile
+              </Link>
+              <Link
+                to="/admin"
+                onClick={() => handleMobileLinkClick('/admin')}
+                className="py-4 pl-6 font-medium border-t"
+              >
+                Admin Panel
+              </Link>
+              <button
+                onClick={() => {
+                  logout();
+                  setMobileNavbar(false);
+                  document.body.style.overflow = "unset";
+                  navigate('/');
+                }}
+                className="py-4 pl-6 font-medium text-left border-t text-red-600"
+              >
+                Logout
+              </button>
+            </div>
+          )}
         </nav>
       )}
     </div>
