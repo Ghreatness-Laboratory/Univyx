@@ -82,7 +82,12 @@ export default function Navbar() {
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, isLoading } = useAuth();
+
+  // Debug logging
+  useEffect(() => {
+    console.log('Navbar auth state:', { user, isAuthenticated, isLoading });
+  }, [user, isAuthenticated, isLoading]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -258,17 +263,22 @@ export default function Navbar() {
         </ul>
 
         <div className="flex items-center gap-4">
-          {isAuthenticated ? (
+          {isLoading ? (
+            <div className="hidden md:flex items-center gap-2">
+              <div className="w-8 h-8 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600"></div>
+              <span className="text-sm text-gray-600">Loading...</span>
+            </div>
+          ) : isAuthenticated ? (
             <div className="relative" ref={userMenuRef}>
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
                 className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                  {user?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                  {user?.full_name?.charAt(0) || user?.first_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
                 </div>
                 <span className="text-sm font-medium">
-                  {user?.full_name || user?.email?.split('@')[0] || 'User'}
+                  {user?.full_name || (user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : user?.first_name) || user?.email?.split('@')[0] || 'User'}
                 </span>
                 <svg
                   className={`w-4 h-4 transition-transform ${showUserMenu ? 'rotate-180' : ''}`}
@@ -290,13 +300,15 @@ export default function Navbar() {
                     >
                       Profile
                     </Link>
-                    <Link
-                      to="/admin"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => setShowUserMenu(false)}
-                    >
-                      Admin Panel
-                    </Link>
+                    {user?.email?.includes('admin') && (
+                      <Link
+                        to="/admin"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        Admin Panel
+                      </Link>
+                    )}
                     <button
                       onClick={() => {
                         logout();
@@ -460,7 +472,12 @@ export default function Navbar() {
 
             {/* Bottom Section */}
             <div className="border-t border-gray-100 bg-gray-50">
-              {!isAuthenticated ? (
+              {isLoading ? (
+                <div className="p-6 flex items-center justify-center">
+                  <div className="w-8 h-8 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600"></div>
+                  <span className="ml-2 text-sm text-gray-600">Loading...</span>
+                </div>
+              ) : !isAuthenticated ? (
                 <div className="p-6 space-y-3">
                   <button
                     onClick={() => {
@@ -487,11 +504,11 @@ export default function Navbar() {
                   <div className="p-6 border-b border-gray-200">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                        {user?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                        {user?.full_name?.charAt(0) || user?.first_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
                       </div>
                       <div className="flex-1">
                         <p className="font-semibold text-gray-800">
-                          {user?.full_name || user?.email?.split('@')[0] || 'User'}
+                          {user?.full_name || (user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : user?.first_name) || user?.email?.split('@')[0] || 'User'}
                         </p>
                         <p className="text-sm text-gray-500 truncate">{user?.email}</p>
                       </div>
@@ -510,16 +527,18 @@ export default function Navbar() {
                       </svg>
                       Profile
                     </Link>
-                    <Link
-                      to="/admin"
-                      onClick={() => handleMobileLinkClick('/admin')}
-                      className="flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-white hover:text-blue-600 transition-colors"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      Admin Panel
-                    </Link>
+                    {user?.email?.includes('admin') && (
+                      <Link
+                        to="/admin"
+                        onClick={() => handleMobileLinkClick('/admin')}
+                        className="flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-white hover:text-blue-600 transition-colors"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Admin Panel
+                      </Link>
+                    )}
                     <button
                       onClick={() => {
                         logout();

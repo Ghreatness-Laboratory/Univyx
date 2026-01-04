@@ -13,20 +13,24 @@ export const useArticles = () => {
       console.log('Fetching articles from API...');
       const response = await apiService.getArticles();
       console.log('Articles API Response:', response.data);
-      console.log('Articles data structure:', {
-        hasResults: !!response.data.results,
-        resultsLength: response.data.results?.length,
-        isArray: Array.isArray(response.data),
-        dataKeys: Object.keys(response.data)
-      });
       
-      const articlesData = response.data.data || Array.isArray(response.data) ? response.data : response.data.results || [];
+      // Ensure we always get an array
+      let articlesData = [];
+      if (Array.isArray(response.data)) {
+        articlesData = response.data;
+      } else if (response.data?.results && Array.isArray(response.data.results)) {
+        articlesData = response.data.results;
+      } else if (response.data?.data && Array.isArray(response.data.data)) {
+        articlesData = response.data.data;
+      }
+      
       console.log('Final articles data:', articlesData);
       setArticles(articlesData);
       setError(null);
     } catch (err: any) {
       console.error('Articles fetch error:', err);
       setError('Failed to fetch articles');
+      setArticles([]); // Ensure articles is always an array
     } finally {
       setLoading(false);
     }

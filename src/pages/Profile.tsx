@@ -30,12 +30,12 @@ export default function Profile() {
             <div className="flex items-center space-x-5">
               <div className="flex-shrink-0">
                 <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center text-white text-2xl font-bold">
-                  {user.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                  {user.full_name?.charAt(0) || user.first_name?.charAt(0) || user.email?.charAt(0) || 'U'}
                 </div>
               </div>
               <div className="flex-1 min-w-0">
                 <h1 className="text-2xl font-bold text-gray-900">
-                  {user.full_name || 'User Profile'}
+                  {user.full_name || (user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name) || 'User Profile'}
                 </h1>
                 <p className="text-sm text-gray-500">
                   Welcome to your Univyx profile
@@ -59,7 +59,7 @@ export default function Profile() {
                     Full Name
                   </dt>
                   <dd className="mt-1 text-sm text-gray-900">
-                    {user.full_name || 'Not provided'}
+                    {user.full_name || (user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name) || 'Not provided'}
                   </dd>
                 </div>
 

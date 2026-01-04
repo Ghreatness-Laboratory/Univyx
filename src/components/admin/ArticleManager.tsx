@@ -51,7 +51,7 @@ export default function ArticleManager() {
       </div>
 
       <div className="p-6">
-        {articles.length === 0 ? (
+        {articles && articles.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-500 mb-4">No articles found</p>
             <button
@@ -63,7 +63,7 @@ export default function ArticleManager() {
           </div>
         ) : (
           <div className="space-y-4">
-            {articles.map((article) => (
+            {Array.isArray(articles) && articles.map((article) => (
               <div key={article.id} className="border border-gray-200 rounded-lg p-4">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">

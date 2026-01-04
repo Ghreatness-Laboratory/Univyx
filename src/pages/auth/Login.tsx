@@ -27,10 +27,17 @@ export default function Login() {
     try {
       setIsLoading(true);
       setApiError(null);
+      console.log('Attempting login with:', data.email);
       await login(data.email, data.password);
+      console.log('Login successful, navigating to home');
       navigate('/', { replace: true });
     } catch (error: any) {
-      setApiError(error.response?.data?.detail || 'Login failed. Please try again.');
+      console.error('Login failed:', error);
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.detail || 
+                          error.message || 
+                          'Login failed. Please try again.';
+      setApiError(errorMessage);
     } finally {
       setIsLoading(false);
     }

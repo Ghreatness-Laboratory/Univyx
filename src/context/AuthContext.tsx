@@ -31,13 +31,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const isAuthenticated = !!user;
+  const isAuthenticated = !!user && !!localStorage.getItem('access_token');
 
   const refreshProfile = async () => {
     try {
       const response = await apiService.getProfile();
       setUser(response.data);
+      return response.data;
     } catch (error) {
+      console.error('Failed to refresh profile:', error);
+      // Clear tokens if profile fetch fails
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      setUser(null);
       throw error;
     }
   };
@@ -49,8 +55,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         try {
           await refreshProfile();
         } catch (error) {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
+          console.error('Auth initialization failed:', error);
+          // Tokens are already cleared in refreshProfile
         }
       }
       setIsLoading(false);
@@ -62,23 +68,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string) => {
     try {
       const response = await apiService.login({ email, password });
+      console.log('Login response:', response.data);
       
-      // Handle different possible response structures
-      const tokens = response.data.tokens || response.data;
-      if (tokens?.access && tokens?.refresh) {
-        localStorage.setItem('access_token', tokens.access);
-        localStorage.setItem('refresh_token', tokens.refresh);
-        
-        // Fetch user profile after successful login
-        await refreshProfile();
-      } else if (response.data.access && response.data.refresh) {
+      // Handle the actual API response format
+      if (response.data.access && response.data.refresh) {
+        // Direct token format
         localStorage.setItem('access_token', response.data.access);
         localStorage.setItem('refresh_token', response.data.refresh);
-        
-        await refreshProfile();
+      } else if (response.data.tokens?.access && response.data.tokens?.refresh) {
+        // Nested tokens format
+        localStorage.setItem('access_token', response.data.tokens.access);
+        localStorage.setItem('refresh_token', response.data.tokens.refresh);
+      } else if (response.data.data?.tokens?.access && response.data.data?.tokens?.refresh) {
+        // Double nested format
+        localStorage.setItem('access_token', response.data.data.tokens.access);
+        localStorage.setItem('refresh_token', response.data.data.tokens.refresh);
+      } else {
+        console.error('Unexpected response format:', response.data);
+        throw new Error('Invalid response format: missing tokens');
       }
+      
+      // Fetch user profile after successful login
+      const userData = await refreshProfile();
+      console.log('Login successful, user data:', userData);
     } catch (error: any) {
       console.error('Login error:', error);
+      // Clear any partial state
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      setUser(null);
       throw error;
     }
   };
@@ -97,6 +115,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       return response.data;
     } catch (error: any) {
+      console.error('Registration error:', error);
       throw error;
     }
   };
@@ -111,14 +130,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       setUser(data.user);
     } catch (error) {
+      console.error('Google auth error:', error);
       throw error;
     }
   };
 
   const logout = async () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    setUser(null);
+    try {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      setUser(null);
+      console.log('Logout successful');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   const value: AuthContextType = {
