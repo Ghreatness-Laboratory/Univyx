@@ -300,7 +300,7 @@ export default function Navbar() {
                     >
                       Profile
                     </Link>
-                    {user?.email?.includes('admin') && (
+                    {(user?.is_staff || user?.email?.includes('admin')) && (
                       <Link
                         to="/admin"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -527,7 +527,7 @@ export default function Navbar() {
                       </svg>
                       Profile
                     </Link>
-                    {user?.email?.includes('admin') && (
+                    {(user?.is_staff || user?.email?.includes('admin')) && (
                       <Link
                         to="/admin"
                         onClick={() => handleMobileLinkClick('/admin')}
