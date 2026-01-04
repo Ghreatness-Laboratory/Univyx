@@ -1,5 +1,5 @@
 import { useAuth } from '../context/AuthContext';
-import { User, Mail, Calendar, LogOut } from 'lucide-react';
+import { User, Mail, Calendar, LogOut, Bookmark, Heart, MessageCircle } from 'lucide-react';
 import ProfileForm from '../components/profile/ProfileForm';
 import { useUserStats } from '../hooks/useUserStats';
 
@@ -128,7 +128,7 @@ export default function Profile() {
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
-                        <span className="text-white text-sm font-medium">📖</span>
+                        <Bookmark className="w-4 h-4 text-white" />
                       </div>
                     </div>
                     <div className="ml-5 w-0 flex-1">
@@ -150,7 +150,7 @@ export default function Profile() {
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <div className="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
-                        <span className="text-white text-sm font-medium">❤️</span>
+                        <Heart className="w-4 h-4 text-white" />
                       </div>
                     </div>
                     <div className="ml-5 w-0 flex-1">
@@ -172,7 +172,7 @@ export default function Profile() {
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <div className="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
-                        <span className="text-white text-sm font-medium">💬</span>
+                        <MessageCircle className="w-4 h-4 text-white" />
                       </div>
                     </div>
                     <div className="ml-5 w-0 flex-1">
