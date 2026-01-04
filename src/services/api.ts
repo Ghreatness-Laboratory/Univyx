@@ -286,6 +286,25 @@ class ApiService {
     return this.api.post(`/entertainment/${modelName}/${publicId}/comments`, data);
   }
 
+  // User stats endpoints
+  async getUserStats(): Promise<AxiosResponse<any>> {
+    return this.api.get('/auth/stats');
+  }
+
+  async getUserBookmarks(): Promise<AxiosResponse<any[]>> {
+    return this.api.get('/auth/bookmarks');
+  }
+
+  async getUserComments(): Promise<AxiosResponse<Comment[]>> {
+    return this.api.get('/auth/comments');
+  }
+
+  async getUserLikes(): Promise<AxiosResponse<Like[]>> {
+    return this.api.get('/auth/likes');
+  }
+}}/${publicId}/comments`, data);
+  }
+
   // Store endpoints
   async getStoreItems(): Promise<AxiosResponse<StoreItem[]>> {
     return this.api.get('/store');

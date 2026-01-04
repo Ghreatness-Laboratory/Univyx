@@ -36,8 +36,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const refreshProfile = async () => {
     try {
       const response = await apiService.getProfile();
-      setUser(response.data);
-      return response.data;
+      console.log('Profile API response:', response.data);
+      
+      // Handle different response structures
+      let userData = response.data;
+      if (response.data.user) {
+        userData = response.data.user;
+      } else if (response.data.data) {
+        userData = response.data.data;
+      }
+      
+      console.log('Setting user data:', userData);
+      setUser(userData);
+      return userData;
     } catch (error) {
       console.error('Failed to refresh profile:', error);
       // Clear tokens if profile fetch fails

@@ -1,9 +1,15 @@
 import { useAuth } from '../context/AuthContext';
 import { User, Mail, Calendar, LogOut } from 'lucide-react';
 import ProfileForm from '../components/profile/ProfileForm';
+import { useUserStats } from '../hooks/useUserStats';
 
 export default function Profile() {
   const { user, logout, isAuthenticated } = useAuth();
+  const { stats, loading: statsLoading } = useUserStats();
+
+  // Debug logging to see what user data we have
+  console.log('Profile user data:', user);
+  console.log('User stats:', stats);
 
   if (!isAuthenticated || !user) {
     return (
@@ -122,16 +128,16 @@ export default function Profile() {
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
-                        <span className="text-white text-sm font-medium">A</span>
+                        <span className="text-white text-sm font-medium">📖</span>
                       </div>
                     </div>
                     <div className="ml-5 w-0 flex-1">
                       <dl>
                         <dt className="text-sm font-medium text-gray-500 truncate">
-                          Articles Read
+                          Bookmarks
                         </dt>
                         <dd className="text-lg font-medium text-gray-900">
-                          Coming Soon
+                          {statsLoading ? '...' : stats.bookmarks_count}
                         </dd>
                       </dl>
                     </div>
@@ -144,16 +150,16 @@ export default function Profile() {
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <div className="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
-                        <span className="text-white text-sm font-medium">E</span>
+                        <span className="text-white text-sm font-medium">❤️</span>
                       </div>
                     </div>
                     <div className="ml-5 w-0 flex-1">
                       <dl>
                         <dt className="text-sm font-medium text-gray-500 truncate">
-                          Events Attended
+                          Likes Given
                         </dt>
                         <dd className="text-lg font-medium text-gray-900">
-                          Coming Soon
+                          {statsLoading ? '...' : stats.likes_count}
                         </dd>
                       </dl>
                     </div>
@@ -166,7 +172,7 @@ export default function Profile() {
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <div className="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
-                        <span className="text-white text-sm font-medium">C</span>
+                        <span className="text-white text-sm font-medium">💬</span>
                       </div>
                     </div>
                     <div className="ml-5 w-0 flex-1">
@@ -175,7 +181,7 @@ export default function Profile() {
                           Comments Posted
                         </dt>
                         <dd className="text-lg font-medium text-gray-900">
-                          Coming Soon
+                          {statsLoading ? '...' : stats.comments_posted}
                         </dd>
                       </dl>
                     </div>
