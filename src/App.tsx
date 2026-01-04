@@ -12,10 +12,12 @@ import PublicRouter from "./routes/PublicRoutes";
 function App() {
   return (
     <AuthProvider>
-      <div>
+      <div className="min-h-screen w-full overflow-x-hidden">
         <>
           <Navbar />
-          <PublicRouter />
+          <main className="w-full">
+            <PublicRouter />
+          </main>
           <Footer />
         </>
         <AuthModal />

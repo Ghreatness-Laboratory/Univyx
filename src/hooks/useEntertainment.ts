@@ -20,7 +20,7 @@ export const useArticles = () => {
         dataKeys: Object.keys(response.data)
       });
       
-      const articlesData = Array.isArray(response.data) ? response.data : response.data.results || [];
+      const articlesData = response.data.data || Array.isArray(response.data) ? response.data : response.data.results || [];
       console.log('Final articles data:', articlesData);
       setArticles(articlesData);
       setError(null);
@@ -82,7 +82,7 @@ export const useEvents = () => {
         dataKeys: Object.keys(response.data)
       });
       
-      const eventsData = Array.isArray(response.data) ? response.data : response.data.results || [];
+      const eventsData = response.data.data || Array.isArray(response.data) ? response.data : response.data.results || [];
       console.log('Final events data:', eventsData);
       setEvents(eventsData);
       setError(null);
@@ -144,7 +144,7 @@ export const useNews = () => {
         dataKeys: Object.keys(response.data)
       });
       
-      const newsData = Array.isArray(response.data) ? response.data : response.data.results || [];
+      const newsData = response.data.data || Array.isArray(response.data) ? response.data : response.data.results || [];
       console.log('Final news data:', newsData);
       setNews(newsData);
       setError(null);

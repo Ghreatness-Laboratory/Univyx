@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 export const useTournaments = () => {
   const [tournaments] = useState<any[]>([]);
-  const [loading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error] = useState<string | null>(null);
 
   const fetchTournaments = async () => {
@@ -25,7 +25,7 @@ export const useTournaments = () => {
 
 export const useLeaderboard = () => {
   const [leaderboard] = useState<any[]>([]);
-  const [loading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error] = useState<string | null>(null);
 
   const fetchLeaderboard = async () => {

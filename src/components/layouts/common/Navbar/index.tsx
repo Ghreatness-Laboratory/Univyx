@@ -32,20 +32,23 @@ const navlinks: Navlink[] = [
   },
 ];
 
-const dropdownItems = [
-  {
-    href: "/",
-    menu: "Page 1",
-  },
-  {
-    href: "/",
-    menu: "Page 2",
-  },
-  {
-    href: "/",
-    menu: "Page 3",
-  },
-];
+const dropdownItems = {
+  Entertainment: [
+    { href: "/entertainment/articles", menu: "Articles" },
+    { href: "/entertainment/events", menu: "Events" },
+    { href: "/entertainment/news", menu: "News" },
+  ],
+  Academics: [
+    { href: "/academics/resources", menu: "Resources" },
+    { href: "/academics/courses", menu: "Courses" },
+    { href: "/academics/calendar", menu: "Calendar" },
+  ],
+  Gaming: [
+    { href: "/gaming/tournaments", menu: "Tournaments" },
+    { href: "/gaming/leaderboards", menu: "Leaderboards" },
+    { href: "/gaming/achievements", menu: "Achievements" },
+  ],
+};
 
 const fadeInDown = (time: number) => ({
   animation: `fadeInDown ${time}s linear`,
@@ -236,11 +239,11 @@ export default function Navbar() {
                     style={fadeInDown(0.2)}
                   >
                     <ul className="divide-y">
-                      {dropdownItems.map((item, index) => (
+                      {dropdownItems[link.menu as keyof typeof dropdownItems]?.map((item, index) => (
                         <li key={index}>
                           <Link
                             to={item.href}
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 transition-all duration-200"
                           >
                             {item.menu}
                           </Link>
@@ -357,175 +360,188 @@ export default function Navbar() {
       </nav>
 
       {mobileNavbar && (
-        <nav
-          className="fixed lg:hidden top-0 left-0 h-screen w-screen bg-white z-50 overflow-y-auto"
-          style={{ minWidth: '100vw', maxWidth: '100vw' }}
-          aria-label="Mobile navigation"
-        >
-          <div className="flex items-center justify-end gap-2 py-3 px-6 font-bold leading-6">
-            <h6>MENU</h6>
-            <Button
-              className="block py-2.5 px-3.5"
-              isIconOnly={true}
-              ariaLabel="Close mobile menu"
-              onClick={handleMobileNavbar}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <path
-                  d="M18 18L12 12M12 12L6 6M12 12L18 6M12 12L6 18"
-                  stroke="#0D0D0D"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </Button>
-          </div>
-          <ul className="flex flex-col border-b">
-            {navlinks.map((link, index) => {
-              const isDropdownMenu =
-                link.menu === "Academics" ||
-                link.menu === "Gaming" ||
-                link.menu === "Entertainment";
-              return (
-                <li
-                  key={index}
-                  className={`flex flex-col border-t ${
-                    isDropdownMenu ? "relative" : ""
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <Link
-                      to={link.href}
-                      onClick={() => handleMobileLinkClick(link.href)}
-                      className={`py-4 pl-6 font-medium leading-6`}
-                    >
-                      {link.menu}
-                    </Link>
-                    {isDropdownMenu && (
-                      <Button
-                        className="p-4 border-l"
-                        isIconOnly={true}
-                        ariaLabel={`Toggle ${link.menu} mobile dropdown menu`}
-                        onClick={() => handleDropDownMenu(link.menu)}
-                      >
-                        <svg
-                          className={`${
-                            activeDropdown === link.menu
-                              ? "transform rotate-180"
-                              : ""
-                          }`}
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="21"
-                          height="20"
-                          viewBox="0 0 21 20"
-                          fill="none"
-                        >
-                          <path
-                            d="M16.3334 7.5L10.5001 13.3333L4.66675 7.5"
-                            stroke="#616161"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </Button>
-                    )}
-                  </div>
-                  {isDropdownMenu && activeDropdown === link.menu && (
-                    <ul
-                      className="flex flex-col border-t divide-y"
-                      style={fadeInDown(0.2)}
-                    >
-                      {dropdownItems.map((item, index) => (
-                        <Link
-                          key={index}
-                          to={item.href}
-                          onClick={() => handleMobileLinkClick(item.href)}
-                          className="py-4 pl-6 text-secondary font-normal text-sm animate-fadeInDown cursor-pointer"
-                        >
-                          {item.menu}
-                        </Link>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+        <>
+          {/* Mobile Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+            onClick={handleMobileNavbar}
+          />
           
-          {/* Mobile Auth Buttons */}
-          {!isAuthenticated && (
-            <div className="flex flex-col gap-4 p-6 border-t">
-              <Button
-                href="?auth=login"
-                className="w-full py-3 px-4 bg-transparent text-primary border border-primary hover:bg-primary hover:text-white text-center"
-                isIconOnly={false}
-                ariaLabel="Go to Login page"
-                onClick={() => setMobileNavbar(false)}
-              >
-                <p>Login</p>
-              </Button>
-              <Button
-                href="?auth=signup"
-                className="w-full py-3 px-4 bg-primary text-white hover:bg-primary-dark text-center"
-                isIconOnly={false}
-                ariaLabel="Go to Signup page"
-                onClick={() => setMobileNavbar(false)}
-              >
-                <p>Join Us</p>
-              </Button>
-            </div>
-          )}
-          
-          {/* Mobile User Menu */}
-          {isAuthenticated && (
-            <div className="flex flex-col border-t">
-              <div className="flex items-center gap-3 p-6 border-b">
-                <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
-                  {user?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
-                </div>
-                <div>
-                  <p className="font-medium">{user?.full_name || user?.email?.split('@')[0] || 'User'}</p>
-                  <p className="text-sm text-gray-500">{user?.email}</p>
-                </div>
+          {/* Mobile Menu */}
+          <nav
+            className="fixed top-0 right-0 h-screen w-80 max-w-[85vw] bg-white z-50 shadow-2xl transform transition-transform duration-300 ease-out lg:hidden"
+            aria-label="Mobile navigation"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
+              <div className="flex items-center gap-3">
+                <img src={UnivyxLogo} alt="Univyx" className="h-8" />
+                <span className="font-bold text-gray-800">Menu</span>
               </div>
-              <Link
-                to="/profile"
-                onClick={() => handleMobileLinkClick('/profile')}
-                className="py-4 pl-6 font-medium border-t"
-              >
-                Profile
-              </Link>
-              <Link
-                to="/admin"
-                onClick={() => handleMobileLinkClick('/admin')}
-                className="py-4 pl-6 font-medium border-t"
-              >
-                Admin Panel
-              </Link>
               <button
-                onClick={() => {
-                  logout();
-                  setMobileNavbar(false);
-                  document.body.style.overflow = "unset";
-                  document.body.style.position = "unset";
-                  document.body.style.width = "unset";
-                  navigate('/');
-                }}
-                className="py-4 pl-6 font-medium text-left border-t text-red-600"
+                onClick={handleMobileNavbar}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                aria-label="Close mobile menu"
               >
-                Logout
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
-          )}
-        </nav>
+
+            {/* Navigation Links */}
+            <div className="flex-1 overflow-y-auto">
+              <ul className="py-4">
+                {navlinks.map((link, index) => {
+                  const isActive = location.pathname === link.href;
+                  const isDropdownMenu = link.menu === "Academics" || link.menu === "Gaming" || link.menu === "Entertainment";
+                  
+                  return (
+                    <li key={index} className="mb-1">
+                      <div className="flex items-center">
+                        <Link
+                          to={link.href}
+                          onClick={() => handleMobileLinkClick(link.href)}
+                          className={`flex-1 px-6 py-4 font-medium transition-all duration-200 ${
+                            isActive 
+                              ? 'text-blue-600 bg-blue-50 border-r-4 border-blue-600' 
+                              : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                          }`}
+                        >
+                          <span className="flex items-center gap-3">
+                            {link.menu === 'Home' && <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>}
+                            {link.menu === 'Entertainment' && <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.5a1.5 1.5 0 011.5 1.5V12a1.5 1.5 0 01-1.5 1.5H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+                            {link.menu === 'Academics' && <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>}
+                            {link.menu === 'Gaming' && <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 011-1h1a2 2 0 100-4H7a1 1 0 01-1-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" /></svg>}
+                            {link.menu === 'Store' && <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>}
+                            {link.menu}
+                          </span>
+                        </Link>
+                        {isDropdownMenu && (
+                          <button
+                            onClick={() => handleDropDownMenu(link.menu)}
+                            className="p-4 text-gray-400 hover:text-gray-600 transition-colors"
+                            aria-label={`Toggle ${link.menu} dropdown`}
+                          >
+                            <svg
+                              className={`w-5 h-5 transition-transform duration-200 ${
+                                activeDropdown === link.menu ? 'rotate-180' : ''
+                              }`}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                      
+                      {isDropdownMenu && activeDropdown === link.menu && (
+                        <ul className="bg-gradient-to-r from-blue-50 to-purple-50 border-l-4 border-blue-200 ml-6">
+                          {dropdownItems[link.menu as keyof typeof dropdownItems]?.map((item, idx) => (
+                            <li key={idx}>
+                              <Link
+                                to={item.href}
+                                onClick={() => handleMobileLinkClick(item.href)}
+                                className="block px-6 py-3 text-sm text-gray-600 hover:text-blue-700 hover:bg-white transition-colors"
+                              >
+                                {item.menu}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            {/* Bottom Section */}
+            <div className="border-t border-gray-100 bg-gray-50">
+              {!isAuthenticated ? (
+                <div className="p-6 space-y-3">
+                  <button
+                    onClick={() => {
+                      window.location.href = '?auth=login';
+                      setMobileNavbar(false);
+                    }}
+                    className="w-full py-3 px-4 text-blue-600 border-2 border-blue-600 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition-all duration-200"
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => {
+                      window.location.href = '?auth=signup';
+                      setMobileNavbar(false);
+                    }}
+                    className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg"
+                  >
+                    Join Us
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  {/* User Profile Section */}
+                  <div className="p-6 border-b border-gray-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                        {user?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-gray-800">
+                          {user?.full_name || user?.email?.split('@')[0] || 'User'}
+                        </p>
+                        <p className="text-sm text-gray-500 truncate">{user?.email}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* User Menu Items */}
+                  <div className="py-2">
+                    <Link
+                      to="/profile"
+                      onClick={() => handleMobileLinkClick('/profile')}
+                      className="flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-white hover:text-blue-600 transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      Profile
+                    </Link>
+                    <Link
+                      to="/admin"
+                      onClick={() => handleMobileLinkClick('/admin')}
+                      className="flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-white hover:text-blue-600 transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      Admin Panel
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setMobileNavbar(false);
+                        document.body.style.overflow = "unset";
+                        document.body.style.position = "unset";
+                        document.body.style.width = "unset";
+                        navigate('/');
+                      }}
+                      className="flex items-center gap-3 w-full px-6 py-3 text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </nav>
+        </>
       )}
     </div>
   );

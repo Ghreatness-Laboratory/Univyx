@@ -18,7 +18,7 @@ import {
   User,
 } from '../types/api';
 
-const BASE_URL = 'https://univyx-backend.onrender.com/univyxApi/v1';
+const BASE_URL = 'https://univyx-backend-1xfv.onrender.com/univyxApi/v1';
 
 class ApiService {
   private api: AxiosInstance;
@@ -107,205 +107,221 @@ class ApiService {
   }
 
   async register(data: Signup): Promise<AxiosResponse<any>> {
-    return this.api.post('/auth/sign-up/', data);
+    return this.api.post('/auth/register', data);
   }
 
   async getProfile(): Promise<AxiosResponse<User>> {
-    return this.api.get('/auth/profile/');
+    return this.api.get('/auth/profile');
   }
 
   async updateProfile(data: Partial<User>): Promise<AxiosResponse<User>> {
-    return this.api.patch('/auth/profile/', data);
+    return this.api.patch('/auth/profile', data);
   }
 
   async resendVerification(data: Email): Promise<AxiosResponse<EmailResent>> {
-    return this.api.post('/auth/resend-verification/', data);
+    return this.api.post('/auth/resend-verification', data);
   }
 
-  async verifyEmail(uidb64: string, token: string): Promise<AxiosResponse<VerifyEmailSuccess>> {
-    return this.api.get(`/auth/verify-email/${uidb64}/${token}/`);
+  async verifyEmail(token: string): Promise<AxiosResponse<VerifyEmailSuccess>> {
+    return this.api.get(`/auth/verify-email/${token}`);
   }
 
   async requestPasswordReset(data: Email): Promise<AxiosResponse<any>> {
-    return this.api.post('/auth/request-reset/', data);
+    return this.api.post('/auth/request-reset', data);
   }
 
-  async resetPassword(uidb64: string, token: string, data: any): Promise<AxiosResponse<any>> {
-    return this.api.post(`/auth/reset-password/${uidb64}/${token}/`, data);
+  async resetPassword(token: string, data: any): Promise<AxiosResponse<any>> {
+    return this.api.post(`/auth/reset-password/${token}`, data);
   }
 
   async changePassword(data: any): Promise<AxiosResponse<any>> {
-    return this.api.post('/auth/change-password/', data);
+    return this.api.post('/auth/change-password', data);
   }
 
   async changeConfirm(uidb64: string, token: string): Promise<AxiosResponse<any>> {
-    return this.api.post(`/auth/change-confirm/${uidb64}/${token}/`);
+    return this.api.post(`/auth/change-confirm/${uidb64}/${token}`);
   }
 
   async changeRequest(data: any): Promise<AxiosResponse<any>> {
-    return this.api.post('/auth/change-request/', data);
+    return this.api.post('/auth/change-request', data);
   }
 
   async getToken(data: TokenObtainPair): Promise<AxiosResponse<TokenObtainPair>> {
-    return this.api.post('/auth/token/', data);
+    return this.api.post('/auth/token', data);
   }
 
   async verifyToken(data: { token: string }): Promise<AxiosResponse<any>> {
-    return this.api.post('/auth/token/verify/', data);
+    return this.api.post('/auth/token/verify', data);
   }
 
   async refreshToken(data: TokenRefresh): Promise<AxiosResponse<TokenRefresh>> {
-    return this.api.post('/auth/token/refresh/', data);
+    return this.api.post('/auth/token/refresh', data);
   }
 
   // Entertainment endpoints
   async getArticles(): Promise<AxiosResponse<Article[]>> {
-    return this.api.get('/entertainment/articles/');
+    return this.api.get('/entertainment/articles');
   }
 
   async createArticle(data: Partial<Article>): Promise<AxiosResponse<Article>> {
-    return this.api.post('/entertainment/articles/', data);
+    return this.api.post('/entertainment/articles', data);
   }
 
   async updateArticles(data: Partial<Article>): Promise<AxiosResponse<Article>> {
-    return this.api.put('/entertainment/articles/', data);
+    return this.api.put('/entertainment/articles', data);
   }
 
   async deleteArticles(): Promise<AxiosResponse<void>> {
-    return this.api.delete('/entertainment/articles/');
+    return this.api.delete('/entertainment/articles');
   }
 
   async getArticle(id: string): Promise<AxiosResponse<Article>> {
-    return this.api.get(`/entertainment/articles/${id}/`);
+    return this.api.get(`/entertainment/articles/${id}`);
   }
 
   async createArticleById(id: string, data: Partial<Article>): Promise<AxiosResponse<Article>> {
-    return this.api.post(`/entertainment/articles/${id}/`, data);
+    return this.api.post(`/entertainment/articles/${id}`, data);
   }
 
   async updateArticle(id: string, data: Partial<Article>): Promise<AxiosResponse<Article>> {
-    return this.api.put(`/entertainment/articles/${id}/`, data);
+    return this.api.put(`/entertainment/articles/${id}`, data);
   }
 
   async deleteArticle(id: string): Promise<AxiosResponse<void>> {
-    return this.api.delete(`/entertainment/articles/${id}/`);
+    return this.api.delete(`/entertainment/articles/${id}`);
   }
 
   async getEvents(): Promise<AxiosResponse<Event[]>> {
-    return this.api.get('/entertainment/events/');
+    return this.api.get('/entertainment/events');
   }
 
   async createEvent(data: Partial<Event>): Promise<AxiosResponse<Event>> {
-    return this.api.post('/entertainment/events/', data);
+    return this.api.post('/entertainment/events', data);
   }
 
   async updateEvents(data: Partial<Event>): Promise<AxiosResponse<Event>> {
-    return this.api.put('/entertainment/events/', data);
+    return this.api.put('/entertainment/events', data);
   }
 
   async deleteEvents(): Promise<AxiosResponse<void>> {
-    return this.api.delete('/entertainment/events/');
+    return this.api.delete('/entertainment/events');
   }
 
   async getEvent(id: string): Promise<AxiosResponse<Event>> {
-    return this.api.get(`/entertainment/events/${id}/`);
+    return this.api.get(`/entertainment/events/${id}`);
   }
 
   async createEventById(id: string, data: Partial<Event>): Promise<AxiosResponse<Event>> {
-    return this.api.post(`/entertainment/events/${id}/`, data);
+    return this.api.post(`/entertainment/events/${id}`, data);
   }
 
   async updateEventById(id: string, data: Partial<Event>): Promise<AxiosResponse<Event>> {
-    return this.api.put(`/entertainment/events/${id}/`, data);
+    return this.api.put(`/entertainment/events/${id}`, data);
   }
 
   async deleteEventById(id: string): Promise<AxiosResponse<void>> {
-    return this.api.delete(`/entertainment/events/${id}/`);
+    return this.api.delete(`/entertainment/events/${id}`);
   }
 
 
 
   async getNews(): Promise<AxiosResponse<News[]>> {
-    return this.api.get('/entertainment/news/');
+    return this.api.get('/entertainment/news');
   }
 
   async createNews(data: Partial<News>): Promise<AxiosResponse<News>> {
-    return this.api.post('/entertainment/news/', data);
+    return this.api.post('/entertainment/news', data);
   }
 
   async updateNewsCollection(data: Partial<News>): Promise<AxiosResponse<News>> {
-    return this.api.put('/entertainment/news/', data);
+    return this.api.put('/entertainment/news', data);
   }
 
   async deleteNewsCollection(): Promise<AxiosResponse<void>> {
-    return this.api.delete('/entertainment/news/');
+    return this.api.delete('/entertainment/news');
   }
 
   async getNewsItem(id: string): Promise<AxiosResponse<News>> {
-    return this.api.get(`/entertainment/news/${id}/`);
+    return this.api.get(`/entertainment/news/${id}`);
   }
 
   async createNewsById(id: string, data: Partial<News>): Promise<AxiosResponse<News>> {
-    return this.api.post(`/entertainment/news/${id}/`, data);
+    return this.api.post(`/entertainment/news/${id}`, data);
   }
 
   async updateNews(id: string, data: Partial<News>): Promise<AxiosResponse<News>> {
-    return this.api.put(`/entertainment/news/${id}/`, data);
+    return this.api.put(`/entertainment/news/${id}`, data);
   }
 
   async deleteNews(id: string): Promise<AxiosResponse<void>> {
-    return this.api.delete(`/entertainment/news/${id}/`);
+    return this.api.delete(`/entertainment/news/${id}`);
   }
 
   // Like endpoints
   async getLikes(modelName: string, objectId: string): Promise<AxiosResponse<Like[]>> {
-    return this.api.get(`/entertainment/${modelName}/${objectId}/like/`);
+    return this.api.get(`/entertainment/${modelName}/${objectId}/like`);
   }
 
   async toggleLike(modelName: string, objectId: string): Promise<AxiosResponse<Like>> {
-    return this.api.post(`/entertainment/${modelName}/${objectId}/like/`);
+    return this.api.post(`/entertainment/${modelName}/${objectId}/like`);
   }
 
   // Bookmark endpoints
   async getBookmarks(modelName: string, publicId: string): Promise<AxiosResponse<Bookmark[]>> {
-    return this.api.get(`/entertainment/${modelName}/${publicId}/bookmark/`);
+    return this.api.get(`/entertainment/${modelName}/${publicId}/bookmark`);
   }
 
   async toggleBookmark(modelName: string, publicId: string): Promise<AxiosResponse<Bookmark>> {
-    return this.api.post(`/entertainment/${modelName}/${publicId}/bookmark/`);
+    return this.api.post(`/entertainment/${modelName}/${publicId}/bookmark`);
   }
 
   // Comment endpoints
   async getComments(modelName: string, publicId: string): Promise<AxiosResponse<Comment[]>> {
-    return this.api.get(`/entertainment/${modelName}/${publicId}/comments/`);
+    return this.api.get(`/entertainment/${modelName}/${publicId}/comments`);
   }
 
   async createComment(modelName: string, publicId: string, data: { content: string }): Promise<AxiosResponse<Comment>> {
-    return this.api.post(`/entertainment/${modelName}/${publicId}/comments/`, data);
+    return this.api.post(`/entertainment/${modelName}/${publicId}/comments`, data);
   }
 
   // Store endpoints
   async getStoreItems(): Promise<AxiosResponse<StoreItem[]>> {
-    return this.api.get('/store/');
+    return this.api.get('/store');
   }
 
   async createStoreItem(data: Partial<StoreItem>): Promise<AxiosResponse<StoreItem>> {
-    return this.api.post('/store/', data);
+    return this.api.post('/store', data);
   }
 
   // Academics endpoints
   async getUniversities(): Promise<AxiosResponse<University[]>> {
-    return this.api.get('/academics/universities/');
+    return this.api.get('/academics/universities');
   }
 
   async createUniversity(data: Partial<University>): Promise<AxiosResponse<University>> {
-    return this.api.post('/academics/universities/', data);
+    return this.api.post('/academics/universities', data);
   }
 
-  async getUniversity(id: number): Promise<AxiosResponse<University>> {
-    return this.api.get(`/academics/universities/${id}/`);
+  async getCourses(): Promise<AxiosResponse<any[]>> {
+    return this.api.get('/academics/courses');
+  }
+
+  async getResources(): Promise<AxiosResponse<any[]>> {
+    return this.api.get('/academics/resources');
+  }
+
+  // Gaming endpoints
+  async getTournaments(): Promise<AxiosResponse<any[]>> {
+    return this.api.get('/gaming/tournaments');
+  }
+
+  async getLeaderboards(): Promise<AxiosResponse<any[]>> {
+    return this.api.get('/gaming/leaderboards');
+  }
+
+  async getLeaderboard(id: string): Promise<AxiosResponse<any>> {
+    return this.api.get(`/gaming/leaderboards/${id}`);
   }
 }
 
-export const apiService = new ApiService();
-export default apiService;
+export default new ApiService();
