@@ -11,6 +11,8 @@ import NotFound from "../pages/NotFound";
 import Profile from "../pages/Profile";
 import Store from "../pages/Store";
 import ArticleDetail from "../pages/ArticleDetail";
+import LoginPage from "../pages/LoginPage";
+import SignUpPage from "../pages/SignUpPage";
 import ScrollToTop from "./ScrollToTop";
 
 const PublicRouter: React.FC = () => {
@@ -18,6 +20,8 @@ const PublicRouter: React.FC = () => {
     <>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
         <Route path="/entertainment" element={<Entertainment />} />
         <Route path="/academics" element={<Academics />} />
         <Route path="/academics/:universityId" element={<Resources />} />

@@ -1,6 +1,5 @@
 import "./App.css";
 import { AuthProvider } from "./context/AuthContext";
-import AuthModal from "./components/auth/AuthModal";
 import Footer from "./components/layouts/common/Footer";
 import Navbar from "./components/layouts/common/Navbar";
 import ArticlesModal from "./components/modals/entertainment/articles";
@@ -20,7 +19,6 @@ function App() {
           </main>
           <Footer />
         </>
-        <AuthModal />
         <NewsModal />
         <ArticlesModal />
         <TopicsModal />

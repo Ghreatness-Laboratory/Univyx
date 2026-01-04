@@ -28,7 +28,7 @@ export default function Login() {
       setIsLoading(true);
       setApiError(null);
       await login(data.email, data.password);
-      navigate('/');
+      navigate('/', { replace: true });
     } catch (error: any) {
       setApiError(error.response?.data?.detail || 'Login failed. Please try again.');
     } finally {
@@ -108,7 +108,7 @@ export default function Login() {
       <p className="text-[#808080] text-sm text-center pt-2">
         Don't have an account?{" "}
         <Link
-          to={"?auth=signup"}
+          to="/signup"
           className="text-black hover:underline transition-all duration-300"
         >
           Sign up

@@ -18,7 +18,9 @@ import {
   User,
 } from '../types/api';
 
-const BASE_URL = 'https://univyx-backend-1xfv.onrender.com/univyxApi/v1';
+const BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://univyx-backend-1xfv.onrender.com/univyxApi/v1'
+  : 'http://localhost:5000/univyxApi/v1';
 
 class ApiService {
   private api: AxiosInstance;

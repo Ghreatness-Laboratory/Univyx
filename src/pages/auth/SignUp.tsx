@@ -5,12 +5,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import UnivyxLogo from "../../assets/images/univyx-logo.svg";
+import WelcomeModal from "../../components/modals/WelcomeModal";
 
 interface FormData {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
+  confirmPassword: string;
 }
 
 export default function SignUp() {
@@ -18,43 +20,34 @@ export default function SignUp() {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<FormData>();
   
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [welcomeName, setWelcomeName] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
 
   const onSubmit = async (data: FormData) => {
     try {
       setIsLoading(true);
       setApiError(null);
-      const registrationData = {
-        first_name: data.firstName,
-        last_name: data.lastName,
-        email: data.email,
-        password: data.password
-      };
-      console.log('Sending registration data:', registrationData);
-      console.log('Email being sent:', data.email);
+      
       await registerUser(data.firstName, data.lastName, data.email, data.password);
-      setSuccess(true);
+      
+      // Show welcome modal and prepare for redirect
+      setWelcomeName(data.firstName);
+      setShowWelcomeModal(true);
+      
     } catch (error: any) {
       console.log('Registration error details:', error.response?.data);
       
       // Handle validation errors from backend
       if (error.response?.data?.errors) {
         const errors = error.response.data.errors;
-        console.log('Validation errors:', errors);
-        console.log('Email errors specifically:', errors.email);
-        
-        // Log each error in detail
-        Object.entries(errors).forEach(([field, messages]) => {
-          console.log(`${field} errors:`, messages);
-        });
-        
         const errorMessages = Object.entries(errors)
           .map(([field, messages]: [string, any]) => {
             const messageArray = Array.isArray(messages) ? messages : [messages];
@@ -68,6 +61,14 @@ export default function SignUp() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleWelcomeClose = () => {
+    setShowWelcomeModal(false);
+    // Redirect to home page after welcome modal closes
+    setTimeout(() => {
+      navigate('/', { replace: true });
+    }, 300);
   };
 
   const handleGoogleSignup = async () => {
@@ -184,29 +185,41 @@ export default function SignUp() {
           )}
         </div>
 
+        <div>
+          <label className="block text-[14px] text-primary font-mormal mb-1">
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            {...register("confirmPassword", {
+              required: "Please confirm your password",
+              validate: (value) => value === watch("password") || "Passwords do not match",
+            })}
+            placeholder="Confirm your password"
+            className="w-full p-4 border border-gray-300 rounded-md text-sm"
+          />
+          {errors.confirmPassword && (
+            <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>
+          )}
+        </div>
+
         {apiError && (
           <p className="text-red-500 text-sm text-center">{apiError}</p>
         )}
         
-        {success && (
-          <p className="text-green-500 text-sm text-center">
-            Registration successful! Please check your email for verification.
-          </p>
-        )}
-
         <button
           type="submit"
-          disabled={isLoading || success}
+          disabled={isLoading}
           className="w-full bg-primary font-semibold text-[#FCFCFC] py-2 md:py-3 mt-2.5 rounded-md disabled:opacity-50"
         >
-          {isLoading ? 'Creating account...' : success ? 'Account created!' : 'Join'}
+          {isLoading ? 'Creating account...' : 'Join'}
         </button>
       </form>
 
       <p className="text-[#808080] text-sm text-center pt-2">
         Already joined?{" "}
         <Link
-          to={"?auth=login"}
+          to="/login"
           className="text-black hover:underline transition-all duration-300"
         >
           Login
@@ -277,6 +290,12 @@ export default function SignUp() {
           <p>Sign Up with Apple</p>
         </button>
       </div>
+      
+      <WelcomeModal 
+        isOpen={showWelcomeModal}
+        onClose={handleWelcomeClose}
+        userName={welcomeName}
+      />
     </div>
   );
 }

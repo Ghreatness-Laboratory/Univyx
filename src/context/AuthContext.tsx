@@ -33,6 +33,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const isAuthenticated = !!user;
 
+  const refreshProfile = async () => {
+    try {
+      const response = await apiService.getProfile();
+      setUser(response.data);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   useEffect(() => {
     const initAuth = async () => {
       const token = localStorage.getItem('access_token');
@@ -83,6 +92,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         password
       });
       
+      // Auto-login after successful registration
+      await login(email, password);
+      
       return response.data;
     } catch (error: any) {
       throw error;
@@ -107,15 +119,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     setUser(null);
-  };
-
-  const refreshProfile = async () => {
-    try {
-      const response = await apiService.getProfile();
-      setUser(response.data);
-    } catch (error) {
-      throw error;
-    }
   };
 
   const value: AuthContextType = {

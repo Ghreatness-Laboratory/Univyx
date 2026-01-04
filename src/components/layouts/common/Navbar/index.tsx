@@ -314,7 +314,7 @@ export default function Navbar() {
           ) : (
             <>
               <Button
-                href="?auth=login"
+                href="/login"
                 className="hidden md:block py-2.5 px-3.5 bg-transparent text-primary border border-primary hover:bg-primary hover:text-white"
                 isIconOnly={false}
                 ariaLabel="Go to Login page"
@@ -323,7 +323,7 @@ export default function Navbar() {
                 <p>Login</p>
               </Button>
               <Button
-                href="?auth=signup"
+                href="/signup"
                 className="hidden md:block py-2.5 px-3.5"
                 isIconOnly={false}
                 ariaLabel="Go to Signup page"
@@ -464,7 +464,7 @@ export default function Navbar() {
                 <div className="p-6 space-y-3">
                   <button
                     onClick={() => {
-                      window.location.href = '?auth=login';
+                      window.location.href = '/login';
                       setMobileNavbar(false);
                     }}
                     className="w-full py-3 px-4 text-blue-600 border-2 border-blue-600 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition-all duration-200"
@@ -473,7 +473,7 @@ export default function Navbar() {
                   </button>
                   <button
                     onClick={() => {
-                      window.location.href = '?auth=signup';
+                      window.location.href = '/signup';
                       setMobileNavbar(false);
                     }}
                     className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg"
