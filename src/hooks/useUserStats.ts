@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiService from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 interface UserStats {
   articles_read: number;
@@ -10,6 +11,7 @@ interface UserStats {
 }
 
 export const useUserStats = () => {
+  const { isAuthenticated } = useAuth();
   const [stats, setStats] = useState<UserStats>({
     articles_read: 0,
     events_attended: 0,
@@ -21,6 +23,11 @@ export const useUserStats = () => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchStats = async () => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       
@@ -39,22 +46,6 @@ export const useUserStats = () => {
           likes_count: 0
         };
 
-        // Try to get individual counts if endpoints exist
-        try {
-          const bookmarksResponse = await apiService.getUserBookmarks();
-          calculatedStats.bookmarks_count = bookmarksResponse.data.length;
-        } catch (e) { /* ignore */ }
-
-        try {
-          const commentsResponse = await apiService.getUserComments();
-          calculatedStats.comments_posted = commentsResponse.data.length;
-        } catch (e) { /* ignore */ }
-
-        try {
-          const likesResponse = await apiService.getUserLikes();
-          calculatedStats.likes_count = likesResponse.data.length;
-        } catch (e) { /* ignore */ }
-
         setStats(calculatedStats);
       }
       
@@ -69,7 +60,7 @@ export const useUserStats = () => {
 
   useEffect(() => {
     fetchStats();
-  }, []);
+  }, [isAuthenticated]);
 
   return {
     stats,
