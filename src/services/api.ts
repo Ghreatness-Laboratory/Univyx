@@ -36,8 +36,6 @@ class ApiService {
     this.setupInterceptors();
   }
 
-
-
   private setupInterceptors() {
     // Request interceptor to add auth token
     this.api.interceptors.request.use(
@@ -64,18 +62,6 @@ class ApiService {
           status: error.response?.status,
           data: error.response?.data
         });
-        
-        // Log detailed error information for 400 errors
-        if (error.response?.status === 400) {
-          console.error('Detailed 400 Error:', {
-            fullResponse: error.response,
-            errorData: error.response?.data,
-            errors: error.response?.data?.errors,
-            message: error.response?.data?.message
-          });
-        }
-        
-
         
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
@@ -120,6 +106,10 @@ class ApiService {
     return this.api.patch('/auth/profile', data);
   }
 
+  async refreshToken(data: TokenRefresh): Promise<AxiosResponse<TokenRefresh>> {
+    return this.api.post('/auth/token/refresh', data);
+  }
+
   async resendVerification(data: Email): Promise<AxiosResponse<EmailResent>> {
     return this.api.post('/auth/resend-verification', data);
   }
@@ -136,28 +126,12 @@ class ApiService {
     return this.api.post(`/auth/reset-password/${token}`, data);
   }
 
-  async changePassword(data: any): Promise<AxiosResponse<any>> {
-    return this.api.post('/auth/change-password', data);
-  }
-
-  async changeConfirm(uidb64: string, token: string): Promise<AxiosResponse<any>> {
-    return this.api.post(`/auth/change-confirm/${uidb64}/${token}`);
-  }
-
-  async changeRequest(data: any): Promise<AxiosResponse<any>> {
-    return this.api.post('/auth/change-request', data);
-  }
-
   async getToken(data: TokenObtainPair): Promise<AxiosResponse<TokenObtainPair>> {
     return this.api.post('/auth/token', data);
   }
 
   async verifyToken(data: { token: string }): Promise<AxiosResponse<any>> {
     return this.api.post('/auth/token/verify', data);
-  }
-
-  async refreshToken(data: TokenRefresh): Promise<AxiosResponse<TokenRefresh>> {
-    return this.api.post('/auth/token/refresh', data);
   }
 
   // Entertainment endpoints
@@ -169,20 +143,8 @@ class ApiService {
     return this.api.post('/entertainment/articles', data);
   }
 
-  async updateArticles(data: Partial<Article>): Promise<AxiosResponse<Article>> {
-    return this.api.put('/entertainment/articles', data);
-  }
-
-  async deleteArticles(): Promise<AxiosResponse<void>> {
-    return this.api.delete('/entertainment/articles');
-  }
-
   async getArticle(id: string): Promise<AxiosResponse<Article>> {
     return this.api.get(`/entertainment/articles/${id}`);
-  }
-
-  async createArticleById(id: string, data: Partial<Article>): Promise<AxiosResponse<Article>> {
-    return this.api.post(`/entertainment/articles/${id}`, data);
   }
 
   async updateArticle(id: string, data: Partial<Article>): Promise<AxiosResponse<Article>> {
@@ -201,20 +163,8 @@ class ApiService {
     return this.api.post('/entertainment/events', data);
   }
 
-  async updateEvents(data: Partial<Event>): Promise<AxiosResponse<Event>> {
-    return this.api.put('/entertainment/events', data);
-  }
-
-  async deleteEvents(): Promise<AxiosResponse<void>> {
-    return this.api.delete('/entertainment/events');
-  }
-
   async getEvent(id: string): Promise<AxiosResponse<Event>> {
     return this.api.get(`/entertainment/events/${id}`);
-  }
-
-  async createEventById(id: string, data: Partial<Event>): Promise<AxiosResponse<Event>> {
-    return this.api.post(`/entertainment/events/${id}`, data);
   }
 
   async updateEventById(id: string, data: Partial<Event>): Promise<AxiosResponse<Event>> {
@@ -225,8 +175,6 @@ class ApiService {
     return this.api.delete(`/entertainment/events/${id}`);
   }
 
-
-
   async getNews(): Promise<AxiosResponse<News[]>> {
     return this.api.get('/entertainment/news');
   }
@@ -235,20 +183,8 @@ class ApiService {
     return this.api.post('/entertainment/news', data);
   }
 
-  async updateNewsCollection(data: Partial<News>): Promise<AxiosResponse<News>> {
-    return this.api.put('/entertainment/news', data);
-  }
-
-  async deleteNewsCollection(): Promise<AxiosResponse<void>> {
-    return this.api.delete('/entertainment/news');
-  }
-
   async getNewsItem(id: string): Promise<AxiosResponse<News>> {
     return this.api.get(`/entertainment/news/${id}`);
-  }
-
-  async createNewsById(id: string, data: Partial<News>): Promise<AxiosResponse<News>> {
-    return this.api.post(`/entertainment/news/${id}`, data);
   }
 
   async updateNews(id: string, data: Partial<News>): Promise<AxiosResponse<News>> {
@@ -301,8 +237,6 @@ class ApiService {
 
   async getUserLikes(): Promise<AxiosResponse<Like[]>> {
     return this.api.get('/auth/likes');
-  }
-}}/${publicId}/comments`, data);
   }
 
   // Store endpoints
