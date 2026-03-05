@@ -25,10 +25,12 @@ export const useArticles = () => {
       }
       
       // Map _id to id for compatibility
-      articlesData = articlesData.map((article: any) => ({
-        ...article,
-        id: article.id || article._id
-      }));
+      if (Array.isArray(articlesData)) {
+        articlesData = articlesData.map((article: any) => ({
+          ...article,
+          id: article.id || article._id
+        }));
+      }
       
       console.log('Final articles data:', articlesData);
       setArticles(articlesData);
@@ -97,10 +99,12 @@ export const useEvents = () => {
       }
       
       // Map _id to id for compatibility
-      eventsData = eventsData.map((event: any) => ({
-        ...event,
-        id: event.id || event._id
-      }));
+      if (Array.isArray(eventsData)) {
+        eventsData = eventsData.map((event: any) => ({
+          ...event,
+          id: event.id || event._id
+        }));
+      }
       
       console.log('Final events data:', eventsData);
       setEvents(eventsData);
@@ -169,10 +173,12 @@ export const useNews = () => {
       }
       
       // Map _id to id for compatibility
-      newsData = newsData.map((news: any) => ({
-        ...news,
-        id: news.id || news._id
-      }));
+      if (Array.isArray(newsData)) {
+        newsData = newsData.map((news: any) => ({
+          ...news,
+          id: news.id || news._id
+        }));
+      }
       
       console.log('Final news data:', newsData);
       setNews(newsData);

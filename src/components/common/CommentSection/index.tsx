@@ -8,9 +8,12 @@ interface CommentSectionProps {
   isAuthenticated: boolean;
 }
 
-export default function CommentSection({ comments, onAddComment, isAuthenticated }: CommentSectionProps) {
+export default function CommentSection({ comments = [], onAddComment, isAuthenticated }: CommentSectionProps) {
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Ensure comments is always an array
+  const commentsList = Array.isArray(comments) ? comments : [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +35,7 @@ export default function CommentSection({ comments, onAddComment, isAuthenticated
       <div className="flex items-center mb-6">
         <MessageCircle size={24} className="text-gray-600 mr-2" />
         <h3 className="text-xl font-semibold text-gray-900">
-          Comments ({comments.length})
+          Comments ({commentsList.length})
         </h3>
       </div>
 
@@ -65,13 +68,13 @@ export default function CommentSection({ comments, onAddComment, isAuthenticated
       )}
 
       <div className="space-y-4">
-        {comments.length === 0 ? (
+        {commentsList.length === 0 ? (
           <div className="text-center py-8">
             <MessageCircle size={48} className="mx-auto text-gray-400 mb-3" />
             <p className="text-gray-500">No comments yet. Be the first to comment!</p>
           </div>
         ) : (
-          comments.map((comment) => (
+          commentsList.map((comment) => (
             <div key={comment.id} className="border-b border-gray-200 pb-4 last:border-b-0">
               <div className="flex items-start space-x-3">
                 <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
