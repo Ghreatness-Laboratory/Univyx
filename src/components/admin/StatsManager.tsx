@@ -49,8 +49,8 @@ export default function StatsManager() {
             <label className="block text-sm font-medium text-gray-700 mb-2">Students</label>
             <input
               type="number"
-              value={stats.students}
-              onChange={(e) => setStats({ ...stats, students: parseInt(e.target.value) })}
+              value={stats.students || ''}
+              onChange={(e) => setStats({ ...stats, students: parseInt(e.target.value) || 0 })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
           </div>
@@ -58,8 +58,8 @@ export default function StatsManager() {
             <label className="block text-sm font-medium text-gray-700 mb-2">Universities</label>
             <input
               type="number"
-              value={stats.universities}
-              onChange={(e) => setStats({ ...stats, universities: parseInt(e.target.value) })}
+              value={stats.universities || ''}
+              onChange={(e) => setStats({ ...stats, universities: parseInt(e.target.value) || 0 })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
           </div>
@@ -67,8 +67,8 @@ export default function StatsManager() {
             <label className="block text-sm font-medium text-gray-700 mb-2">Events</label>
             <input
               type="number"
-              value={stats.events}
-              onChange={(e) => setStats({ ...stats, events: parseInt(e.target.value) })}
+              value={stats.events || ''}
+              onChange={(e) => setStats({ ...stats, events: parseInt(e.target.value) || 0 })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
           </div>
@@ -76,8 +76,8 @@ export default function StatsManager() {
             <label className="block text-sm font-medium text-gray-700 mb-2">Tournaments</label>
             <input
               type="number"
-              value={stats.tournaments}
-              onChange={(e) => setStats({ ...stats, tournaments: parseInt(e.target.value) })}
+              value={stats.tournaments || ''}
+              onChange={(e) => setStats({ ...stats, tournaments: parseInt(e.target.value) || 0 })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
           </div>
