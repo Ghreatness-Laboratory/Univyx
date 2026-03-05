@@ -67,9 +67,11 @@ export default function ArticleDetail() {
               </h1>
               
               <div className="flex items-center text-sm text-gray-500 mb-4">
-                <span>By {article.author}</span>
+                <span>By {typeof article.author === 'object' && article.author?.first_name 
+                  ? `${article.author.first_name} ${article.author.last_name || ''}`.trim()
+                  : article.author || 'Anonymous'}</span>
                 <span className="mx-2">•</span>
-                <span>{article.created_at}</span>
+                <span>{new Date(article.created_at).toLocaleDateString()}</span>
               </div>
 
               <div className="flex items-center space-x-6 py-4 border-y border-gray-200">
