@@ -19,9 +19,11 @@ export default function PartnerManager() {
   const fetchPartners = async () => {
     try {
       const response = await api.getPartners();
-      setPartners(response.data.data || []);
+      const data = response.data.data || response.data || [];
+      setPartners(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch partners:', error);
+      setPartners([]);
     }
   };
 

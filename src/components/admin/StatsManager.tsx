@@ -13,9 +13,11 @@ export default function StatsManager() {
   const fetchStats = async () => {
     try {
       const response = await api.getHomepageStats();
-      setStats(response.data.data || { students: 0, universities: 0, events: 0, tournaments: 0 });
+      const data = response.data.data || response.data || { students: 0, universities: 0, events: 0, tournaments: 0 };
+      setStats(data);
     } catch (error) {
       console.error('Failed to fetch stats:', error);
+      setStats({ students: 0, universities: 0, events: 0, tournaments: 0 });
     }
   };
 
@@ -25,9 +27,11 @@ export default function StatsManager() {
 
     try {
       await api.updateHomepageStats(stats);
+      await fetchStats();
       alert('Stats updated successfully!');
     } catch (error) {
       console.error('Failed to update stats:', error);
+      alert('Failed to update stats');
     } finally {
       setLoading(false);
     }

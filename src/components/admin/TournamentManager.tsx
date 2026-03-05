@@ -40,9 +40,11 @@ export default function TournamentManager() {
   const fetchTournaments = async () => {
     try {
       const response = await api.getTournaments();
-      setTournaments(response.data.data || response.data || []);
+      const data = response.data.data || response.data || [];
+      setTournaments(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch tournaments:', error);
+      setTournaments([]);
     }
   };
 
@@ -96,6 +98,7 @@ export default function TournamentManager() {
     });
     setImagePreview(tournament.image || '');
     setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id: string) => {

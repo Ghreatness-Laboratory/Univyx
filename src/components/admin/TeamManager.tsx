@@ -20,9 +20,11 @@ export default function TeamManager() {
   const fetchMembers = async () => {
     try {
       const response = await api.getTeamMembers();
-      setMembers(response.data.data || []);
+      const data = response.data.data || response.data || [];
+      setMembers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch team members:', error);
+      setMembers([]);
     }
   };
 
@@ -72,6 +74,7 @@ export default function TeamManager() {
     });
     setImagePreview(member.image || '');
     setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id: string) => {

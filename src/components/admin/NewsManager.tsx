@@ -21,9 +21,11 @@ export default function NewsManager() {
   const fetchNews = async () => {
     try {
       const response = await api.getNews();
-      setNews(response.data.data || response.data || []);
+      const data = response.data.data || response.data || [];
+      setNews(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch news:', error);
+      setNews([]);
     }
   };
 
@@ -64,6 +66,7 @@ export default function NewsManager() {
     setFormData({ title: item.title || '', content: item.content || '' });
     setImagePreview(item.image || '');
     setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id: string) => {

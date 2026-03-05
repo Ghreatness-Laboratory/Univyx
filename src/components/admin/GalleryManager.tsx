@@ -19,9 +19,11 @@ export default function GalleryManager() {
   const fetchGallery = async () => {
     try {
       const response = await api.getGallery();
-      setGallery(response.data.data || []);
+      const data = response.data.data || response.data || [];
+      setGallery(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch gallery:', error);
+      setGallery([]);
     }
   };
 

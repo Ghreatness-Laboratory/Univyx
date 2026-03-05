@@ -21,9 +21,11 @@ export default function ArticleManager() {
   const fetchArticles = async () => {
     try {
       const response = await api.getArticles();
-      setArticles(response.data.data || response.data || []);
+      const data = response.data.data || response.data || [];
+      setArticles(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch articles:', error);
+      setArticles([]);
     }
   };
 
@@ -65,6 +67,7 @@ export default function ArticleManager() {
     setFormData({ title: article.title || '', content: article.content || '', category: 'Other' });
     setImagePreview(article.image || '');
     setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id: string) => {

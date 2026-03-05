@@ -28,18 +28,22 @@ export default function StoreManager() {
   const fetchStores = async () => {
     try {
       const response = await api.getStores();
-      setStores(response.data.data || response.data || []);
+      const data = response.data.data || response.data || [];
+      setStores(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch stores:', error);
+      setStores([]);
     }
   };
 
   const fetchItems = async () => {
     try {
       const response = await api.getStoreItems();
-      setItems(response.data.data || response.data || []);
+      const data = response.data.data || response.data || [];
+      setItems(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch items:', error);
+      setItems([]);
     }
   };
 
@@ -84,7 +88,7 @@ export default function StoreManager() {
       if (image) data.append('image', image);
 
       if (editingId) {
-        await api.api.put(`/store/${editingId}`, data);
+        await api.updateStoreItem(editingId, data);
       } else {
         await api.createStoreItem(data as any);
       }
@@ -99,6 +103,7 @@ export default function StoreManager() {
   };
 
   const handleEditStore = (store: any) => {
+    setActiveTab('stores');
     setEditingId(store.id);
     setStoreForm({
       name: store.name || '',
@@ -110,9 +115,11 @@ export default function StoreManager() {
     });
     setImagePreview(store.logo || '');
     setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleEditItem = (item: any) => {
+    setActiveTab('items');
     setEditingId(item.id);
     setItemForm({
       name: item.name || '',
@@ -124,6 +131,7 @@ export default function StoreManager() {
     });
     setImagePreview(item.image || '');
     setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDeleteStore = async (id: string) => {
@@ -139,7 +147,7 @@ export default function StoreManager() {
   const handleDeleteItem = async (id: string) => {
     if (!confirm('Delete this item?')) return;
     try {
-      await api.api.delete(`/store/${id}`);
+      await api.deleteStoreItem(id);
       fetchItems();
     } catch (error) {
       console.error('Failed to delete item:', error);

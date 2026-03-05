@@ -16,9 +16,11 @@ export default function FAQManager() {
   const fetchFAQs = async () => {
     try {
       const response = await api.getFAQs();
-      setFaqs(response.data.data || []);
+      const data = response.data.data || response.data || [];
+      setFaqs(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch FAQs:', error);
+      setFaqs([]);
     }
   };
 
@@ -51,6 +53,7 @@ export default function FAQManager() {
       order: faq.order || 0
     });
     setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id: string) => {

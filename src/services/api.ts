@@ -269,6 +269,15 @@ class ApiService {
     return this.api.post('/store', data, config);
   }
 
+  async updateStoreItem(id: string, data: Partial<StoreItem> | FormData): Promise<AxiosResponse<StoreItem>> {
+    const config = data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+    return this.api.put(`/store/${id}`, data, config);
+  }
+
+  async deleteStoreItem(id: string): Promise<AxiosResponse<void>> {
+    return this.api.delete(`/store/${id}`);
+  }
+
   // Academics endpoints
   async getUniversities(): Promise<AxiosResponse<University[]>> {
     return this.api.get('/academics/universities');
@@ -277,6 +286,23 @@ class ApiService {
   async createUniversity(data: Partial<University> | FormData): Promise<AxiosResponse<University>> {
     const config = data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
     return this.api.post('/academics/universities', data, config);
+  }
+
+  async getUniversity(id: number): Promise<AxiosResponse<University>> {
+    return this.api.get(`/academics/universities/${id}`);
+  }
+
+  async updateUniversity(id: number, data: Partial<University> | FormData): Promise<AxiosResponse<University>> {
+    const config = data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+    return this.api.put(`/academics/universities/${id}`, data, config);
+  }
+
+  async deleteUniversity(id: number): Promise<AxiosResponse<void>> {
+    return this.api.delete(`/academics/universities/${id}`);
+  }
+
+  async getUniversityResources(universityId: number): Promise<AxiosResponse<any[]>> {
+    return this.api.get(`/academics/universities/${universityId}/resources`);
   }
 
   async getCourses(): Promise<AxiosResponse<any[]>> {

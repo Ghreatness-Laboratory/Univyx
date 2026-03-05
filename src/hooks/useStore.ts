@@ -58,8 +58,7 @@ export const useStore = () => {
   const updateFilters = useCallback((newFilters: Partial<StoreFilters>) => {
     const updatedFilters = { ...filters, ...newFilters };
     setFilters(updatedFilters);
-    fetchStoreItems(updatedFilters);
-  }, [filters, fetchStoreItems]);
+  }, [filters]);
 
   const setPage = useCallback((page: number) => {
     updateFilters({ page });
@@ -82,11 +81,9 @@ export const useStore = () => {
     }
   }, [fetchStoreItems]);
 
-
-
   useEffect(() => {
     fetchStoreItems();
-  }, []);
+  }, [fetchStoreItems]);
 
   return {
     items,
@@ -98,8 +95,7 @@ export const useStore = () => {
     setCategory,
     setSearch,
     createItem,
-
-    refetch: () => fetchStoreItems()
+    refetch: fetchStoreItems
   };
 };
 

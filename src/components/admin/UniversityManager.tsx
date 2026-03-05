@@ -58,7 +58,7 @@ export default function UniversityManager() {
       if (image) data.append('logo', image);
 
       if (editingId) {
-        await api.api.put(`/academics/universities/${editingId}`, data);
+        await api.updateUniversity(editingId, data);
       } else {
         await api.createUniversity(data as any);
       }
@@ -91,7 +91,7 @@ export default function UniversityManager() {
   const handleDelete = async (id: number) => {
     if (!confirm('Delete this university? This action cannot be undone.')) return;
     try {
-      await api.api.delete(`/academics/universities/${id}`);
+      await api.deleteUniversity(id);
       fetchUniversities();
     } catch (error) {
       console.error('Failed to delete university:', error);

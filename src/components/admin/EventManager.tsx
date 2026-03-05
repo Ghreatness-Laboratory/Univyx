@@ -26,9 +26,11 @@ export default function EventManager() {
   const fetchEvents = async () => {
     try {
       const response = await api.getEvents();
-      setEvents(response.data.data || response.data || []);
+      const data = response.data.data || response.data || [];
+      setEvents(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch events:', error);
+      setEvents([]);
     }
   };
 
@@ -81,6 +83,7 @@ export default function EventManager() {
     });
     setImagePreview(event.image || '');
     setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id: string) => {
