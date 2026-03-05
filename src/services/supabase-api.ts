@@ -563,6 +563,13 @@ class SupabaseApiService {
   async updateHomepageStats(data: any) {
     return supabaseDb.updateHomepageStats(data);
   }
+
+  // Store Categories
+  async getStoreCategories() {
+    const { data } = await supabase.from('store_items').select('category');
+    const categories = [...new Set(data?.map(item => item.category) || [])];
+    return { data: { data: categories } };
+  }
 }
 
 export default new SupabaseApiService();

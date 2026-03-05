@@ -5,21 +5,28 @@ export class SupabaseService {
   async getArticles() {
     const { data, error } = await supabase
       .from('articles')
-      .select(`
-        *,
-        likes_count:likes(count)
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
     
     if (error) throw error;
     
-    // Transform to include likes count
-    const transformedData = data?.map(article => ({
-      ...article,
-      likes: article.likes_count?.[0]?.count || 0
-    })) || [];
+    // Fetch likes count for each article
+    const articlesWithLikes = await Promise.all(
+      (data || []).map(async (article) => {
+        const { count } = await supabase
+          .from('likes')
+          .select('*', { count: 'exact', head: true })
+          .eq('model_name', 'article')
+          .eq('object_id', article.id);
+        
+        return {
+          ...article,
+          likes: count || 0
+        };
+      })
+    );
     
-    return { data: { data: transformedData } };
+    return { data: { data: articlesWithLikes } };
   }
 
   async createArticle(article: any) {
@@ -44,20 +51,28 @@ export class SupabaseService {
   async getEvents() {
     const { data, error } = await supabase
       .from('events')
-      .select(`
-        *,
-        likes_count:likes(count)
-      `)
+      .select('*')
       .order('date', { ascending: false });
     
     if (error) throw error;
     
-    const transformedData = data?.map(event => ({
-      ...event,
-      likes: event.likes_count?.[0]?.count || 0
-    })) || [];
+    // Fetch likes count for each event
+    const eventsWithLikes = await Promise.all(
+      (data || []).map(async (event) => {
+        const { count } = await supabase
+          .from('likes')
+          .select('*', { count: 'exact', head: true })
+          .eq('model_name', 'event')
+          .eq('object_id', event.id);
+        
+        return {
+          ...event,
+          likes: count || 0
+        };
+      })
+    );
     
-    return { data: { data: transformedData } };
+    return { data: { data: eventsWithLikes } };
   }
 
   async createEvent(event: any) {
@@ -82,20 +97,28 @@ export class SupabaseService {
   async getNews() {
     const { data, error } = await supabase
       .from('news')
-      .select(`
-        *,
-        likes_count:likes(count)
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
     
     if (error) throw error;
     
-    const transformedData = data?.map(news => ({
-      ...news,
-      likes: news.likes_count?.[0]?.count || 0
-    })) || [];
+    // Fetch likes count for each news
+    const newsWithLikes = await Promise.all(
+      (data || []).map(async (news) => {
+        const { count } = await supabase
+          .from('likes')
+          .select('*', { count: 'exact', head: true })
+          .eq('model_name', 'news')
+          .eq('object_id', news.id);
+        
+        return {
+          ...news,
+          likes: count || 0
+        };
+      })
+    );
     
-    return { data: { data: transformedData } };
+    return { data: { data: newsWithLikes } };
   }
 
   async createNews(news: any) {
