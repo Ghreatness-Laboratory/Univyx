@@ -5,7 +5,7 @@ import Header from "../components/layouts/gaming/Header";
 import Leaderboards from "../components/layouts/gaming/leaderboard";
 import Tournaments from "../components/layouts/gaming/Tournament";
 import { useTournaments, useLeaderboard } from "../hooks/useGaming";
-import { upcomingEvents } from "../data/gaming/upcomingEvents";
+import { useEvents } from "../hooks/useEntertainment";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -15,6 +15,7 @@ const sectionVariants = {
 export default function Gaming() {
   const { tournaments, loading: tournamentsLoading, error: tournamentsError } = useTournaments();
   const { leaderboard, loading: leaderboardLoading, error: leaderboardError } = useLeaderboard();
+  const { events, loading: eventsLoading } = useEvents();
 
   return (
     <main data-testid="gaming-page">
@@ -30,7 +31,7 @@ export default function Gaming() {
         whileInView="visible"
         variants={sectionVariants}
       >
-        <Events upcomingEvents={upcomingEvents} />
+        <Events upcomingEvents={events} loading={eventsLoading} />
       </motion.div>
       <motion.div
         initial="hidden"

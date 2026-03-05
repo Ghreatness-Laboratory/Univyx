@@ -1,6 +1,33 @@
 import { ArrowRight } from "phosphor-react";
+import { useState, useEffect } from "react";
+import apiService from "../../../services/api";
+
+interface Tournament {
+  _id: string;
+  name: string;
+  game: string;
+  prizePool: number;
+  teams: number;
+  status: string;
+}
 
 export default function GamingHero() {
+  const [featuredTournament, setFeaturedTournament] = useState<Tournament | null>(null);
+
+  useEffect(() => {
+    const fetchFeaturedTournament = async () => {
+      try {
+        const response = await apiService.getTournaments();
+        const tournaments = response.data.data || response.data.results || response.data;
+        if (tournaments && tournaments.length > 0) {
+          setFeaturedTournament(tournaments[0]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch tournaments:', error);
+      }
+    };
+    fetchFeaturedTournament();
+  }, []);
   return (
     <header
       data-testid="gaming-header"
@@ -57,16 +84,16 @@ export default function GamingHero() {
               <div className="relative bg-gray-800/80 backdrop-blur-sm border border-purple-500/20 p-6 rounded-2xl shadow-xl transform rotate-3">
                 <div className="text-center mb-3">
                   <span className="inline-block px-3 py-1 text-xs font-semibold text-pink-400 bg-pink-900/30 rounded-full">
-                    TRENDING TOURNAMENT
+                    {featuredTournament ? 'FEATURED TOURNAMENT' : 'TRENDING TOURNAMENT'}
                   </span>
                 </div>
 
                 <h3 className="text-xl font-bold text-white mb-2">
-                  Cyber Legends Cup
+                  {featuredTournament?.name || 'Cyber Legends Cup'}
                 </h3>
                 <div className="flex justify-between text-gray-300 text-sm mb-4">
-                  <span>32 Teams</span>
-                  <span>Prize: $10,000</span>
+                  <span>{featuredTournament?.teams || 32} Teams</span>
+                  <span>Prize: ${featuredTournament?.prizePool?.toLocaleString() || '10,000'}</span>
                 </div>
 
                 <div className="w-full bg-gray-700 h-2 rounded-full mb-4">
@@ -74,7 +101,7 @@ export default function GamingHero() {
                 </div>
 
                 <div className="flex justify-between text-gray-400 text-xs mb-4">
-                  <span>Registration</span>
+                  <span>{featuredTournament?.status || 'Registration'}</span>
                   <span className="text-pink-400 font-medium">75% Full</span>
                 </div>
 

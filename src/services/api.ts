@@ -18,9 +18,7 @@ import {
   User,
 } from '../types/api';
 
-const BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://univyx-backend-1xfv.onrender.com/univyxApi/v1'
-  : 'http://localhost:5000/univyxApi/v1';
+const BASE_URL = 'https://univyx-backend-1xfv.onrender.com/univyxApi/v1';
 
 class ApiService {
   private api: AxiosInstance;
@@ -139,16 +137,18 @@ class ApiService {
     return this.api.get('/entertainment/articles');
   }
 
-  async createArticle(data: Partial<Article>): Promise<AxiosResponse<Article>> {
-    return this.api.post('/entertainment/articles', data);
+  async createArticle(data: Partial<Article> | FormData): Promise<AxiosResponse<Article>> {
+    const config = data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+    return this.api.post('/entertainment/articles', data, config);
   }
 
   async getArticle(id: string): Promise<AxiosResponse<Article>> {
     return this.api.get(`/entertainment/articles/${id}`);
   }
 
-  async updateArticle(id: string, data: Partial<Article>): Promise<AxiosResponse<Article>> {
-    return this.api.put(`/entertainment/articles/${id}`, data);
+  async updateArticle(id: string, data: Partial<Article> | FormData): Promise<AxiosResponse<Article>> {
+    const config = data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+    return this.api.put(`/entertainment/articles/${id}`, data, config);
   }
 
   async deleteArticle(id: string): Promise<AxiosResponse<void>> {
@@ -159,16 +159,18 @@ class ApiService {
     return this.api.get('/entertainment/events');
   }
 
-  async createEvent(data: Partial<Event>): Promise<AxiosResponse<Event>> {
-    return this.api.post('/entertainment/events', data);
+  async createEvent(data: Partial<Event> | FormData): Promise<AxiosResponse<Event>> {
+    const config = data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+    return this.api.post('/entertainment/events', data, config);
   }
 
   async getEvent(id: string): Promise<AxiosResponse<Event>> {
     return this.api.get(`/entertainment/events/${id}`);
   }
 
-  async updateEventById(id: string, data: Partial<Event>): Promise<AxiosResponse<Event>> {
-    return this.api.put(`/entertainment/events/${id}`, data);
+  async updateEventById(id: string, data: Partial<Event> | FormData): Promise<AxiosResponse<Event>> {
+    const config = data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+    return this.api.put(`/entertainment/events/${id}`, data, config);
   }
 
   async deleteEventById(id: string): Promise<AxiosResponse<void>> {
@@ -179,16 +181,18 @@ class ApiService {
     return this.api.get('/entertainment/news');
   }
 
-  async createNews(data: Partial<News>): Promise<AxiosResponse<News>> {
-    return this.api.post('/entertainment/news', data);
+  async createNews(data: Partial<News> | FormData): Promise<AxiosResponse<News>> {
+    const config = data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+    return this.api.post('/entertainment/news', data, config);
   }
 
   async getNewsItem(id: string): Promise<AxiosResponse<News>> {
     return this.api.get(`/entertainment/news/${id}`);
   }
 
-  async updateNews(id: string, data: Partial<News>): Promise<AxiosResponse<News>> {
-    return this.api.put(`/entertainment/news/${id}`, data);
+  async updateNews(id: string, data: Partial<News> | FormData): Promise<AxiosResponse<News>> {
+    const config = data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+    return this.api.put(`/entertainment/news/${id}`, data, config);
   }
 
   async deleteNews(id: string): Promise<AxiosResponse<void>> {
@@ -244,8 +248,9 @@ class ApiService {
     return this.api.get('/store');
   }
 
-  async createStoreItem(data: Partial<StoreItem>): Promise<AxiosResponse<StoreItem>> {
-    return this.api.post('/store', data);
+  async createStoreItem(data: Partial<StoreItem> | FormData): Promise<AxiosResponse<StoreItem>> {
+    const config = data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+    return this.api.post('/store', data, config);
   }
 
   // Academics endpoints
@@ -253,8 +258,9 @@ class ApiService {
     return this.api.get('/academics/universities');
   }
 
-  async createUniversity(data: Partial<University>): Promise<AxiosResponse<University>> {
-    return this.api.post('/academics/universities', data);
+  async createUniversity(data: Partial<University> | FormData): Promise<AxiosResponse<University>> {
+    const config = data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+    return this.api.post('/academics/universities', data, config);
   }
 
   async getCourses(): Promise<AxiosResponse<any[]>> {
@@ -276,6 +282,84 @@ class ApiService {
 
   async getLeaderboard(id: string): Promise<AxiosResponse<any>> {
     return this.api.get(`/gaming/leaderboards/${id}`);
+  }
+
+  async getGallery(): Promise<AxiosResponse<any[]>> {
+    return this.api.get('/gaming/gallery');
+  }
+
+  async createGalleryItem(data: FormData): Promise<AxiosResponse<any>> {
+    return this.api.post('/gaming/gallery', data, { headers: { 'Content-Type': 'multipart/form-data' } });
+  }
+
+  async deleteGalleryItem(id: string): Promise<AxiosResponse<void>> {
+    return this.api.delete(`/gaming/gallery/${id}`);
+  }
+
+  // Homepage endpoints
+  async getTeamMembers(): Promise<AxiosResponse<any[]>> {
+    return this.api.get('/homepage/team-members');
+  }
+
+  async createTeamMember(data: FormData): Promise<AxiosResponse<any>> {
+    return this.api.post('/homepage/team-members', data, { headers: { 'Content-Type': 'multipart/form-data' } });
+  }
+
+  async updateTeamMember(id: string, data: FormData): Promise<AxiosResponse<any>> {
+    return this.api.put(`/homepage/team-members/${id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } });
+  }
+
+  async deleteTeamMember(id: string): Promise<AxiosResponse<void>> {
+    return this.api.delete(`/homepage/team-members/${id}`);
+  }
+
+  async getPartners(): Promise<AxiosResponse<any[]>> {
+    return this.api.get('/homepage/partners');
+  }
+
+  async createPartner(data: FormData): Promise<AxiosResponse<any>> {
+    return this.api.post('/homepage/partners', data, { headers: { 'Content-Type': 'multipart/form-data' } });
+  }
+
+  async deletePartner(id: string): Promise<AxiosResponse<void>> {
+    return this.api.delete(`/homepage/partners/${id}`);
+  }
+
+  async getHomepageStats(): Promise<AxiosResponse<any>> {
+    return this.api.get('/homepage/stats');
+  }
+
+  async updateHomepageStats(data: any): Promise<AxiosResponse<any>> {
+    return this.api.put('/homepage/stats', data);
+  }
+
+  async getFAQs(): Promise<AxiosResponse<any[]>> {
+    return this.api.get('/homepage/faqs');
+  }
+
+  async createFAQ(data: any): Promise<AxiosResponse<any>> {
+    return this.api.post('/homepage/faqs', data);
+  }
+
+  async updateFAQ(id: string, data: any): Promise<AxiosResponse<any>> {
+    return this.api.put(`/homepage/faqs/${id}`, data);
+  }
+
+  async deleteFAQ(id: string): Promise<AxiosResponse<void>> {
+    return this.api.delete(`/homepage/faqs/${id}`);
+  }
+
+  // Store categories
+  async getStoreCategories(): Promise<AxiosResponse<any[]>> {
+    return this.api.get('/store/categories');
+  }
+
+  async createStoreCategory(data: any): Promise<AxiosResponse<any>> {
+    return this.api.post('/store/categories', data);
+  }
+
+  async deleteStoreCategory(id: string): Promise<AxiosResponse<void>> {
+    return this.api.delete(`/store/categories/${id}`);
   }
 }
 

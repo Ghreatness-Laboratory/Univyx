@@ -1,14 +1,15 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useRef } from "react";
 import Slider from "react-slick";
-import { GamingEvent } from "../../../../types/gaming";
+import { Event } from "../../../../types/api";
 import EventCard from "./EventCard";
 
 interface UpcomingEventsSectionProps {
-  upcomingEvents: GamingEvent[];
+  upcomingEvents: Event[];
+  loading?: boolean;
 }
 
-const Events: React.FC<UpcomingEventsSectionProps> = ({ upcomingEvents }) => {
+const Events: React.FC<UpcomingEventsSectionProps> = ({ upcomingEvents, loading }) => {
   const sliderRef = useRef<Slider>(null);
 
   const settings = {
@@ -43,30 +44,42 @@ const Events: React.FC<UpcomingEventsSectionProps> = ({ upcomingEvents }) => {
         </p>
       </div>
 
-      <div className="relative">
-        <Slider ref={sliderRef} {...settings}>
-          {upcomingEvents.map((event) => (
-            <div key={event.id} className="px-2">
-              <EventCard event={event} />
-            </div>
-          ))}
-        </Slider>
-      </div>
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <p className="text-gray-500">Loading events...</p>
+        </div>
+      ) : !upcomingEvents || upcomingEvents.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500">No upcoming events at the moment</p>
+        </div>
+      ) : (
+        <>
+          <div className="relative">
+            <Slider ref={sliderRef} {...settings}>
+              {upcomingEvents.map((event) => (
+                <div key={event._id} className="px-2">
+                  <EventCard event={event} />
+                </div>
+              ))}
+            </Slider>
+          </div>
 
-      <div className="flex justify-center gap-4">
-        <button
-          onClick={() => sliderRef.current?.slickPrev()}
-          className="p-2 bg-white rounded-full shadow border hover:bg-gray-100 transition"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </button>
-        <button
-          onClick={() => sliderRef.current?.slickNext()}
-          className="p-2 bg-white rounded-full shadow border hover:bg-gray-100 transition"
-        >
-          <ChevronRight className="h-6 w-6" />
-        </button>
-      </div>
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={() => sliderRef.current?.slickPrev()}
+              className="p-2 bg-white rounded-full shadow border hover:bg-gray-100 transition"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+            <button
+              onClick={() => sliderRef.current?.slickNext()}
+              className="p-2 bg-white rounded-full shadow border hover:bg-gray-100 transition"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

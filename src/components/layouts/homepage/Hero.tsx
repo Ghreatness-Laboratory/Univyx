@@ -1,14 +1,45 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Users, BookOpen, Trophy, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
 import HeroImage from "../../../assets/images/homepage/hero-image.png";
 import GraduationHatVideo from "../../../assets/graduationhat.mp4";
+import api from "../../../services/api";
 
 export default function Hero() {
-  const stats = [
-    { icon: Users, value: "10K+", label: "Active Students" },
-    { icon: BookOpen, value: "500+", label: "Universities" },
-    { icon: Trophy, value: "1M+", label: "Achievements" },
-  ];
+  const [stats, setStats] = useState([
+    { icon: Users, value: "0", label: "Active Students" },
+    { icon: BookOpen, value: "0", label: "Universities" },
+    { icon: Trophy, value: "0", label: "Tournaments" },
+  ]);
+  const [partners, setPartners] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchStats();
+    fetchPartners();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const response = await api.getHomepageStats();
+      const data = response.data.data;
+      setStats([
+        { icon: Users, value: `${(data.students / 1000).toFixed(0)}K+`, label: "Active Students" },
+        { icon: BookOpen, value: `${data.universities}+`, label: "Universities" },
+        { icon: Trophy, value: `${data.tournaments}+`, label: "Tournaments" },
+      ]);
+    } catch (error) {
+      console.error('Failed to fetch stats:', error);
+    }
+  };
+
+  const fetchPartners = async () => {
+    try {
+      const response = await api.getPartners();
+      setPartners(response.data.data || []);
+    } catch (error) {
+      console.error('Failed to fetch partners:', error);
+    }
+  };
 
   const floatingElements = [
     { icon: Sparkles, delay: 0, x: 20, y: -30 },
@@ -77,7 +108,7 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
           >
             <Sparkles className="w-4 h-4 text-blue-500" />
-            <span className="text-sm font-medium text-blue-700">Trusted by 500+ Universities</span>
+            <span className="text-sm font-medium text-blue-700">Trusted by {stats[1].value} Universities</span>
           </motion.div>
 
           {/* Main Heading */}
@@ -188,16 +219,28 @@ export default function Hero() {
         >
           <p className="text-sm text-gray-500 mb-6">Trusted by students from leading universities</p>
           <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-            {/* University logos would go here */}
-            <div className="w-24 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-              <span className="text-xs font-medium text-gray-500">University</span>
-            </div>
-            <div className="w-24 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-              <span className="text-xs font-medium text-gray-500">College</span>
-            </div>
-            <div className="w-24 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-              <span className="text-xs font-medium text-gray-500">Institute</span>
-            </div>
+            {partners.slice(0, 3).map((partner) => (
+              <div key={partner._id} className="w-24 h-12 bg-white rounded-lg flex items-center justify-center p-2">
+                {partner.logo ? (
+                  <img src={partner.logo} alt={partner.name} className="max-w-full max-h-full object-contain" />
+                ) : (
+                  <span className="text-xs font-medium text-gray-500">{partner.name}</span>
+                )}
+              </div>
+            ))}
+            {partners.length === 0 && (
+              <>
+                <div className="w-24 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                  <span className="text-xs font-medium text-gray-500">University</span>
+                </div>
+                <div className="w-24 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                  <span className="text-xs font-medium text-gray-500">College</span>
+                </div>
+                <div className="w-24 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                  <span className="text-xs font-medium text-gray-500">Institute</span>
+                </div>
+              </>
+            )}
           </div>
         </motion.div>
       </section>

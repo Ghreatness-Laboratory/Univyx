@@ -1,6 +1,31 @@
 import { Play } from "phosphor-react";
+import { useState, useEffect } from "react";
+import apiService from "../../../services/api";
+
+interface FeaturedEvent {
+  _id: string;
+  title: string;
+  date: string;
+  location: string;
+}
 
 export default function EntertainmentHero() {
+  const [featuredEvent, setFeaturedEvent] = useState<FeaturedEvent | null>(null);
+
+  useEffect(() => {
+    const fetchFeaturedEvent = async () => {
+      try {
+        const response = await apiService.getEvents();
+        const events = response.data.data || response.data.results || response.data;
+        if (events && events.length > 0) {
+          setFeaturedEvent(events[0]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch events:', error);
+      }
+    };
+    fetchFeaturedEvent();
+  }, []);
   return (
     <header
       data-testid="entertainment-header"
@@ -65,7 +90,7 @@ export default function EntertainmentHero() {
                     Featured
                   </span>
                   <h3 className="text-white text-xl font-bold mt-2">
-                    Spring Music Festival
+                    {featuredEvent?.title || 'Spring Music Festival'}
                   </h3>
                 </div>
               </div>
@@ -74,14 +99,16 @@ export default function EntertainmentHero() {
                 <div className="flex justify-between items-center mb-4">
                   <span className="flex items-center gap-1 text-purple-100">
                     <span className="w-2 h-2 bg-pink-400 rounded-full"></span>
-                    Live Tonight
+                    {featuredEvent ? 'Upcoming' : 'Live Tonight'}
                   </span>
-                  <span className="text-white text-sm">7:00 PM</span>
+                  <span className="text-white text-sm">
+                    {featuredEvent ? new Date(featuredEvent.date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '7:00 PM'}
+                  </span>
                 </div>
 
                 <div className="flex justify-between items-center">
                   <span className="text-purple-100 text-sm">
-                    Campus Auditorium
+                    {featuredEvent?.location || 'Campus Auditorium'}
                   </span>
                   <button className="px-3 py-1 bg-pink-500 text-white text-xs rounded-lg">
                     Get Tickets

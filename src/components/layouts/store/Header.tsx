@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 import { FlameIcon as Fire, Search, Tag, TrendingUp, Zap } from "lucide-react";
 import type React from "react";
-import { useState } from "react";
-import { storeCategories } from "../../../data/store/stores";
+import { useState, useEffect } from "react";
+import apiService from "../../../services/api";
 
 interface StoreHeaderProps {
   onSearch: (query: string) => void;
@@ -17,6 +17,23 @@ export default function Header({
 }: StoreHeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [categories, setCategories] = useState<string[]>(["All"]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await apiService.getStoreCategories();
+        const cats = response.data.data || response.data.results || response.data;
+        if (cats && cats.length > 0) {
+          const categoryNames = cats.map((cat: any) => cat.name);
+          setCategories(["All", ...categoryNames]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,7 +127,7 @@ export default function Header({
             </form>
 
             <div className="flex items-center gap-2 flex-wrap">
-              {storeCategories.map((category) => (
+              {categories.map((category) => (
                 <motion.button
                   key={category}
                   whileHover={{ scale: 1.05 }}

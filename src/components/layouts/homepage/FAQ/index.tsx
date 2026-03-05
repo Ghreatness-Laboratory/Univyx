@@ -1,62 +1,27 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Accordion from "./Accordian";
-
-const questions_and_answer = [
-  {
-    question: "What is Univyx all about?",
-    answer:
-      "Univyx is a pioneering platform designed to transform the student experience in private universities, providing a comprehensive ecosystem of community, resources, opportunities, and gaming.",
-  },
-  {
-    question: "Is Univyx only for private university students?",
-    answer:
-      "Yes, Univyx is specifically designed for private university students aged 18-25, addressing their unique needs and challenges.",
-  },
-  {
-    question: "What features does Univyx offer?",
-    answer:
-      "Univyx offers academic resources, community forums, gaming competitions, a marketplace for student entrepreneurs, remote internship opportunities, and tech networking.",
-  },
-  {
-    question: "How can I sign up for Univyx?",
-    answer:
-      "You can sign up by visiting our website and creating an account using your private university email address.",
-  },
-  {
-    question: "Are there gaming tournaments on Univyx?",
-    answer:
-      "Yes, Univyx hosts both intra and inter-university gaming competitions, fostering teamwork and healthy competition among students.",
-  },
-  {
-    question: "Does Univyx provide academic resources?",
-    answer:
-      "Yes, Univyx provides access to past questions, notes, and other study materials to help students excel academically.",
-  },
-  {
-    question: "How can I get support if I have an issue?",
-    answer:
-      "You can reach out to our support team through the help center on our website or via email at support@univyx.com.",
-  },
-  {
-    question: "Can I sell my products on Univyx?",
-    answer:
-      "Absolutely! Univyx Store is a marketplace for student entrepreneurs to sell their products and services to the university community.",
-  },
-  {
-    question: "How does Univyx help with career development?",
-    answer:
-      "Univyx provides access to remote internship opportunities and connections with tech professionals for mentorship and career growth.",
-  },
-];
+import api from "../../../../services/api";
 
 export default function FAQ() {
-  const [openAccordionIndex, setOpenAccordionIndex] = useState<number | null>(
-    null
-  );
+  const [openAccordionIndex, setOpenAccordionIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
+  const [faqs, setFaqs] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchFAQs();
+  }, []);
+
+  const fetchFAQs = async () => {
+    try {
+      const response = await api.getFAQs();
+      setFaqs(response.data.data || []);
+    } catch (error) {
+      console.error('Failed to fetch FAQs:', error);
+    }
+  };
 
   const itemsPerPage = 3;
 
@@ -64,7 +29,7 @@ export default function FAQ() {
     setOpenAccordionIndex(openAccordionIndex === index ? null : index);
   };
 
-  const filteredQuestions = questions_and_answer.filter(
+  const filteredQuestions = faqs.filter(
     (item) =>
       item.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.answer.toLowerCase().includes(searchTerm.toLowerCase())

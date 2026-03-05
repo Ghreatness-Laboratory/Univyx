@@ -13,6 +13,7 @@ import Store from "../pages/Store";
 import ArticleDetail from "../pages/ArticleDetail";
 import LoginPage from "../pages/LoginPage";
 import SignUpPage from "../pages/SignUpPage";
+import AddEvent from "../pages/admin/AddEvent";
 import ScrollToTop from "./ScrollToTop";
 
 const PublicRouter: React.FC = () => {
@@ -29,6 +30,7 @@ const PublicRouter: React.FC = () => {
         <Route path="/store" element={<Store />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/events/add" element={<AddEvent />} />
         <Route path="/entertainment/articles/:id" element={<ArticleDetail />} />
         <Route path="*" element={<NotFound />}></Route>
       </Routes>

@@ -1,80 +1,45 @@
-import { FacebookLogo, InstagramLogo, TwitterLogo } from "phosphor-react";
-import { useRef } from "react";
+import { FacebookLogo, InstagramLogo, TwitterLogo, GithubLogo, LinkedinLogo } from "phosphor-react";
+import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
-import TeamMember1 from "../../../../assets/images/homepage/team-member-1.png";
-import TeamMember2 from "../../../../assets/images/homepage/team-member-2.png";
-import TeamMember3 from "../../../../assets/images/homepage/team-member-3.png";
+import api from "../../../../services/api";
 
 interface TeamMemberProps {
-  id: number;
+  _id: string;
   name: string;
   role: string;
-  photo: string;
-  social: {
-    facebookLink: string;
-    instagramLink: string;
-    twitterLink: string;
+  image?: string;
+  bio?: string;
+  social?: {
+    twitter?: string;
+    linkedin?: string;
+    github?: string;
   };
+  order: number;
 }
 
 interface TeamMemberCardsProps {
   selectedRole: string;
 }
 
-const teamMembers: TeamMemberProps[] = [
-  {
-    id: 1,
-    name: "William B. Harris",
-    role: "Designer",
-    photo: TeamMember1,
-    social: {
-      facebookLink: "facebook-url",
-      instagramLink: "instagram-url",
-      twitterLink: "twitter-url",
-    },
-  },
-  {
-    id: 2,
-    name: "William B. Harris",
-    role: "Developer",
-    photo: TeamMember2,
-    social: {
-      facebookLink: "facebook-url",
-      instagramLink: "instagram-url",
-      twitterLink: "twitter-url",
-    },
-  },
-  {
-    id: 3,
-    name: "William B. Harris",
-    role: "Software Developer",
-    photo: TeamMember3,
-    social: {
-      facebookLink: "facebook-url",
-      instagramLink: "instagram-url",
-      twitterLink: "twitter-url",
-    },
-  },
-  {
-    id: 4,
-    name: "William B. Harris",
-    role: "Web Designer",
-    photo: TeamMember1,
-    social: {
-      facebookLink: "facebook-url",
-      instagramLink: "instagram-url",
-      twitterLink: "twitter-url",
-    },
-  },
-];
-
-export default function TeamMemberCards({
-  selectedRole,
-}: TeamMemberCardsProps) {
+export default function TeamMemberCards({ selectedRole }: TeamMemberCardsProps) {
   const sliderRef = useRef<Slider>(null);
+  const [teamMembers, setTeamMembers] = useState<TeamMemberProps[]>([]);
+
+  useEffect(() => {
+    fetchTeamMembers();
+  }, []);
+
+  const fetchTeamMembers = async () => {
+    try {
+      const response = await api.getTeamMembers();
+      setTeamMembers(response.data.data || []);
+    } catch (error) {
+      console.error('Failed to fetch team members:', error);
+    }
+  };
 
   const filteredMembers =
     selectedRole === "All"
@@ -121,17 +86,23 @@ export default function TeamMemberCards({
             {...settings}
             className="team-member-slider px-1 sm:px-0"
           >
-            {filteredMembers.map((member, index) => (
-              <div key={index} className="px-1 sm:px-3 w-full">
+            {filteredMembers.map((member) => (
+              <div key={member._id} className="px-1 sm:px-3 w-full">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4 sm:p-5 rounded-lg sm:rounded-xl bg-[#F9F9FB] h-full">
                   <div className="w-full h-[100px] sm:w-[130px] sm:h-[130px] md:w-[150px] md:h-[150px] flex-shrink-0 overflow-hidden">
-                    <img
-                      src={member.photo}
-                      alt={member.name}
-                      role="img"
-                      aria-label={`Photo of ${member.name}`}
-                      className="w-full h-full object-cover rounded-md sm:rounded-lg"
-                    />
+                    {member.image ? (
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        role="img"
+                        aria-label={`Photo of ${member.name}`}
+                        className="w-full h-full object-cover rounded-md sm:rounded-lg"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 rounded-md sm:rounded-lg flex items-center justify-center">
+                        <span className="text-2xl font-bold text-blue-600">{member.name.charAt(0)}</span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex flex-col flex-1 mt-4 sm:mt-0 text-center sm:text-left">
@@ -141,34 +112,45 @@ export default function TeamMemberCards({
                     <span className="text-secondary text-sm sm:text-base font-normal my-2">
                       {member.role}
                     </span>
-                    <div className="flex max-md:justify-center gap-4 mt-2">
-                      <div className="flex items-start gap-[5.42px] sm:gap-2.5">
-                        {member.social.facebookLink && (
-                          <Link
-                            to={member.social.facebookLink}
-                            aria-label="Facebook"
-                          >
-                            <FacebookLogo size={20} />
-                          </Link>
-                        )}
-                        {member.social.instagramLink && (
-                          <Link
-                            to={member.social.instagramLink}
-                            aria-label="Instagram"
-                          >
-                            <InstagramLogo size={20} />
-                          </Link>
-                        )}
-                        {member.social.twitterLink && (
-                          <Link
-                            to={member.social.twitterLink}
-                            aria-label="Twitter"
-                          >
-                            <TwitterLogo size={20} />
-                          </Link>
-                        )}
+                    {member.bio && (
+                      <p className="text-sm text-gray-600 mb-2 line-clamp-2">{member.bio}</p>
+                    )}
+                    {member.social && (
+                      <div className="flex max-md:justify-center gap-4 mt-2">
+                        <div className="flex items-start gap-[5.42px] sm:gap-2.5">
+                          {member.social.twitter && (
+                            <a
+                              href={member.social.twitter}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label="Twitter"
+                            >
+                              <TwitterLogo size={20} />
+                            </a>
+                          )}
+                          {member.social.linkedin && (
+                            <a
+                              href={member.social.linkedin}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label="LinkedIn"
+                            >
+                              <LinkedinLogo size={20} />
+                            </a>
+                          )}
+                          {member.social.github && (
+                            <a
+                              href={member.social.github}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label="GitHub"
+                            >
+                              <GithubLogo size={20} />
+                            </a>
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>

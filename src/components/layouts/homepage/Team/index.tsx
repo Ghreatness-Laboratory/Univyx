@@ -1,18 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import TeamMemberCards from "./TeamMemberCards";
-
-const TeamMemberRoles = [
-  "All",
-  "Designer",
-  "Web Designer",
-  "Developer",
-  "Software Developer",
-];
+import api from "../../../../services/api";
 
 export default function Team() {
   const [selectedRole, setSelectedRole] = useState("All");
+  const [roles, setRoles] = useState<string[]>(["All"]);
+
+  useEffect(() => {
+    fetchRoles();
+  }, []);
+
+  const fetchRoles = async () => {
+    try {
+      const response = await api.getTeamMembers();
+      const members = response.data.data || [];
+      const uniqueRoles = Array.from(new Set(members.map((m: any) => m.role)));
+      setRoles(["All", ...uniqueRoles]);
+    } catch (error) {
+      console.error('Failed to fetch roles:', error);
+    }
+  };
 
   return (
     <div className="bg-white">
@@ -24,7 +33,7 @@ export default function Team() {
 
           <div className="w-full overflow-x-auto py-4 hide-scrollbar">
             <ul className="flex items-center gap-6 md:gap-10 px-4 md:px-10 min-w-max md:min-w-0 md:justify-center">
-              {TeamMemberRoles.map((role, index) => (
+              {roles.map((role, index) => (
                 <li
                   key={index}
                   className={`text-secondary text-lg md:text-xl leading-[30px] font-normal cursor-pointer relative pb-1 transition-all duration-300

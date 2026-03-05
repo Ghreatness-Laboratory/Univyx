@@ -79,20 +79,24 @@ export const useEvents = () => {
       console.log('Fetching events from API...');
       const response = await apiService.getEvents();
       console.log('Events API Response:', response.data);
-      console.log('Events data structure:', {
-        hasResults: !!response.data.results,
-        resultsLength: response.data.results?.length,
-        isArray: Array.isArray(response.data),
-        dataKeys: Object.keys(response.data)
-      });
       
-      const eventsData = response.data.data || Array.isArray(response.data) ? response.data : response.data.results || [];
+      // Ensure we always get an array
+      let eventsData = [];
+      if (Array.isArray(response.data)) {
+        eventsData = response.data;
+      } else if (response.data?.results && Array.isArray(response.data.results)) {
+        eventsData = response.data.results;
+      } else if (response.data?.data && Array.isArray(response.data.data)) {
+        eventsData = response.data.data;
+      }
+      
       console.log('Final events data:', eventsData);
       setEvents(eventsData);
       setError(null);
     } catch (err: any) {
       console.error('Events fetch error:', err);
       setError('Failed to fetch events');
+      setEvents([]); // Ensure events is always an array
     } finally {
       setLoading(false);
     }
@@ -141,20 +145,24 @@ export const useNews = () => {
       console.log('Fetching news from API...');
       const response = await apiService.getNews();
       console.log('News API Response:', response.data);
-      console.log('News data structure:', {
-        hasResults: !!response.data.results,
-        resultsLength: response.data.results?.length,
-        isArray: Array.isArray(response.data),
-        dataKeys: Object.keys(response.data)
-      });
       
-      const newsData = response.data.data || Array.isArray(response.data) ? response.data : response.data.results || [];
+      // Ensure we always get an array
+      let newsData = [];
+      if (Array.isArray(response.data)) {
+        newsData = response.data;
+      } else if (response.data?.results && Array.isArray(response.data.results)) {
+        newsData = response.data.results;
+      } else if (response.data?.data && Array.isArray(response.data.data)) {
+        newsData = response.data.data;
+      }
+      
       console.log('Final news data:', newsData);
       setNews(newsData);
       setError(null);
     } catch (err: any) {
       console.error('News fetch error:', err);
       setError('Failed to fetch news');
+      setNews([]); // Ensure news is always an array
     } finally {
       setLoading(false);
     }

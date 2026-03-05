@@ -1,8 +1,10 @@
+import { useState, useEffect } from "react";
 import Notes from "../../../assets/images/academics/image 22.png";
 import PastQuestions from "../../../assets/images/academics/image 23.png";
 import Tutorials from "../../../assets/images/academics/image 24.png";
 import Technology from "../../../assets/images/academics/image 25.png";
 import Academics from "../../../assets/images/academics/image.png";
+import apiService from "../../../services/api";
 
 const departments = [
   {
@@ -24,6 +26,22 @@ const departments = [
 ];
 
 export default function Intro() {
+  const [universitiesCount, setUniversitiesCount] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchUniversities = async () => {
+      try {
+        const response = await apiService.getUniversities();
+        const universities = response.data.data || response.data.results || response.data;
+        if (universities) {
+          setUniversitiesCount(universities.length);
+        }
+      } catch (error) {
+        console.error('Failed to fetch universities:', error);
+      }
+    };
+    fetchUniversities();
+  }, []);
   return (
     <div
       data-testid="general"
@@ -53,7 +71,7 @@ export default function Intro() {
               Collaborative Learning: Building Knowledge Together
             </h2>
             <p className="text-secondary mt-2 leading-relaxed">
-              Join our community of ambitious students sharing resources and
+              Join our community of ambitious students from {universitiesCount > 0 ? universitiesCount : 'multiple'} universities sharing resources and
               insights to maximize academic success in private universities.
             </p>
             <p className="text-[#616161] mt-6">

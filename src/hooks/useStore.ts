@@ -27,7 +27,16 @@ export const useStore = () => {
       setLoading(true);
       const response = await apiService.getStoreItems();
       
-      const storeData = Array.isArray(response.data) ? response.data : response.data.results || [];
+      // Ensure we always get an array
+      let storeData = [];
+      if (Array.isArray(response.data)) {
+        storeData = response.data;
+      } else if (response.data?.results && Array.isArray(response.data.results)) {
+        storeData = response.data.results;
+      } else if (response.data?.data && Array.isArray(response.data.data)) {
+        storeData = response.data.data;
+      }
+      
       setItems(storeData);
       setPagination({
         count: storeData.length,
@@ -38,7 +47,9 @@ export const useStore = () => {
       });
       setError(null);
     } catch (err) {
+      console.error('Store fetch error:', err);
       setError('Failed to fetch store items');
+      setItems([]); // Ensure items is always an array
     } finally {
       setLoading(false);
     }
