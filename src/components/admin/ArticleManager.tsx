@@ -23,7 +23,11 @@ export default function ArticleManager() {
     try {
       const response = await api.getArticles();
       let data = response.data.data || response.data || [];
-      data = data.map((article: Article) => ({ ...article, image: getImageUrl(article.image) }));
+      data = data.map((article: any) => ({
+        ...article,
+        id: article.id || article._id,
+        image: getImageUrl(article.image)
+      }));
       setArticles(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch articles:', error);
@@ -67,14 +71,16 @@ export default function ArticleManager() {
   };
 
   const handleEdit = (article: Article) => {
-    setEditingId(article.id!);
+    const articleId = article.id || article._id;
+    setEditingId(articleId!);
     setFormData({ title: article.title || '', content: article.content || '', category: 'Other' });
     setImagePreview(article.image || '');
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string | undefined) => {
+    if (!id) return alert('Invalid article ID');
     if (!confirm('Delete this article?')) return;
     try {
       await api.deleteArticle(id);
@@ -154,23 +160,26 @@ export default function ArticleManager() {
       )}
 
       <div className="space-y-4">
-        {articles.map((article) => (
-          <div key={article.id} className="flex gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-            {article.image && <img src={article.image} alt={article.title} className="w-24 h-24 object-cover rounded-lg" />}
-            <div className="flex-1">
-              <h3 className="font-semibold text-lg text-gray-900">{article.title}</h3>
-              <p className="text-gray-600 text-sm mt-1 line-clamp-2">{article.content}</p>
+        {articles.map((article) => {
+          const articleId = article.id || article._id;
+          return (
+            <div key={articleId} className="flex gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+              {article.image && <img src={article.image} alt={article.title} className="w-24 h-24 object-cover rounded-lg" />}
+              <div className="flex-1">
+                <h3 className="font-semibold text-lg text-gray-900">{article.title}</h3>
+                <p className="text-gray-600 text-sm mt-1 line-clamp-2">{article.content}</p>
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => handleEdit(article)} className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg">
+                  <Edit size={18} />
+                </button>
+                <button onClick={() => handleDelete(articleId)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
+                  <Trash2 size={18} />
+                </button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <button onClick={() => handleEdit(article)} className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg">
-                <Edit size={18} />
-              </button>
-              <button onClick={() => handleDelete(article.id!)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
-                <Trash2 size={18} />
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
