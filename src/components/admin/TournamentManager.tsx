@@ -69,9 +69,9 @@ export default function TournamentManager() {
       if (image) data.append('image', image);
 
       if (editingId) {
-        await api.api.put(`/gaming/tournaments/${editingId}`, data);
+        await api.updateTournament(editingId, data);
       } else {
-        await api.api.post('/gaming/tournaments', data);
+        await api.createTournament(data);
       }
 
       resetForm();
@@ -101,7 +101,7 @@ export default function TournamentManager() {
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this tournament?')) return;
     try {
-      await api.api.delete(`/gaming/tournaments/${id}`);
+      await api.deleteTournament(id);
       fetchTournaments();
     } catch (error) {
       console.error('Failed to delete tournament:', error);

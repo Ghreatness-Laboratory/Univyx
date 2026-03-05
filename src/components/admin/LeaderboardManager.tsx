@@ -73,9 +73,9 @@ export default function LeaderboardManager() {
       const data = { ...formData, entries: sortedEntries };
 
       if (editingId) {
-        await api.api.put(`/gaming/leaderboards/${editingId}`, data);
+        await api.updateLeaderboard(editingId, data);
       } else {
-        await api.api.post('/gaming/leaderboards', data);
+        await api.createLeaderboard(data);
       }
 
       resetForm();
@@ -103,7 +103,7 @@ export default function LeaderboardManager() {
     if (!confirm('Delete this leaderboard? This action cannot be undone.')) return;
     
     try {
-      await api.api.delete(`/gaming/leaderboards/${id}`);
+      await api.deleteLeaderboard(id);
       fetchLeaderboards();
     } catch (error) {
       console.error('Failed to delete leaderboard:', error);

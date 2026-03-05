@@ -292,8 +292,32 @@ class ApiService {
     return this.api.get('/gaming/tournaments');
   }
 
+  async createTournament(data: FormData): Promise<AxiosResponse<any>> {
+    return this.api.post('/gaming/tournaments', data, { headers: { 'Content-Type': 'multipart/form-data' } });
+  }
+
+  async updateTournament(id: string, data: FormData): Promise<AxiosResponse<any>> {
+    return this.api.put(`/gaming/tournaments/${id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } });
+  }
+
+  async deleteTournament(id: string): Promise<AxiosResponse<void>> {
+    return this.api.delete(`/gaming/tournaments/${id}`);
+  }
+
   async getLeaderboards(): Promise<AxiosResponse<any[]>> {
     return this.api.get('/gaming/leaderboards');
+  }
+
+  async createLeaderboard(data: any): Promise<AxiosResponse<any>> {
+    return this.api.post('/gaming/leaderboards', data);
+  }
+
+  async updateLeaderboard(id: string, data: any): Promise<AxiosResponse<any>> {
+    return this.api.put(`/gaming/leaderboards/${id}`, data);
+  }
+
+  async deleteLeaderboard(id: string): Promise<AxiosResponse<void>> {
+    return this.api.delete(`/gaming/leaderboards/${id}`);
   }
 
   async getLeaderboard(id: string): Promise<AxiosResponse<any>> {
