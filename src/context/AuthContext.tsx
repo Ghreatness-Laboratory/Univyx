@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types/api';
-import apiService from '../services/api';
+import { supabase } from '../lib/supabase';
+import supabaseAuth from '../services/supabase-auth';
 
 interface AuthContextType {
   user: User | null;
@@ -31,29 +32,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const isAuthenticated = !!user && !!localStorage.getItem('access_token');
+  const isAuthenticated = !!user;
 
   const refreshProfile = async () => {
     try {
-      const response = await apiService.getProfile();
-      console.log('Profile API response:', response.data);
-      
-      // Handle different response structures
-      let userData = response.data;
-      if (response.data.user) {
-        userData = response.data.user;
-      } else if (response.data.data) {
-        userData = response.data.data;
-      }
-      
-      console.log('Setting user data:', userData);
-      setUser(userData);
-      return userData;
+      const supabaseUser = await supabaseAuth.getUser();
+      setUser(supabaseUser as any);
+      return supabaseUser;
     } catch (error) {
       console.error('Failed to refresh profile:', error);
-      // Clear tokens if profile fetch fails
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
       setUser(null);
       throw error;
     }
@@ -61,70 +48,53 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const initAuth = async () => {
-      const token = localStorage.getItem('access_token');
-      if (token) {
-        try {
+      try {
+        const session = await supabaseAuth.getSession();
+        if (session) {
           await refreshProfile();
-        } catch (error) {
-          console.error('Auth initialization failed:', error);
-          // Tokens are already cleared in refreshProfile
         }
+      } catch (error) {
+        console.error('Auth initialization failed:', error);
       }
       setIsLoading(false);
     };
 
     initAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        setUser(session.user as any);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await apiService.login({ email, password });
-      console.log('Login response:', response.data);
-      
-      // Handle the actual API response format
-      if (response.data.access && response.data.refresh) {
-        // Direct token format
-        localStorage.setItem('access_token', response.data.access);
-        localStorage.setItem('refresh_token', response.data.refresh);
-      } else if (response.data.tokens?.access && response.data.tokens?.refresh) {
-        // Nested tokens format
-        localStorage.setItem('access_token', response.data.tokens.access);
-        localStorage.setItem('refresh_token', response.data.tokens.refresh);
-      } else if (response.data.data?.tokens?.access && response.data.data?.tokens?.refresh) {
-        // Double nested format
-        localStorage.setItem('access_token', response.data.data.tokens.access);
-        localStorage.setItem('refresh_token', response.data.data.tokens.refresh);
-      } else {
-        console.error('Unexpected response format:', response.data);
-        throw new Error('Invalid response format: missing tokens');
-      }
-      
-      // Fetch user profile after successful login
-      const userData = await refreshProfile();
-      console.log('Login successful, user data:', userData);
+      const result = await supabaseAuth.signIn(email, password);
+      setUser(result.user as any);
     } catch (error: any) {
       console.error('Login error:', error);
-      // Clear any partial state
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      setUser(null);
       throw error;
     }
   };
 
   const register = async (firstName: string, lastName: string, email: string, password: string) => {
     try {
-      const response = await apiService.register({
+      const result = await supabaseAuth.signUp(email, password, {
         first_name: firstName,
-        last_name: lastName,
-        email,
-        password
+        last_name: lastName
       });
       
-      // Auto-login after successful registration
-      await login(email, password);
+      if (result.user) {
+        setUser(result.user as any);
+      }
       
-      return response.data;
+      return result;
     } catch (error: any) {
       console.error('Registration error:', error);
       throw error;
@@ -133,13 +103,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const googleAuth = async (token: string) => {
     try {
-      const response = await apiService.googleAuth({ token });
-      const { data } = response.data;
-      
-      localStorage.setItem('access_token', data.tokens.access);
-      localStorage.setItem('refresh_token', data.tokens.refresh);
-      
-      setUser(data.user);
+      const result = await supabaseAuth.signInWithGoogle();
+      if (result.url) {
+        window.location.href = result.url;
+      }
     } catch (error) {
       console.error('Google auth error:', error);
       throw error;
@@ -148,10 +115,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
+      await supabaseAuth.signOut();
       setUser(null);
-      console.log('Logout successful');
     } catch (error) {
       console.error('Logout error:', error);
     }
