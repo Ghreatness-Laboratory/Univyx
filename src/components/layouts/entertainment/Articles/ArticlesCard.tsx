@@ -55,7 +55,9 @@ export default function ArticleCard({
             <div className="flex items-center">
               <User size={14} className="text-gray-500 mr-1" />
               <span className="text-xs text-gray-700 font-medium">
-                {article.author || 'Anonymous'}
+                {typeof article.author === 'object' && article.author?.first_name 
+                  ? `${article.author.first_name} ${article.author.last_name || ''}`.trim()
+                  : article.author || 'Anonymous'}
               </span>
               <span className="mx-2 text-gray-300">•</span>
               <Clock size={14} className="text-gray-500 mr-1" />
