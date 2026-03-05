@@ -24,6 +24,12 @@ export const useArticles = () => {
         articlesData = response.data.data;
       }
       
+      // Map _id to id for compatibility
+      articlesData = articlesData.map((article: any) => ({
+        ...article,
+        id: article.id || article._id
+      }));
+      
       console.log('Final articles data:', articlesData);
       setArticles(articlesData);
       setError(null);
@@ -90,6 +96,12 @@ export const useEvents = () => {
         eventsData = response.data.data;
       }
       
+      // Map _id to id for compatibility
+      eventsData = eventsData.map((event: any) => ({
+        ...event,
+        id: event.id || event._id
+      }));
+      
       console.log('Final events data:', eventsData);
       setEvents(eventsData);
       setError(null);
@@ -155,6 +167,12 @@ export const useNews = () => {
       } else if (response.data?.data && Array.isArray(response.data.data)) {
         newsData = response.data.data;
       }
+      
+      // Map _id to id for compatibility
+      newsData = newsData.map((news: any) => ({
+        ...news,
+        id: news.id || news._id
+      }));
       
       console.log('Final news data:', newsData);
       setNews(newsData);

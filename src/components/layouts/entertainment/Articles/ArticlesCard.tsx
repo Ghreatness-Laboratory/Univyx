@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Article } from "../../../../types/api";
+import { getImageUrl } from "../../../../utils/imageUrl";
 
 interface ArticleCardProps {
   article: Article;
@@ -44,7 +45,7 @@ export default function ArticleCard({
     >
       <div className="h-60 overflow-hidden relative">
         <img
-          src={article.image || '/placeholder-image.jpg'}
+          src={getImageUrl(article.image) || '/placeholder-image.jpg'}
           alt={article.title || 'Article image'}
           className="w-full h-full object-cover"
         />
