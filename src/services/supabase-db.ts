@@ -332,7 +332,13 @@ export class SupabaseService {
   // Stats
   async getHomepageStats() {
     const { data, error } = await supabase.from('homepage_stats').select('*').single();
-    if (error) throw error;
+    if (error) {
+      // If no stats exist, return defaults
+      if (error.code === 'PGRST116') {
+        return { data: { data: { students: 0, universities: 0, events: 0, tournaments: 0 } } };
+      }
+      throw error;
+    }
     return { data: { data } };
   }
 
