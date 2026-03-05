@@ -30,7 +30,9 @@ export default function LeaderboardManager() {
   const fetchLeaderboards = async () => {
     try {
       const response = await api.getLeaderboards();
+      console.log('Leaderboards response:', response.data);
       const data = response.data.data || response.data || [];
+      console.log('Parsed leaderboards:', data);
       setLeaderboards(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch leaderboards:', error);
@@ -99,10 +101,16 @@ export default function LeaderboardManager() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string | undefined) => {
+    if (!id) {
+      alert('Invalid leaderboard ID');
+      console.error('Attempted to delete leaderboard with undefined ID');
+      return;
+    }
     if (!confirm('Delete this leaderboard? This action cannot be undone.')) return;
     
     try {
+      console.log('Deleting leaderboard with ID:', id);
       await api.deleteLeaderboard(id);
       fetchLeaderboards();
     } catch (error) {
@@ -187,7 +195,7 @@ export default function LeaderboardManager() {
             </div>
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {entries.map((entry, index) => (
-                <div key={index} className="flex gap-2 items-center bg-white p-2 rounded-lg">
+                <div key={`entry-${index}`} className="flex gap-2 items-center bg-white p-2 rounded-lg">
                   <span className="text-gray-500 font-semibold w-8 text-center">{index + 1}</span>
                   <input
                     type="text"
@@ -281,7 +289,7 @@ export default function LeaderboardManager() {
                 <div className="space-y-2">
                   {leaderboard.entries.slice(0, 10).map((entry, idx) => (
                     <div 
-                      key={idx} 
+                      key={`${leaderboard._id}-entry-${idx}`}
                       className={`flex justify-between items-center text-sm py-2 px-3 rounded-lg ${getRankColor(entry.rank || idx + 1)}`}
                     >
                       <span className="flex items-center gap-3 flex-1">
