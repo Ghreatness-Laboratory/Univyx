@@ -3,6 +3,7 @@ import { Plus, Edit, Trash2 } from 'lucide-react';
 import api from '../../services/api';
 import ImageUpload from '../common/ImageUpload';
 import { Article } from '../../types/api';
+import { getImageUrl } from '../../utils/imageUrl';
 
 export default function ArticleManager() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -21,7 +22,8 @@ export default function ArticleManager() {
   const fetchArticles = async () => {
     try {
       const response = await api.getArticles();
-      const data = response.data.data || response.data || [];
+      let data = response.data.data || response.data || [];
+      data = data.map((article: Article) => ({ ...article, image: getImageUrl(article.image) }));
       setArticles(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch articles:', error);

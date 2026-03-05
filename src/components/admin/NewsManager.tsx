@@ -3,6 +3,7 @@ import { Plus, Edit, Trash2 } from 'lucide-react';
 import api from '../../services/api';
 import ImageUpload from '../common/ImageUpload';
 import { News } from '../../types/api';
+import { getImageUrl } from '../../utils/imageUrl';
 
 export default function NewsManager() {
   const [news, setNews] = useState<News[]>([]);
@@ -21,7 +22,8 @@ export default function NewsManager() {
   const fetchNews = async () => {
     try {
       const response = await api.getNews();
-      const data = response.data.data || response.data || [];
+      let data = response.data.data || response.data || [];
+      data = data.map((item: News) => ({ ...item, image: getImageUrl(item.image) }));
       setNews(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch news:', error);

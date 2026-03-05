@@ -3,6 +3,7 @@ import { Plus, Edit, Trash2, Calendar, MapPin } from 'lucide-react';
 import api from '../../services/api';
 import ImageUpload from '../common/ImageUpload';
 import { Event } from '../../types/api';
+import { getImageUrl } from '../../utils/imageUrl';
 
 export default function EventManager() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -26,7 +27,8 @@ export default function EventManager() {
   const fetchEvents = async () => {
     try {
       const response = await api.getEvents();
-      const data = response.data.data || response.data || [];
+      let data = response.data.data || response.data || [];
+      data = data.map((event: Event) => ({ ...event, image: getImageUrl(event.image) }));
       setEvents(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch events:', error);
