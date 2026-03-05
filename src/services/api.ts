@@ -244,6 +244,22 @@ class ApiService {
   }
 
   // Store endpoints
+  async getStores(): Promise<AxiosResponse<any[]>> {
+    return this.api.get('/store/stores');
+  }
+
+  async createStore(data: FormData): Promise<AxiosResponse<any>> {
+    return this.api.post('/store/stores', data, { headers: { 'Content-Type': 'multipart/form-data' } });
+  }
+
+  async updateStore(id: string, data: FormData): Promise<AxiosResponse<any>> {
+    return this.api.put(`/store/stores/${id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } });
+  }
+
+  async deleteStore(id: string): Promise<AxiosResponse<void>> {
+    return this.api.delete(`/store/stores/${id}`);
+  }
+
   async getStoreItems(): Promise<AxiosResponse<StoreItem[]>> {
     return this.api.get('/store');
   }
