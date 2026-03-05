@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Edit, Trash2, Users, BookOpen, Trophy, Store, Award, UserCircle, Handshake, BarChart3, HelpCircle, Image } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 import ArticleManager from '../components/admin/ArticleManager';
 import EventManager from '../components/admin/EventManager';
 import NewsManager from '../components/admin/NewsManager';
@@ -41,7 +42,13 @@ export default function Admin() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
-          <p className="text-gray-600">Please log in to access the admin panel.</p>
+          <p className="text-gray-600 mb-6">Please log in to access the admin panel.</p>
+          <Link
+            to="/login"
+            className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Go to Login
+          </Link>
         </div>
       </div>
     );

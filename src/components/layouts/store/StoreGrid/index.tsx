@@ -56,7 +56,7 @@ export default function StoreGrid() {
             </p>
           </div>
           <Button
-            href="?auth=signup"
+            href="/signup"
             className="flex items-center justify-center px-3 py-2.5 gap-1.5 min-w-40 my-6"
             isIconOnly={false}
             ariaLabel="Sign Up for Univyx"

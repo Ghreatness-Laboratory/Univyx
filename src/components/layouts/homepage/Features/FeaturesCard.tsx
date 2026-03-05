@@ -124,7 +124,7 @@ export default function FeaturesCard() {
         whileTap={{ scale: 0.97 }}
       >
         <Button
-          href="?auth=signup"
+          href="/signup"
           isIconOnly={false}
           className="py-4 px-[22px] max-sm:max-w-[338px] w-full grid place-self-center max-md:mt-4"
           ariaLabel="Explore All Features"
