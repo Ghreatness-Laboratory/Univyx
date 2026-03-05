@@ -275,7 +275,11 @@ export const useArticle = (id: string) => {
     try {
       setLoading(true);
       const response = await apiService.getArticle(id);
-      setArticle(response.data);
+      const articleData = response.data.data || response.data;
+      // Map _id to id
+      if (articleData) {
+        setArticle({ ...articleData, id: articleData.id || articleData._id });
+      }
       setError(null);
     } catch (err) {
       setError('Failed to fetch article');
