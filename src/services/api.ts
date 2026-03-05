@@ -18,7 +18,7 @@ import {
   User,
 } from '../types/api';
 
-const BASE_URL = 'https://univyx-backend-1xfv.onrender.com/univyxApi/v1';
+const BASE_URL = import.meta.env.DEV ? '/api' : 'https://univyx-backend-1xfv.onrender.com/univyxApi/v1';
 
 class ApiService {
   private api: AxiosInstance;
@@ -224,6 +224,18 @@ class ApiService {
 
   async createComment(modelName: string, publicId: string, data: { content: string }): Promise<AxiosResponse<Comment>> {
     return this.api.post(`/entertainment/${modelName}/${publicId}/comments`, data);
+  }
+
+  async updateComment(commentId: string, data: { content: string }): Promise<AxiosResponse<Comment>> {
+    return this.api.put(`/entertainment/comments/${commentId}`, data);
+  }
+
+  async deleteComment(commentId: string): Promise<AxiosResponse<void>> {
+    return this.api.delete(`/entertainment/comments/${commentId}`);
+  }
+
+  async getComment(commentId: string): Promise<AxiosResponse<Comment>> {
+    return this.api.get(`/entertainment/comments/${commentId}`);
   }
 
   // User stats endpoints

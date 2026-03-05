@@ -14,6 +14,7 @@ export default function EventManager() {
     title: '',
     description: '',
     date: '',
+    time: '',
     location: '',
   });
   const [image, setImage] = useState<File | null>(null);
@@ -28,7 +29,11 @@ export default function EventManager() {
     try {
       const response = await api.getEvents();
       let data = response.data.data || response.data || [];
-      data = data.map((event: Event) => ({ ...event, image: getImageUrl(event.image) }));
+      data = data.map((event: any) => ({ 
+        ...event, 
+        id: event.id || event._id,
+        image: getImageUrl(event.image) 
+      }));
       setEvents(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch events:', error);
@@ -57,6 +62,7 @@ export default function EventManager() {
       data.append('title', formData.title);
       data.append('description', formData.description);
       data.append('date', formData.date);
+      data.append('time', formData.time);
       data.append('location', formData.location);
       if (image) data.append('image', image);
 
@@ -81,6 +87,7 @@ export default function EventManager() {
       title: event.title || '',
       description: event.description || '',
       date: event.date || '',
+      time: (event as any).time || '',
       location: event.location || '',
     });
     setImagePreview(event.image || '');
@@ -100,7 +107,7 @@ export default function EventManager() {
   };
 
   const resetForm = () => {
-    setFormData({ title: '', description: '', date: '', location: '' });
+    setFormData({ title: '', description: '', date: '', time: '', location: '' });
     setImage(null);
     setImagePreview('');
     setEditingId(null);
@@ -157,7 +164,7 @@ export default function EventManager() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
               <input
-                type="datetime-local"
+                type="date"
                 required
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
@@ -165,15 +172,26 @@ export default function EventManager() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Time</label>
               <input
-                type="text"
+                type="time"
                 required
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                value={formData.time}
+                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+            <input
+              type="text"
+              required
+              value={formData.location}
+              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
           </div>
 
           <div className="flex gap-3">

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Article, Event, News, Comment, PaginatedResponse } from '../types/api';
 import apiService from '../services/api';
+import { getImageUrl } from '../utils/imageUrl';
 
 export const useArticles = () => {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -28,7 +29,8 @@ export const useArticles = () => {
       if (Array.isArray(articlesData)) {
         articlesData = articlesData.map((article: any) => ({
           ...article,
-          id: article.id || article._id
+          id: article.id || article._id,
+          image: getImageUrl(article.image)
         }));
       }
       
@@ -102,7 +104,8 @@ export const useEvents = () => {
       if (Array.isArray(eventsData)) {
         eventsData = eventsData.map((event: any) => ({
           ...event,
-          id: event.id || event._id
+          id: event.id || event._id,
+          image: getImageUrl(event.image)
         }));
       }
       
@@ -176,7 +179,8 @@ export const useNews = () => {
       if (Array.isArray(newsData)) {
         newsData = newsData.map((news: any) => ({
           ...news,
-          id: news.id || news._id
+          id: news.id || news._id,
+          image: getImageUrl(news.image)
         }));
       }
       
@@ -276,9 +280,13 @@ export const useArticle = (id: string) => {
       setLoading(true);
       const response = await apiService.getArticle(id);
       const articleData = response.data.data || response.data;
-      // Map _id to id
+      // Map _id to id and fix image URL
       if (articleData) {
-        setArticle({ ...articleData, id: articleData.id || articleData._id });
+        setArticle({ 
+          ...articleData, 
+          id: articleData.id || articleData._id,
+          image: getImageUrl(articleData.image)
+        });
       }
       setError(null);
     } catch (err) {
@@ -311,7 +319,14 @@ export const useNewsItem = (id: string) => {
     try {
       setLoading(true);
       const response = await apiService.getNewsItem(id);
-      setNewsItem(response.data);
+      const newsData = response.data.data || response.data;
+      if (newsData) {
+        setNewsItem({ 
+          ...newsData, 
+          id: newsData.id || newsData._id,
+          image: getImageUrl(newsData.image)
+        });
+      }
       setError(null);
     } catch (err) {
       setError('Failed to fetch news item');
@@ -343,7 +358,14 @@ export const useEventItem = (id: string) => {
     try {
       setLoading(true);
       const response = await apiService.getEvent(id);
-      setEvent(response.data);
+      const eventData = response.data.data || response.data;
+      if (eventData) {
+        setEvent({ 
+          ...eventData, 
+          id: eventData.id || eventData._id,
+          image: getImageUrl(eventData.image)
+        });
+      }
       setError(null);
     } catch (err) {
       setError('Failed to fetch event');

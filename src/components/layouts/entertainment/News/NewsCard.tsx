@@ -2,6 +2,7 @@ import { ChevronRight, Clock, Heart } from "lucide-react";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { NewsProps } from "../../../../data/entertainment/news";
+import { getImageUrl } from "../../../../utils/imageUrl";
 
 interface NewsCardProps {
   news: NewsProps;
@@ -22,12 +23,12 @@ export default function NewsCard({ news, className }: NewsCardProps) {
     >
       <div className="relative">
         <img
-          src={news.imageUrl}
+          src={getImageUrl(news.image)}
           alt={news.title}
           className="w-full h-48 object-cover"
         />
         <div className="absolute top-4 right-4 bg-indigo-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
-          {news.category}
+          {(news as any).category || news.category}
         </div>
       </div>
       <div className="p-5 ">
@@ -44,7 +45,7 @@ export default function NewsCard({ news, className }: NewsCardProps) {
           {news.title}
         </h3>
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-          {news.description}
+          {news.content || news.description}
         </p>
         <div className="flex justify-between items-center">
           <button

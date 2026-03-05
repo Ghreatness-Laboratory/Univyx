@@ -11,6 +11,7 @@ interface StoreFilters {
 
 export const useStore = () => {
   const [items, setItems] = useState<StoreItem[]>([]);
+  const [stores, setStores] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState({
@@ -22,24 +23,56 @@ export const useStore = () => {
   });
   const [filters, setFilters] = useState<StoreFilters>({ page: 1, limit: 20 });
 
+  const fetchStores = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.getStores();
+      
+      let storeData = [];
+      if (Array.isArray(response.data)) {
+        storeData = response.data;
+      } else if (response.data?.data && Array.isArray(response.data.data)) {
+        storeData = response.data.data;
+      }
+      
+      storeData = storeData.map((store: any) => ({
+        ...store,
+        id: store.id || store._id
+      }));
+      
+      setStores(storeData);
+      setError(null);
+    } catch (err) {
+      console.error('Store fetch error:', err);
+      setError('Failed to fetch stores');
+      setStores([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const fetchStoreItems = useCallback(async () => {
     try {
       setLoading(true);
       const response = await apiService.getStoreItems();
       
-      // Ensure we always get an array
-      let storeData = [];
+      let itemsData = [];
       if (Array.isArray(response.data)) {
-        storeData = response.data;
+        itemsData = response.data;
       } else if (response.data?.results && Array.isArray(response.data.results)) {
-        storeData = response.data.results;
+        itemsData = response.data.results;
       } else if (response.data?.data && Array.isArray(response.data.data)) {
-        storeData = response.data.data;
+        itemsData = response.data.data;
       }
       
-      setItems(storeData);
+      itemsData = itemsData.map((item: any) => ({
+        ...item,
+        id: item.id || item._id
+      }));
+      
+      setItems(itemsData);
       setPagination({
-        count: storeData.length,
+        count: itemsData.length,
         next: null,
         previous: null,
         page: 1,
@@ -47,9 +80,9 @@ export const useStore = () => {
       });
       setError(null);
     } catch (err) {
-      console.error('Store fetch error:', err);
+      console.error('Store items fetch error:', err);
       setError('Failed to fetch store items');
-      setItems([]); // Ensure items is always an array
+      setItems([]);
     } finally {
       setLoading(false);
     }
@@ -82,11 +115,12 @@ export const useStore = () => {
   }, [fetchStoreItems]);
 
   useEffect(() => {
-    fetchStoreItems();
-  }, [fetchStoreItems]);
+    fetchStores();
+  }, [fetchStores]);
 
   return {
     items,
+    stores,
     loading,
     error,
     pagination,
@@ -95,7 +129,7 @@ export const useStore = () => {
     setCategory,
     setSearch,
     createItem,
-    refetch: fetchStoreItems
+    refetch: fetchStores
   };
 };
 

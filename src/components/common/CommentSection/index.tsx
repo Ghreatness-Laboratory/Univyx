@@ -85,9 +85,11 @@ export default function CommentSection({ comments = [], onAddComment, isAuthenti
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-1">
                     <span className="font-medium text-gray-900">
-                      {comment.author?.full_name || 'Anonymous'}
+                      {comment.author?.full_name || comment.author?.first_name || 'Anonymous'}
                     </span>
-                    <span className="text-sm text-gray-500">{comment.created_at}</span>
+                    <span className="text-sm text-gray-500">
+                      {comment.created_at ? new Date(comment.created_at).toLocaleDateString() : ''}
+                    </span>
                   </div>
                   <p className="text-gray-700">{comment.content}</p>
                 </div>

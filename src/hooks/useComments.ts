@@ -11,7 +11,8 @@ export const useComments = (modelName: string, objectId: string) => {
     try {
       setLoading(true);
       const response = await apiService.getComments(modelName, objectId);
-      setComments(response.data || []);
+      const commentsData = response.data?.data || response.data || [];
+      setComments(Array.isArray(commentsData) ? commentsData : []);
       setError(null);
     } catch (err: any) {
       console.error('Comments fetch error:', err);
@@ -25,7 +26,7 @@ export const useComments = (modelName: string, objectId: string) => {
   const addComment = async (content: string) => {
     try {
       const response = await apiService.createComment(modelName, objectId, { content });
-      setComments(prev => [...prev, response.data]);
+      setComments(prev => Array.isArray(prev) ? [...prev, response.data] : [response.data]);
       return response.data;
     } catch (err: any) {
       console.error('Add comment error:', err);

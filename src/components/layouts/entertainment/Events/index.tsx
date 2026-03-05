@@ -243,7 +243,7 @@ export default function Events() {
 
       <div className="text-center">
         <Link
-          to={"/entertainment/news"}
+          to={"/entertainment"}
           className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors inline-flex items-center"
         >
           See all upcoming events <ChevronRight size={18} className="ml-1" />

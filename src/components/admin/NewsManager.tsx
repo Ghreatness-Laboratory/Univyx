@@ -10,7 +10,7 @@ export default function NewsManager() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ title: '', content: '' });
+  const [formData, setFormData] = useState({ title: '', content: '', category: 'Campus' });
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState('');
   const [isDragging, setIsDragging] = useState(false);
@@ -23,7 +23,7 @@ export default function NewsManager() {
     try {
       const response = await api.getNews();
       let data = response.data.data || response.data || [];
-      data = data.map((item: News) => ({ ...item, image: getImageUrl(item.image) }));
+      data = data.map((item: any) => ({ ...item, id: item.id || item._id, image: getImageUrl(item.image) }));
       setNews(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch news:', error);
@@ -46,6 +46,7 @@ export default function NewsManager() {
       const data = new FormData();
       data.append('title', formData.title);
       data.append('content', formData.content);
+      data.append('category', formData.category);
       if (image) data.append('image', image);
 
       if (editingId) {
@@ -65,7 +66,7 @@ export default function NewsManager() {
 
   const handleEdit = (item: News) => {
     setEditingId(item.id!);
-    setFormData({ title: item.title || '', content: item.content || '' });
+    setFormData({ title: item.title || '', content: item.content || '', category: (item as any).category || 'Campus' });
     setImagePreview(item.image || '');
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -82,7 +83,7 @@ export default function NewsManager() {
   };
 
   const resetForm = () => {
-    setFormData({ title: '', content: '' });
+    setFormData({ title: '', content: '', category: 'Campus' });
     setImage(null);
     setImagePreview('');
     setEditingId(null);
@@ -135,6 +136,25 @@ export default function NewsManager() {
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+            <select
+              required
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="Campus">Campus</option>
+              <option value="Academic">Academic</option>
+              <option value="Sports">Sports</option>
+              <option value="Technology">Technology</option>
+              <option value="Career">Career</option>
+              <option value="International">International</option>
+              <option value="Research">Research</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
           <div className="flex gap-3">
             <button
               type="submit"
@@ -155,7 +175,10 @@ export default function NewsManager() {
           <div key={item.id} className="flex gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
             {item.image && <img src={item.image} alt={item.title} className="w-24 h-24 object-cover rounded-lg" />}
             <div className="flex-1">
-              <h3 className="font-semibold text-lg text-gray-900">{item.title}</h3>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-semibold text-lg text-gray-900">{item.title}</h3>
+                <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded">{(item as any).category || 'Other'}</span>
+              </div>
               <p className="text-gray-600 text-sm mt-1 line-clamp-2">{item.content}</p>
             </div>
             <div className="flex gap-2">

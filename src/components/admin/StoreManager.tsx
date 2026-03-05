@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Store as StoreIcon, Package } from 'lucide-react';
 import api from '../../services/api';
 import ImageUpload from '../common/ImageUpload';
+import { getImageUrl } from '../../utils/imageUrl';
 
 type Tab = 'stores' | 'items';
 
@@ -28,7 +29,12 @@ export default function StoreManager() {
   const fetchStores = async () => {
     try {
       const response = await api.getStores();
-      const data = response.data.data || response.data || [];
+      let data = response.data.data || response.data || [];
+      data = data.map((store: any) => ({
+        ...store,
+        id: store.id || store._id,
+        logo: getImageUrl(store.logo)
+      }));
       setStores(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch stores:', error);
@@ -39,7 +45,12 @@ export default function StoreManager() {
   const fetchItems = async () => {
     try {
       const response = await api.getStoreItems();
-      const data = response.data.data || response.data || [];
+      let data = response.data.data || response.data || [];
+      data = data.map((item: any) => ({
+        ...item,
+        id: item.id || item._id,
+        image: getImageUrl(item.image)
+      }));
       setItems(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch items:', error);
@@ -113,7 +124,7 @@ export default function StoreManager() {
       twitter: store.twitter || '',
       facebook: store.facebook || ''
     });
-    setImagePreview(store.logo || '');
+    setImagePreview(getImageUrl(store.logo));
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -129,7 +140,7 @@ export default function StoreManager() {
       store: item.store || '',
       in_stock: item.in_stock !== false
     });
-    setImagePreview(item.image || '');
+    setImagePreview(getImageUrl(item.image));
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -348,13 +359,22 @@ export default function StoreManager() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-              <input
-                type="text"
+              <select
                 required
                 value={itemForm.category}
                 onChange={(e) => setItemForm({ ...itemForm, category: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
+              >
+                <option value="">Select Category</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Books">Books</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Food">Food</option>
+                <option value="Stationery">Stationery</option>
+                <option value="Sports">Sports</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Other">Other</option>
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">In Stock</label>
@@ -388,7 +408,7 @@ export default function StoreManager() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {stores.map((store) => (
             <div key={store.id} className="flex gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-              {store.logo && <img src={`https://univyx-backend-1xfv.onrender.com${store.logo}`} alt={store.name} className="w-16 h-16 object-cover rounded-lg" />}
+              {store.logo && <img src={store.logo} alt={store.name} className="w-16 h-16 object-cover rounded-lg" />}
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-900">{store.name}</h3>
                 <p className="text-sm text-gray-600 mt-1">{store.description}</p>
@@ -420,7 +440,7 @@ export default function StoreManager() {
                 <p className="text-xs text-gray-500">{item.category}</p>
                 <p className="text-sm text-gray-600 mt-1 line-clamp-2">{item.description}</p>
                 <div className="flex items-center gap-2 mt-2">
-                  <span className="text-green-600 font-semibold">${item.price}</span>
+                  <span className="text-green-600 font-semibold">₦{item.price?.toLocaleString()}</span>
                   <span className={`text-xs px-2 py-1 rounded ${item.in_stock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                     {item.in_stock ? 'In Stock' : 'Out of Stock'}
                   </span>

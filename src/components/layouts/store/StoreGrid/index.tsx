@@ -11,7 +11,7 @@ import StoreCard from "./StoreCard";
 export default function StoreGrid() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { 
-    items, 
+    stores,
     loading, 
     error, 
     pagination, 
@@ -24,7 +24,7 @@ export default function StoreGrid() {
     sectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleStoreClick = (store: StoreItem) => {
+  const handleStoreClick = (store: any) => {
     console.log("Store clicked:", store);
   };
 
@@ -88,7 +88,7 @@ export default function StoreGrid() {
           <div className="flex justify-center items-center py-16">
             <p className="text-red-500 text-lg">{error}</p>
           </div>
-        ) : !items || items.length === 0 ? (
+        ) : !stores || stores.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <School size={48} className="mx-auto text-gray-400 mb-3" />
             <h4 className="text-2xl font-semibold text-primary mb-2">
@@ -111,7 +111,7 @@ export default function StoreGrid() {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {items.map((store) => (
+              {stores.map((store) => (
                 <StoreCard
                   key={store.id}
                   store={store}

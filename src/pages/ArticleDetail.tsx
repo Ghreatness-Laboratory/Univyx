@@ -4,13 +4,41 @@ import { useArticle } from '../hooks/useEntertainment';
 import { useComments } from '../hooks/useComments';
 import { useAuth } from '../context/AuthContext';
 import CommentSection from '../components/common/CommentSection';
+import apiService from '../services/api';
+import { getImageUrl } from '../utils/imageUrl';
 
 export default function ArticleDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { article, loading, error } = useArticle(id!);
-  const { comments, addComment } = useComments('articles', id!);
+  const { article, loading, error, refetch } = useArticle(id!);
+  const { comments, addComment, refetch: refetchComments } = useComments('articles', id!);
   const { isAuthenticated } = useAuth();
+
+  const handleLike = async () => {
+    if (!isAuthenticated || !id) return;
+    try {
+      await apiService.toggleLike('articles', id);
+      refetch();
+    } catch (err) {
+      console.error('Failed to toggle like:', err);
+    }
+  };
+
+  const handleBookmark = async () => {
+    if (!isAuthenticated || !id) return;
+    try {
+      await apiService.toggleBookmark('articles', id);
+      refetch();
+    } catch (err) {
+      console.error('Failed to toggle bookmark:', err);
+    }
+  };
+
+  const handleAddComment = async (content: string) => {
+    await addComment(content);
+    refetch();
+    refetchComments();
+  };
 
   if (loading) {
     return (
@@ -54,7 +82,7 @@ export default function ArticleDetail() {
         <article className="bg-white rounded-lg shadow-sm overflow-hidden">
           {article.image && (
             <img
-              src={article.image}
+              src={getImageUrl(article.image)}
               alt={article.title}
               className="w-full h-64 md:h-96 object-cover"
             />
@@ -76,6 +104,7 @@ export default function ArticleDetail() {
 
               <div className="flex items-center space-x-6 py-4 border-y border-gray-200">
                 <button
+                  onClick={handleLike}
                   className={`flex items-center space-x-2 ${
                     article.liked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
                   }`}
@@ -86,6 +115,7 @@ export default function ArticleDetail() {
                 </button>
                 
                 <button
+                  onClick={handleBookmark}
                   className={`flex items-center space-x-2 ${
                     article.bookmarked ? 'text-blue-500' : 'text-gray-500 hover:text-blue-500'
                   }`}
@@ -118,7 +148,7 @@ export default function ArticleDetail() {
         <div className="mt-8">
           <CommentSection
             comments={comments}
-            onAddComment={addComment}
+            onAddComment={handleAddComment}
             isAuthenticated={isAuthenticated}
           />
         </div>

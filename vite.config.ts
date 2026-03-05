@@ -7,9 +7,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://univyx-backend.onrender.com',
+        target: 'https://univyx-backend-1xfv.onrender.com/univyxApi/v1',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '/univyxApi/v1'),
+        rewrite: (path) => path.replace(/^\/api/, ''),
         secure: true,
       },
     },

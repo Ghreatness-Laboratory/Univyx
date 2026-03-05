@@ -9,10 +9,12 @@ export default function News() {
   const [activeCategory, setActiveCategory] = useState("All");
   const categories = [
     "All",
-    "Environment",
     "Campus",
+    "Academic",
     "Sports",
-    "Academics",
+    "Technology",
+    "Career",
+    "International",
     "Research",
   ];
   const { news = [], loading, error, toggleLike, toggleBookmark } = useNews();
@@ -21,7 +23,7 @@ export default function News() {
   const filteredNews = Array.isArray(news) 
     ? (activeCategory === "All"
         ? news
-        : news.filter((newsItem) => newsItem.title?.toLowerCase().includes(activeCategory.toLowerCase())))
+        : news.filter((newsItem) => (newsItem as any).category === activeCategory))
     : [];
 
   const handleCategoryChange = (category: string) => {
