@@ -61,7 +61,7 @@ export default function GetStartedCard(feature: GetStartedProps) {
           {feature.content}
         </p>
         <Button
-          href="?auth=signup"
+          href="/signup"
           isIconOnly={false}
           ariaLabel="Get Started"
           className="py-2.5 px-[14px]"

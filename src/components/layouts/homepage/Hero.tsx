@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Users, BookOpen, Trophy, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import HeroImage from "../../../assets/images/homepage/hero-image.png";
 import GraduationHatVideo from "../../../assets/graduationhat.mp4";
 import api from "../../../services/api";
@@ -151,13 +152,13 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <button 
-              onClick={() => window.location.href = '/signup'}
+            <Link
+              to="/signup"
               className="group bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center gap-2"
             >
               Get Started Free
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
+            </Link>
           </motion.div>
 
           {/* Stats */}

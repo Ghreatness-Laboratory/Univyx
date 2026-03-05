@@ -47,8 +47,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const refreshProfile = async () => {
     try {
       const supabaseUser = await supabaseAuth.getUser();
-      setUser(supabaseUser as any);
-      return supabaseUser;
+      // Transform Supabase user to include metadata at root level
+      const transformedUser = {
+        ...supabaseUser,
+        first_name: supabaseUser?.user_metadata?.first_name || '',
+        last_name: supabaseUser?.user_metadata?.last_name || '',
+        full_name: `${supabaseUser?.user_metadata?.first_name || ''} ${supabaseUser?.user_metadata?.last_name || ''}`.trim()
+      };
+      setUser(transformedUser as any);
+      return transformedUser;
     } catch (error) {
       console.error('Failed to refresh profile:', error);
       setUser(null);
@@ -74,7 +81,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
-        setUser(session.user as any);
+        const transformedUser = {
+          ...session.user,
+          first_name: session.user?.user_metadata?.first_name || '',
+          last_name: session.user?.user_metadata?.last_name || '',
+          full_name: `${session.user?.user_metadata?.first_name || ''} ${session.user?.user_metadata?.last_name || ''}`.trim()
+        };
+        setUser(transformedUser as any);
       } else {
         setUser(null);
       }
@@ -86,7 +99,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string) => {
     try {
       const result = await supabaseAuth.signIn(email, password);
-      setUser(result.user as any);
+      const transformedUser = {
+        ...result.user,
+        first_name: result.user?.user_metadata?.first_name || '',
+        last_name: result.user?.user_metadata?.last_name || '',
+        full_name: `${result.user?.user_metadata?.first_name || ''} ${result.user?.user_metadata?.last_name || ''}`.trim()
+      };
+      setUser(transformedUser as any);
     } catch (error: any) {
       console.error('Login error:', error);
       throw error;
@@ -101,7 +120,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
       
       if (result.user) {
-        setUser(result.user as any);
+        const transformedUser = {
+          ...result.user,
+          first_name: firstName,
+          last_name: lastName,
+          full_name: `${firstName} ${lastName}`.trim()
+        };
+        setUser(transformedUser as any);
       }
       
       return result;
