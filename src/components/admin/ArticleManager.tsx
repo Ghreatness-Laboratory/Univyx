@@ -55,8 +55,10 @@ export default function ArticleManager() {
 
       resetForm();
       fetchArticles();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save article:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to save article';
+      alert(`Error: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
