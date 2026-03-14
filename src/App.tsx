@@ -10,6 +10,7 @@ import { startKeepAlive, stopKeepAlive } from "./services/keepAlive";
 import PWAInstallPrompt from "./components/common/PWAInstallPrompt";
 import PWAUpdatePrompt from "./components/common/PWAUpdatePrompt";
 import OfflineBanner from "./components/common/OfflineBanner";
+import BottomNav from "./components/layouts/common/BottomNav";
 import PublicRouter from "./routes/PublicRoutes";
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
             <PublicRouter />
           </main>
           <Footer />
+          <BottomNav />
         </>
         <NewsModal />
         <ArticlesModal />
