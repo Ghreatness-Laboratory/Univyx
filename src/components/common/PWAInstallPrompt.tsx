@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Download, Smartphone, Monitor } from 'lucide-react';
+import { X, Download, Smartphone, Zap, WifiOff, Bell, LayoutGrid } from 'lucide-react';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -103,14 +103,14 @@ export default function PWAInstallPrompt() {
           {/* Features */}
           <div className="grid grid-cols-2 gap-2 mb-4">
             {[
-              { icon: '⚡', text: 'Faster loading' },
-              { icon: '📴', text: 'Works offline' },
-              { icon: '🔔', text: 'Notifications' },
-              { icon: '📱', text: 'App-like feel' },
-            ].map((f) => (
-              <div key={f.text} className="flex items-center gap-2 text-xs text-gray-600">
-                <span>{f.icon}</span>
-                <span>{f.text}</span>
+              { icon: Zap, text: 'Faster loading' },
+              { icon: WifiOff, text: 'Works offline' },
+              { icon: Bell, text: 'Notifications' },
+              { icon: LayoutGrid, text: 'App-like feel' },
+            ].map(({ icon: Icon, text }) => (
+              <div key={text} className="flex items-center gap-2 text-xs text-gray-600">
+                <Icon size={13} className="text-purple-500 shrink-0" />
+                <span>{text}</span>
               </div>
             ))}
           </div>
