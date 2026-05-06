@@ -7,6 +7,7 @@ import Admin from "../pages/Admin";
 import Entertainment from "../pages/Entertainment";
 import Gaming from "../pages/Gaming";
 import Home from "../pages/Home";
+import Jobs from "../pages/Jobs";
 import NotFound from "../pages/NotFound";
 import Profile from "../pages/Profile";
 import Store from "../pages/Store";
@@ -28,6 +29,7 @@ const PublicRouter: React.FC = () => {
         <Route path="/academics/:universityId" element={<Resources />} />
         <Route path="/gaming" element={<Gaming />} />
         <Route path="/store" element={<Store />} />
+        <Route path="/jobs" element={<Jobs />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/events/add" element={<AddEvent />} />

@@ -1,9 +1,8 @@
-import { motion } from "framer-motion";
-import { ArrowRight, Users, BookOpen, Trophy, Sparkles } from "lucide-react";
-import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Users, BookOpen, Trophy, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import HeroImage from "../../../assets/images/homepage/hero-image.png";
-import GraduationHatVideo from "../../../assets/graduationhat.mp4";
 import api from "../../../services/api";
 
 export default function Hero() {
@@ -12,12 +11,24 @@ export default function Hero() {
     { icon: BookOpen, value: "0", label: "Universities" },
     { icon: Trophy, value: "0", label: "Tournaments" },
   ]);
-  const [partners, setPartners] = useState<any[]>([]);
+  const [slides, setSlides] = useState<any[]>([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [direction, setDirection] = useState(1);
 
   useEffect(() => {
     fetchStats();
-    fetchPartners();
+    fetchSlides();
   }, []);
+
+  // Auto-advance slideshow
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const timer = setInterval(() => {
+      setDirection(1);
+      setCurrentSlide(prev => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
 
   const fetchStats = async () => {
     try {
@@ -28,80 +39,96 @@ export default function Hero() {
         { icon: BookOpen, value: `${data.universities}+`, label: "Universities" },
         { icon: Trophy, value: `${data.tournaments}+`, label: "Tournaments" },
       ]);
-    } catch (error) {
-      console.error('Failed to fetch stats:', error);
-    }
+    } catch {}
   };
 
-  const fetchPartners = async () => {
+  const fetchSlides = async () => {
     try {
-      const response = await api.getPartners();
-      setPartners(response.data.data || []);
-    } catch (error) {
-      console.error('Failed to fetch partners:', error);
-    }
+      const response = await api.getSlideshow();
+      const data = response.data?.data || [];
+      setSlides(data);
+    } catch {}
   };
 
-  const floatingElements = [
-    { icon: Sparkles, delay: 0, x: 20, y: -30 },
-    { icon: BookOpen, delay: 0.5, x: -25, y: 40 },
-    { icon: Trophy, delay: 1, x: 30, y: 20 },
-  ];
+  const goTo = useCallback((index: number, dir: number) => {
+    setDirection(dir);
+    setCurrentSlide(index);
+  }, []);
+
+  const prev = () => goTo((currentSlide - 1 + slides.length) % slides.length, -1);
+  const next = () => goTo((currentSlide + 1) % slides.length, 1);
+
+  const slideVariants = {
+    enter: (dir: number) => ({ x: dir > 0 ? "100%" : "-100%", opacity: 0 }),
+    center: { x: 0, opacity: 1, transition: { duration: 0.5, ease: "easeInOut" } },
+    exit: (dir: number) => ({ x: dir > 0 ? "-100%" : "100%", opacity: 0, transition: { duration: 0.5, ease: "easeInOut" } }),
+  };
+
+  const hasSlides = slides.length > 0;
 
   return (
     <div className="relative overflow-hidden">
-      {/* Background Video */}
+      {/* Background */}
       <div className="absolute inset-0 z-0">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-full object-cover opacity-10"
-        >
-          <source src={GraduationHatVideo} type="video/mp4" />
-        </video>
+        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse" />
+        <div className="absolute top-40 right-10 w-96 h-96 bg-purple-100 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse delay-1000" />
+        <div className="absolute -bottom-20 left-1/2 w-80 h-80 bg-pink-100 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse delay-2000" />
       </div>
 
-      {/* Background Elements */}
-      <div className="absolute inset-0 z-10">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
-        <div className="absolute top-40 right-10 w-96 h-96 bg-purple-100 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse delay-1000"></div>
-        <div className="absolute -bottom-20 left-1/2 w-80 h-80 bg-pink-100 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse delay-2000"></div>
-      </div>
+      {/* Slideshow (if slides exist) */}
+      {hasSlides && (
+        <div className="relative z-10 w-full overflow-hidden" style={{ minHeight: 320 }}>
+          <AnimatePresence custom={direction} initial={false}>
+            <motion.div
+              key={currentSlide}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              {slides[currentSlide]?.image && (
+                <img src={slides[currentSlide].image} alt={slides[currentSlide].title} className="w-full h-80 object-cover" />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex flex-col items-center justify-end pb-10 px-6 text-center">
+                <motion.h2 initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-white text-3xl md:text-5xl font-extrabold mb-3">
+                  {slides[currentSlide]?.title}
+                </motion.h2>
+                {slides[currentSlide]?.subtitle && (
+                  <p className="text-white/80 text-lg mb-4">{slides[currentSlide].subtitle}</p>
+                )}
+                {slides[currentSlide]?.cta_text && slides[currentSlide]?.cta_link && (
+                  <Link to={slides[currentSlide].cta_link} className="px-6 py-3 bg-white text-gray-900 font-semibold rounded-full hover:bg-gray-100 transition-all">
+                    {slides[currentSlide].cta_text}
+                  </Link>
+                )}
+              </div>
+            </motion.div>
+          </AnimatePresence>
 
-      {/* Floating Icons */}
-      {floatingElements.map((element, index) => {
-        const IconComponent = element.icon;
-        return (
-          <motion.div
-            key={index}
-            className="absolute hidden lg:block text-blue-400 opacity-20"
-            style={{
-              top: `${20 + index * 15}%`,
-              left: `${10 + index * 25}%`,
-            }}
-            animate={{
-              y: [0, element.y, 0],
-              x: [0, element.x, 0],
-              rotate: [0, 10, -10, 0],
-            }}
-            transition={{
-              duration: 6,
-              delay: element.delay,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          >
-            <IconComponent size={32} />
-          </motion.div>
-        );
-      })}
+          {/* Slide controls */}
+          {slides.length > 1 && (
+            <>
+              <button onClick={prev} className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-all">
+                <ChevronLeft size={20} className="text-white" />
+              </button>
+              <button onClick={next} className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-all">
+                <ChevronRight size={20} className="text-white" />
+              </button>
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+                {slides.map((_, i) => (
+                  <button key={i} onClick={() => goTo(i, i > currentSlide ? 1 : -1)} className={`w-2 h-2 rounded-full transition-all ${i === currentSlide ? "bg-white w-6" : "bg-white/50"}`} />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
 
+      {/* Main Hero Content */}
       <section className="relative z-20 w-full mx-auto flex flex-col px-6 lg:px-8 py-16 md:py-24 max-w-7xl">
-        {/* Main Content */}
         <div className="text-center mb-16">
-          {/* Badge */}
           <motion.div
             className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-blue-200 rounded-full px-4 py-2 mb-8 shadow-sm"
             initial={{ opacity: 0, y: -20 }}
@@ -112,10 +139,8 @@ export default function Hero() {
             <span className="text-sm font-medium text-blue-700">Trusted by {stats[1].value} Universities</span>
           </motion.div>
 
-          {/* Main Heading */}
           <motion.h1
             className="max-w-5xl mx-auto text-primary font-bold text-5xl md:text-7xl lg:text-8xl leading-tight tracking-tight mb-8"
-            data-testid="hero-heading"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -135,19 +160,17 @@ export default function Hero() {
             </span>
           </motion.h1>
 
-          {/* Subtitle */}
           <motion.p
             className="max-w-2xl mx-auto text-xl md:text-2xl text-gray-600 leading-relaxed mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Connect, learn, and thrive in a vibrant community designed for private university students worldwide.
+            Connect, learn, and thrive. Entertainment, gaming, jobs, and a campus store — all in one place for private university students.
           </motion.p>
 
-          {/* CTA Button */}
           <motion.div
-            className="flex justify-center mb-16"
+            className="flex flex-wrap justify-center gap-4 mb-16"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
@@ -158,6 +181,12 @@ export default function Hero() {
             >
               Get Started Free
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <Link
+              to="/jobs"
+              className="px-8 py-4 rounded-full font-semibold text-lg border-2 border-blue-600 text-blue-600 hover:bg-blue-50 transition-all duration-300 flex items-center gap-2"
+            >
+              Browse Jobs
             </Link>
           </motion.div>
 
@@ -171,12 +200,7 @@ export default function Hero() {
             {stats.map((stat, index) => {
               const IconComponent = stat.icon;
               return (
-                <motion.div
-                  key={index}
-                  className="text-center group cursor-pointer"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
+                <motion.div key={index} className="text-center group cursor-pointer" whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 300 }}>
                   <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full mb-2 mx-auto group-hover:from-blue-200 group-hover:to-purple-200 transition-colors">
                     <IconComponent className="w-6 h-6 text-blue-600" />
                   </div>
@@ -196,52 +220,10 @@ export default function Hero() {
           transition={{ duration: 1, delay: 0.8 }}
         >
           <div className="relative group">
-            {/* Glow Effect */}
-            <div className="absolute -inset-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-3xl blur-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
-            
-            {/* Main Image */}
+            <div className="absolute -inset-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-3xl blur-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-500" />
             <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl md:rounded-3xl p-2 shadow-2xl">
-              <img
-                src={HeroImage}
-                alt="Univyx Platform Preview"
-                className="w-full h-auto rounded-xl md:rounded-2xl shadow-lg"
-                aria-label="Platform preview showing student dashboard and features"
-              />
+              <img src={HeroImage} alt="Univyx Platform Preview" className="w-full h-auto rounded-xl md:rounded-2xl shadow-lg" />
             </div>
-          </div>
-        </motion.div>
-
-        {/* Trust Indicators */}
-        <motion.div
-          className="text-center mt-16"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
-        >
-          <p className="text-sm text-gray-500 mb-6">Trusted by students from leading universities</p>
-          <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-            {partners.slice(0, 3).map((partner) => (
-              <div key={partner._id} className="w-24 h-12 bg-white rounded-lg flex items-center justify-center p-2">
-                {partner.logo ? (
-                  <img src={partner.logo} alt={partner.name} className="max-w-full max-h-full object-contain" />
-                ) : (
-                  <span className="text-xs font-medium text-gray-500">{partner.name}</span>
-                )}
-              </div>
-            ))}
-            {partners.length === 0 && (
-              <>
-                <div className="w-24 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                  <span className="text-xs font-medium text-gray-500">University</span>
-                </div>
-                <div className="w-24 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                  <span className="text-xs font-medium text-gray-500">College</span>
-                </div>
-                <div className="w-24 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                  <span className="text-xs font-medium text-gray-500">Institute</span>
-                </div>
-              </>
-            )}
           </div>
         </motion.div>
       </section>

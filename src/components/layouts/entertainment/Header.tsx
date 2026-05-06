@@ -48,12 +48,13 @@ export default function EntertainmentHero() {
             </div>
 
             <h1 className="text-4xl lg:text-6xl font-bold mb-6 text-white">
-              Entertainment <span className="text-pink-300">Redefined</span>
+              Entertainment{" "}
+              <span className="text-pink-300">Redefined</span>
+              <span className="ml-2 text-2xl">✨</span>
             </h1>
 
             <p className="text-lg text-purple-100 mb-8 max-w-xl mx-auto lg:mx-0">
-              Discover the pulse of campus - from live concerts to movie nights,
-              art exhibits to comedy shows, all in one place.
+              Your campus, your vibe. Articles, events, news and trending topics — all the tea, none of the cap. Stay plugged in. 🔥
             </p>
 
             <div className="flex flex-wrap gap-4 justify-center lg:justify-start mb-8">

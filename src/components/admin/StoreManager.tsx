@@ -14,7 +14,7 @@ export default function StoreManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   
-  const [storeForm, setStoreForm] = useState({ name: '', description: '', whatsapp: '', instagram: '', twitter: '', facebook: '' });
+  const [storeForm, setStoreForm] = useState({ name: '', description: '', whatsapp: '', instagram: '', twitter: '', facebook: '', university: '', achievements: '', tags: '', is_verified: false });
   const [itemForm, setItemForm] = useState({ name: '', description: '', price: 0, category: '', store: '', in_stock: true });
   
   const [image, setImage] = useState<File | null>(null);
@@ -122,7 +122,11 @@ export default function StoreManager() {
       whatsapp: store.whatsapp || '',
       instagram: store.instagram || '',
       twitter: store.twitter || '',
-      facebook: store.facebook || ''
+      facebook: store.facebook || '',
+      university: store.university || '',
+      achievements: store.achievements?.join(', ') || '',
+      tags: store.tags?.join(', ') || '',
+      is_verified: store.is_verified || false
     });
     setImagePreview(getImageUrl(store.logo));
     setShowForm(true);
@@ -166,7 +170,7 @@ export default function StoreManager() {
   };
 
   const resetForm = () => {
-    setStoreForm({ name: '', description: '', whatsapp: '', instagram: '', twitter: '', facebook: '' });
+    setStoreForm({ name: '', description: '', whatsapp: '', instagram: '', twitter: '', facebook: '', university: '', achievements: '', tags: '', is_verified: false });
     setItemForm({ name: '', description: '', price: 0, category: '', store: '', in_stock: true });
     setImage(null);
     setImagePreview('');
@@ -241,42 +245,40 @@ export default function StoreManager() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">WhatsApp</label>
-              <input
-                type="text"
-                value={storeForm.whatsapp}
-                onChange={(e) => setStoreForm({ ...storeForm, whatsapp: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
+              <input type="text" value={storeForm.whatsapp} onChange={(e) => setStoreForm({ ...storeForm, whatsapp: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Instagram</label>
-              <input
-                type="text"
-                value={storeForm.instagram}
-                onChange={(e) => setStoreForm({ ...storeForm, instagram: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
+              <input type="text" value={storeForm.instagram} onChange={(e) => setStoreForm({ ...storeForm, instagram: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Twitter</label>
-              <input
-                type="text"
-                value={storeForm.twitter}
-                onChange={(e) => setStoreForm({ ...storeForm, twitter: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
+              <input type="text" value={storeForm.twitter} onChange={(e) => setStoreForm({ ...storeForm, twitter: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Facebook</label>
-              <input
-                type="text"
-                value={storeForm.facebook}
-                onChange={(e) => setStoreForm({ ...storeForm, facebook: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
+              <input type="text" value={storeForm.facebook} onChange={(e) => setStoreForm({ ...storeForm, facebook: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">University / School</label>
+              <input type="text" placeholder="e.g. Covenant University" value={storeForm.university} onChange={(e) => setStoreForm({ ...storeForm, university: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Achievements (comma separated)</label>
+              <input type="text" placeholder="e.g. Top Seller, 5-Star Rated, 100+ Orders" value={storeForm.achievements} onChange={(e) => setStoreForm({ ...storeForm, achievements: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Tags (comma separated)</label>
+              <input type="text" placeholder="e.g. food, fashion, electronics" value={storeForm.tags} onChange={(e) => setStoreForm({ ...storeForm, tags: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" />
+            </div>
+            <div className="col-span-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={storeForm.is_verified} onChange={(e) => setStoreForm({ ...storeForm, is_verified: e.target.checked })} className="rounded" />
+                <span className="text-sm text-gray-700">Verified Store</span>
+              </label>
             </div>
           </div>
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Edit, Trash2, Users, BookOpen, Trophy, Store, Award, UserCircle, Handshake, BarChart3, HelpCircle, Image } from 'lucide-react';
+import { Plus, Edit, Trash2, Users, BookOpen, Trophy, Store, Award, UserCircle, Handshake, BarChart3, HelpCircle, Image, Briefcase, Layers, Settings, Bell, SlidersHorizontal } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import ArticleManager from '../components/admin/ArticleManager';
@@ -15,14 +15,19 @@ import PartnerManager from '../components/admin/PartnerManager';
 import StatsManager from '../components/admin/StatsManager';
 import FAQManager from '../components/admin/FAQManager';
 import GalleryManager from '../components/admin/GalleryManager';
+import JobManager from '../components/admin/JobManager';
+import SlideshowManager from '../components/admin/SlideshowManager';
+import SiteSettingsManager from '../components/admin/SiteSettingsManager';
+import PopupManager from '../components/admin/PopupManager';
 
-type AdminSection = 'articles' | 'events' | 'news' | 'store' | 'universities' | 'tournaments' | 'leaderboards' | 'team' | 'partners' | 'stats' | 'faqs' | 'gallery';
+type AdminSection = 'articles' | 'events' | 'news' | 'store' | 'universities' | 'tournaments' | 'leaderboards' | 'team' | 'partners' | 'stats' | 'faqs' | 'gallery' | 'jobs' | 'slideshow' | 'settings' | 'popups';
 
 const adminSections = [
   { id: 'articles' as AdminSection, label: 'Articles', icon: Edit, color: 'purple', category: 'Content' },
   { id: 'events' as AdminSection, label: 'Events', icon: Plus, color: 'orange', category: 'Content' },
   { id: 'news' as AdminSection, label: 'News', icon: BookOpen, color: 'blue', category: 'Content' },
   { id: 'store' as AdminSection, label: 'Store', icon: Store, color: 'green', category: 'Commerce' },
+  { id: 'jobs' as AdminSection, label: 'Jobs & Placements', icon: Briefcase, color: 'blue', category: 'Commerce' },
   { id: 'universities' as AdminSection, label: 'Universities', icon: Users, color: 'indigo', category: 'Academics' },
   { id: 'tournaments' as AdminSection, label: 'Tournaments', icon: Trophy, color: 'yellow', category: 'Gaming' },
   { id: 'leaderboards' as AdminSection, label: 'Leaderboards', icon: Award, color: 'amber', category: 'Gaming' },
@@ -31,6 +36,9 @@ const adminSections = [
   { id: 'partners' as AdminSection, label: 'Partners', icon: Handshake, color: 'purple', category: 'Homepage' },
   { id: 'stats' as AdminSection, label: 'Statistics', icon: BarChart3, color: 'green', category: 'Homepage' },
   { id: 'faqs' as AdminSection, label: 'FAQs', icon: HelpCircle, color: 'teal', category: 'Homepage' },
+  { id: 'slideshow' as AdminSection, label: 'Slideshow', icon: Layers, color: 'purple', category: 'Site' },
+  { id: 'popups' as AdminSection, label: 'Popups', icon: Bell, color: 'orange', category: 'Site' },
+  { id: 'settings' as AdminSection, label: 'Site Settings', icon: Settings, color: 'gray', category: 'Site' },
 ];
 
 export default function Admin() {
@@ -68,6 +76,10 @@ export default function Admin() {
       case 'stats': return <StatsManager />;
       case 'faqs': return <FAQManager />;
       case 'gallery': return <GalleryManager />;
+      case 'jobs': return <JobManager />;
+      case 'slideshow': return <SlideshowManager />;
+      case 'settings': return <SiteSettingsManager />;
+      case 'popups': return <PopupManager />;
       default: return <ArticleManager />;
     }
   };

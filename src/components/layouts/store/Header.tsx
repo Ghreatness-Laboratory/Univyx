@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FlameIcon as Fire, Search, Tag, TrendingUp, Zap } from "lucide-react";
+import { FlameIcon as Fire, Search, Tag, TrendingUp, Zap, MapPin } from "lucide-react";
 import type React from "react";
 import { useState, useEffect } from "react";
 import apiService from "../../../services/api";
@@ -9,31 +9,45 @@ import apiService from "../../../services/api";
 interface StoreHeaderProps {
   onSearch: (query: string) => void;
   onCategoryChange: (category: string) => void;
+  onUniversityChange?: (university: string) => void;
 }
 
 export default function Header({
   onSearch,
   onCategoryChange,
+  onUniversityChange,
 }: StoreHeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [activeUniversity, setActiveUniversity] = useState("All");
   const [categories, setCategories] = useState<string[]>(["All"]);
+  const [universities, setUniversities] = useState<string[]>(["All"]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await apiService.getStoreCategories();
-        const cats = response.data.data || response.data.results || response.data;
-        if (cats && cats.length > 0) {
-          const categoryNames = cats.map((cat: any) => cat.name);
-          setCategories(["All", ...categoryNames]);
-        }
-      } catch (error) {
-        console.error('Failed to fetch categories:', error);
-      }
-    };
     fetchCategories();
+    fetchUniversities();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await apiService.getStoreCategories();
+      const cats = response.data.data || [];
+      if (cats.length > 0) setCategories(["All", ...cats.filter(Boolean)]);
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+    }
+  };
+
+  const fetchUniversities = async () => {
+    try {
+      const response = await apiService.getStores();
+      const stores = response.data?.data || [];
+      const unis = [...new Set(stores.map((s: any) => s.university).filter(Boolean))] as string[];
+      if (unis.length > 0) setUniversities(["All", ...unis]);
+    } catch (error) {
+      console.error("Failed to fetch universities:", error);
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,69 +59,41 @@ export default function Header({
     onCategoryChange(category);
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
+  const handleUniversityClick = (university: string) => {
+    setActiveUniversity(university);
+    onUniversityChange?.(university);
   };
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1 },
-  };
+  const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
+  const itemVariants = { hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } };
 
   return (
     <div className="bg-[#F9F9FB]">
-      <div className="max-w-[1120px] w-full mx-auto flex flex-col gap-[50px] py-12 md:py-[100px] px-6 lg:px-0">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <motion.h1
-            variants={itemVariants}
-            className="text-4xl md:text-5xl font-semibold text-primary mb-4 "
-          >
+      <div className="max-w-[1120px] w-full mx-auto flex flex-col gap-8 py-12 md:py-[80px] px-6 lg:px-0">
+        <motion.div variants={containerVariants} initial="hidden" animate="visible">
+          <motion.h1 variants={itemVariants} className="text-4xl md:text-5xl font-semibold text-primary mb-4">
             Discover Great Deals for Students
           </motion.h1>
-
-          <motion.p
-            variants={itemVariants}
-            className="text-secondary text-lg md:text-xl mb-6"
-          >
-            Find stores, browse products and reach out directly via WhatsApp and
-            social media.
+          <motion.p variants={itemVariants} className="text-secondary text-lg md:text-xl mb-4">
+            Browse verified campus stores — filtered by school, category, and ratings.
           </motion.p>
-
           <motion.div variants={itemVariants} className="flex flex-wrap gap-3">
             <span className="inline-flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full text-sm border border-gray-200 shadow-sm">
-              <Fire size={14} className="text-orange-500" />
-              <span>Hot Deals</span>
+              <Fire size={14} className="text-orange-500" /><span>Hot Deals</span>
             </span>
             <span className="inline-flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full text-sm border border-gray-200 shadow-sm">
-              <TrendingUp size={14} className="text-green-500" />
-              <span>Trending Now</span>
+              <TrendingUp size={14} className="text-green-500" /><span>Trending Now</span>
             </span>
             <span className="inline-flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full text-sm border border-gray-200 shadow-sm">
-              <Tag size={14} className="text-blue-500" />
-              <span>Exclusive</span>
+              <Tag size={14} className="text-blue-500" /><span>Exclusive</span>
             </span>
             <span className="inline-flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full text-sm border border-gray-200 shadow-sm">
-              <Zap size={14} className="text-yellow-500" />
-              <span>New Arrivals</span>
+              <Zap size={14} className="text-yellow-500" /><span>New Arrivals</span>
             </span>
           </motion.div>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
           <div className="flex flex-col gap-4">
             <form onSubmit={handleSearch} className="relative max-w-xl">
               <input
@@ -117,35 +103,42 @@ export default function Header({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full py-4 pl-5 pr-12 rounded-full border border-primary/70 bg-white/80 backdrop-blur-sm"
               />
-              <button
-                type="submit"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-secondary text-white p-2 rounded-full hover:bg-primary/90 transition-colors"
-                aria-label="Search"
-              >
+              <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-secondary text-white p-2 rounded-full hover:bg-primary/90 transition-colors" aria-label="Search">
                 <Search size={18} />
               </button>
             </form>
 
+            {/* Category filter */}
             <div className="flex items-center gap-2 flex-wrap">
               {categories.map((category) => (
-                <motion.button
-                  key={category}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleCategoryClick(category)}
+                <motion.button key={category} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => handleCategoryClick(category)}
                   className={`px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                    activeCategory === category
-                      ? "bg-indigo-500 text-white shadow-md"
-                      : "bg-white text-secondary border border-gray-200 hover:border-primary/30 hover:bg-gray-50"
-                  }`}
-                >
+                    activeCategory === category ? "bg-indigo-500 text-white shadow-md" : "bg-white text-secondary border border-gray-200 hover:border-primary/30 hover:bg-gray-50"
+                  }`}>
                   {category}
                 </motion.button>
               ))}
             </div>
+
+            {/* University filter */}
+            {universities.length > 1 && (
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="flex items-center gap-1 text-sm text-gray-500 mr-1"><MapPin size={14} /> School:</span>
+                {universities.map((uni) => (
+                  <motion.button key={uni} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => handleUniversityClick(uni)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                      activeUniversity === uni ? "bg-blue-500 text-white shadow-md" : "bg-white text-secondary border border-gray-200 hover:border-blue-300 hover:bg-gray-50"
+                    }`}>
+                    {uni}
+                  </motion.button>
+                ))}
+              </div>
+            )}
           </div>
         </motion.div>
       </div>
     </div>
   );
 }
+
+

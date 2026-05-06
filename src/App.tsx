@@ -12,6 +12,7 @@ import PWAUpdatePrompt from "./components/common/PWAUpdatePrompt";
 import OfflineBanner from "./components/common/OfflineBanner";
 import BottomNav from "./components/layouts/common/BottomNav";
 import PublicRouter from "./routes/PublicRoutes";
+import SitePopup from "./components/common/SitePopup";
 
 function App() {
   useEffect(() => {
@@ -38,6 +39,7 @@ function App() {
         <NewsModal />
         <ArticlesModal />
         <TopicsModal />
+        <SitePopup />
       </div>
     </AuthProvider>
   );

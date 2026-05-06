@@ -20,6 +20,8 @@ export default function StoreGrid() {
     setSearch 
   } = useStore();
 
+  const [universityFilter, setUniversityFilter] = useState<string | undefined>();
+
   const scrollToTop = () => {
     sectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -36,14 +38,22 @@ export default function StoreGrid() {
     setCategory(category === "All" ? undefined : category);
   };
 
+  const handleUniversityChange = (university: string) => {
+    setUniversityFilter(university === "All" ? undefined : university);
+  };
+
   const handlePageChange = (page: number) => {
     setPage(page);
     scrollToTop();
   };
 
+  const filteredStores = universityFilter
+    ? stores.filter((s: any) => s.university === universityFilter)
+    : stores;
+
   return (
     <div data-testid="stores" ref={sectionRef}>
-      <Header onSearch={handleSearch} onCategoryChange={handleCategoryChange} />
+      <Header onSearch={handleSearch} onCategoryChange={handleCategoryChange} onUniversityChange={handleUniversityChange} />
 
       <section className="max-w-[1120px] w-full mx-auto flex flex-col gap-[50px] py-12 md:py-[100px] px-6 lg:px-0">
         <div className="flex flex-col md:flex-row md:justify-between gap-4">
@@ -88,7 +98,7 @@ export default function StoreGrid() {
           <div className="flex justify-center items-center py-16">
             <p className="text-red-500 text-lg">{error}</p>
           </div>
-        ) : !stores || stores.length === 0 ? (
+        ) : !filteredStores || filteredStores.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <School size={48} className="mx-auto text-gray-400 mb-3" />
             <h4 className="text-2xl font-semibold text-primary mb-2">
@@ -111,7 +121,7 @@ export default function StoreGrid() {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {stores.map((store) => (
+              {filteredStores.map((store) => (
                 <StoreCard
                   key={store.id}
                   store={store}

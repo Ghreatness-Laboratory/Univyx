@@ -250,13 +250,13 @@ class SupabaseApiService {
       whatsapp: data.get('whatsapp'),
       instagram: data.get('instagram'),
       twitter: data.get('twitter'),
-      facebook: data.get('facebook')
+      facebook: data.get('facebook'),
+      university: data.get('university') || null,
+      is_verified: data.get('is_verified') === 'true',
+      achievements: data.get('achievements') ? (data.get('achievements') as string).split(',').map(a => a.trim()).filter(Boolean) : [],
+      tags: data.get('tags') ? (data.get('tags') as string).split(',').map(t => t.trim()).filter(Boolean) : []
     };
-    
-    if (file) {
-      storeData.logo = await supabaseDb.uploadFile('logos', `stores/${Date.now()}_${file.name}`, file);
-    }
-    
+    if (file) storeData.logo = await supabaseDb.uploadFile('logos', `stores/${Date.now()}_${file.name}`, file);
     return supabaseDb.createStore(storeData);
   }
 
@@ -268,13 +268,13 @@ class SupabaseApiService {
       whatsapp: data.get('whatsapp'),
       instagram: data.get('instagram'),
       twitter: data.get('twitter'),
-      facebook: data.get('facebook')
+      facebook: data.get('facebook'),
+      university: data.get('university') || null,
+      is_verified: data.get('is_verified') === 'true',
+      achievements: data.get('achievements') ? (data.get('achievements') as string).split(',').map(a => a.trim()).filter(Boolean) : [],
+      tags: data.get('tags') ? (data.get('tags') as string).split(',').map(t => t.trim()).filter(Boolean) : []
     };
-    
-    if (file) {
-      updates.logo = await supabaseDb.uploadFile('logos', `stores/${Date.now()}_${file.name}`, file);
-    }
-    
+    if (file) updates.logo = await supabaseDb.uploadFile('logos', `stores/${Date.now()}_${file.name}`, file);
     return supabaseDb.updateStore(id, updates);
   }
 
@@ -569,6 +569,186 @@ class SupabaseApiService {
     const { data } = await supabase.from('store_items').select('category');
     const categories = [...new Set(data?.map(item => item.category) || [])];
     return { data: { data: categories } };
+  }
+
+  // Jobs
+  async getJobs(filters?: { type?: string; university_id?: number; search?: string }) {
+    return supabaseDb.getJobs(filters);
+  }
+
+  async getJob(id: string) {
+    return supabaseDb.getJob(id);
+  }
+
+  async createJob(data: any) {
+    if (data instanceof FormData) {
+      const file = data.get('image') as File;
+      const jobData: any = {
+        title: data.get('title'), company: data.get('company'), description: data.get('description'),
+        requirements: data.get('requirements'), type: data.get('type'), location: data.get('location'),
+        is_remote: data.get('is_remote') === 'true', salary_min: parseFloat(data.get('salary_min') as string) || null,
+        salary_max: parseFloat(data.get('salary_max') as string) || null, salary_verified: data.get('salary_verified') === 'true',
+        pay_record: data.get('pay_record'), application_url: data.get('application_url'),
+        application_email: data.get('application_email'), deadline: data.get('deadline') || null,
+        is_verified: data.get('is_verified') === 'true', tags: data.get('tags') ? (data.get('tags') as string).split(',').map(t => t.trim()) : []
+      };
+      if (file) jobData.image = await supabaseDb.uploadFile('images', `jobs/${Date.now()}_${file.name}`, file);
+      return supabaseDb.createJob(jobData);
+    }
+    return supabaseDb.createJob(data);
+  }
+
+  async updateJob(id: string, data: any) {
+    if (data instanceof FormData) {
+      const file = data.get('image') as File;
+      const updates: any = {
+        title: data.get('title'), company: data.get('company'), description: data.get('description'),
+        requirements: data.get('requirements'), type: data.get('type'), location: data.get('location'),
+        is_remote: data.get('is_remote') === 'true', salary_min: parseFloat(data.get('salary_min') as string) || null,
+        salary_max: parseFloat(data.get('salary_max') as string) || null, salary_verified: data.get('salary_verified') === 'true',
+        pay_record: data.get('pay_record'), application_url: data.get('application_url'),
+        application_email: data.get('application_email'), deadline: data.get('deadline') || null,
+        is_verified: data.get('is_verified') === 'true'
+      };
+      if (file) updates.image = await supabaseDb.uploadFile('images', `jobs/${Date.now()}_${file.name}`, file);
+      return supabaseDb.updateJob(id, updates);
+    }
+    return supabaseDb.updateJob(id, data);
+  }
+
+  async deleteJob(id: string) {
+    return supabaseDb.deleteJob(id);
+  }
+
+  async applyToJob(jobId: string, coverLetter?: string) {
+    const user = await supabaseAuth.getUser();
+    return supabaseDb.applyToJob(jobId, user.id, coverLetter);
+  }
+
+  async getUserApplications() {
+    const user = await supabaseAuth.getUser();
+    return supabaseDb.getUserApplications(user.id);
+  }
+
+  // Skills
+  async getSkills(filters?: { category?: string; search?: string }) {
+    return supabaseDb.getSkills(filters);
+  }
+
+  async createSkill(data: any) {
+    const user = await supabaseAuth.getUser();
+    if (data instanceof FormData) {
+      const file = data.get('image') as File;
+      const skillData: any = {
+        user_id: user.id, title: data.get('title'), description: data.get('description'),
+        category: data.get('category'), price: parseFloat(data.get('price') as string) || null,
+        is_free: data.get('is_free') === 'true', portfolio_url: data.get('portfolio_url'),
+        university: data.get('university'), tags: data.get('tags') ? (data.get('tags') as string).split(',').map(t => t.trim()) : []
+      };
+      if (file) skillData.image = await supabaseDb.uploadFile('images', `skills/${Date.now()}_${file.name}`, file);
+      return supabaseDb.createSkill(skillData);
+    }
+    return supabaseDb.createSkill({ ...data, user_id: user.id });
+  }
+
+  async updateSkill(id: string, data: any) {
+    return supabaseDb.updateSkill(id, data);
+  }
+
+  async deleteSkill(id: string) {
+    return supabaseDb.deleteSkill(id);
+  }
+
+  // Slideshow
+  async getSlideshow() {
+    return supabaseDb.getSlideshow();
+  }
+
+  async createSlide(data: any) {
+    if (data instanceof FormData) {
+      const file = data.get('image') as File;
+      const slideData: any = {
+        title: data.get('title'), subtitle: data.get('subtitle'),
+        cta_text: data.get('cta_text'), cta_link: data.get('cta_link'),
+        order: parseInt(data.get('order') as string) || 0, is_active: data.get('is_active') !== 'false'
+      };
+      if (file) slideData.image = await supabaseDb.uploadFile('images', `slideshow/${Date.now()}_${file.name}`, file);
+      return supabaseDb.createSlide(slideData);
+    }
+    return supabaseDb.createSlide(data);
+  }
+
+  async updateSlide(id: string, data: any) {
+    if (data instanceof FormData) {
+      const file = data.get('image') as File;
+      const updates: any = {
+        title: data.get('title'), subtitle: data.get('subtitle'),
+        cta_text: data.get('cta_text'), cta_link: data.get('cta_link'),
+        order: parseInt(data.get('order') as string) || 0, is_active: data.get('is_active') !== 'false'
+      };
+      if (file) updates.image = await supabaseDb.uploadFile('images', `slideshow/${Date.now()}_${file.name}`, file);
+      return supabaseDb.updateSlide(id, updates);
+    }
+    return supabaseDb.updateSlide(id, data);
+  }
+
+  async deleteSlide(id: string) {
+    return supabaseDb.deleteSlide(id);
+  }
+
+  // Site Settings
+  async getSiteSettings() {
+    return supabaseDb.getSiteSettings();
+  }
+
+  async getAllSiteSettings() {
+    return supabaseDb.getAllSiteSettings();
+  }
+
+  async updateSiteSetting(key: string, value: string) {
+    return supabaseDb.updateSiteSetting(key, value);
+  }
+
+  // Popups
+  async getPopups() {
+    return supabaseDb.getPopups();
+  }
+
+  async getAllPopups() {
+    return supabaseDb.getAllPopups();
+  }
+
+  async createPopup(data: any) {
+    if (data instanceof FormData) {
+      const file = data.get('image') as File;
+      const popupData: any = {
+        title: data.get('title'), content: data.get('content'), cta_text: data.get('cta_text'),
+        cta_link: data.get('cta_link'), trigger: data.get('trigger') || 'onload',
+        delay_seconds: parseInt(data.get('delay_seconds') as string) || 3,
+        is_active: data.get('is_active') !== 'false'
+      };
+      if (file) popupData.image = await supabaseDb.uploadFile('images', `popups/${Date.now()}_${file.name}`, file);
+      return supabaseDb.createPopup(popupData);
+    }
+    return supabaseDb.createPopup(data);
+  }
+
+  async updatePopup(id: string, data: any) {
+    return supabaseDb.updatePopup(id, data);
+  }
+
+  async deletePopup(id: string) {
+    return supabaseDb.deletePopup(id);
+  }
+
+  // Store Reviews
+  async reviewStore(storeId: string, rating: number, comment?: string) {
+    const user = await supabaseAuth.getUser();
+    return supabaseDb.reviewStore(storeId, user.id, rating, comment);
+  }
+
+  async getStoreReviews(storeId: string) {
+    return supabaseDb.getStoreReviews(storeId);
   }
 }
 

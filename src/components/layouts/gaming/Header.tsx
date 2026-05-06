@@ -46,23 +46,21 @@ export default function GamingHero() {
           <div className="flex-1 max-w-2xl">
             <div className="inline-block mb-2 px-3 py-1 rounded-full bg-purple-900/30 border border-purple-700/40">
               <span className="text-xs md:text-sm font-medium text-purple-400">
-                Level Up Your Game
+                🎮 NPUGA Esports League
               </span>
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 md:mb-6">
               <span className="block bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">
-                Unleash Your
+                Univyx Arena
               </span>
               <span className="block bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-fuchsia-500 to-pink-500">
-                Gaming Potential
+                × FragNaija
               </span>
             </h1>
 
             <p className="text-base md:text-lg text-gray-300 mb-8 max-w-lg">
-              Compete in epic tournaments, form unbeatable squads, and rise
-              through the ranks. The virtual battlefield awaits your skills and
-              strategy!
+              Nigeria's premier private university esports league. Compete in tournaments, climb the NPUGA rankings, and represent your school across all games — from FIFA to PUBG.
             </p>
 
             <div className="flex flex-wrap gap-4">

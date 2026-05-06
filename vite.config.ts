@@ -123,6 +123,9 @@ export default defineConfig({
     }),
   ],
   server: {
+    hmr: {
+      port: 5173,
+    },
     proxy: {
       '/api': {
         target: 'https://univyx-backend-1xfv.onrender.com/univyxApi/v1',

@@ -483,6 +483,175 @@ export class SupabaseService {
     const { error } = await supabase.storage.from(bucket).remove([path]);
     if (error) throw error;
   }
+
+  // Jobs
+  async getJobs(filters?: { type?: string; university_id?: number; search?: string }) {
+    let query = supabase.from('jobs').select('*, universities(name, abbreviation)').eq('is_active', true).order('created_at', { ascending: false });
+    if (filters?.type) query = query.eq('type', filters.type);
+    if (filters?.university_id) query = query.eq('university_id', filters.university_id);
+    if (filters?.search) query = query.ilike('title', `%${filters.search}%`);
+    const { data, error } = await query;
+    if (error) throw error;
+    return { data: { data } };
+  }
+
+  async getJob(id: string) {
+    const { data, error } = await supabase.from('jobs').select('*, universities(name, abbreviation)').eq('id', id).single();
+    if (error) throw error;
+    return { data };
+  }
+
+  async createJob(job: any) {
+    const { data, error } = await supabase.from('jobs').insert(job).select().single();
+    if (error) throw error;
+    return { data };
+  }
+
+  async updateJob(id: string, job: any) {
+    const { data, error } = await supabase.from('jobs').update(job).eq('id', id).select().single();
+    if (error) throw error;
+    return { data };
+  }
+
+  async deleteJob(id: string) {
+    const { error } = await supabase.from('jobs').delete().eq('id', id);
+    if (error) throw error;
+    return { data: null };
+  }
+
+  async applyToJob(jobId: string, userId: string, coverLetter?: string) {
+    const { data, error } = await supabase.from('job_applications').insert({ job_id: jobId, user_id: userId, cover_letter: coverLetter }).select().single();
+    if (error) throw error;
+    return { data };
+  }
+
+  async getUserApplications(userId: string) {
+    const { data, error } = await supabase.from('job_applications').select('*, jobs(title, company, type)').eq('user_id', userId);
+    if (error) throw error;
+    return { data: { data } };
+  }
+
+  // Skills
+  async getSkills(filters?: { category?: string; search?: string }) {
+    let query = supabase.from('skills').select('*').eq('is_active', true).order('created_at', { ascending: false });
+    if (filters?.category) query = query.eq('category', filters.category);
+    if (filters?.search) query = query.ilike('title', `%${filters.search}%`);
+    const { data, error } = await query;
+    if (error) throw error;
+    return { data: { data } };
+  }
+
+  async createSkill(skill: any) {
+    const { data, error } = await supabase.from('skills').insert(skill).select().single();
+    if (error) throw error;
+    return { data };
+  }
+
+  async updateSkill(id: string, skill: any) {
+    const { data, error } = await supabase.from('skills').update(skill).eq('id', id).select().single();
+    if (error) throw error;
+    return { data };
+  }
+
+  async deleteSkill(id: string) {
+    const { error } = await supabase.from('skills').delete().eq('id', id);
+    if (error) throw error;
+    return { data: null };
+  }
+
+  // Slideshow
+  async getSlideshow() {
+    const { data, error } = await supabase.from('slideshow').select('*').eq('is_active', true).order('order', { ascending: true });
+    if (error) throw error;
+    return { data: { data } };
+  }
+
+  async createSlide(slide: any) {
+    const { data, error } = await supabase.from('slideshow').insert(slide).select().single();
+    if (error) throw error;
+    return { data };
+  }
+
+  async updateSlide(id: string, slide: any) {
+    const { data, error } = await supabase.from('slideshow').update(slide).eq('id', id).select().single();
+    if (error) throw error;
+    return { data };
+  }
+
+  async deleteSlide(id: string) {
+    const { error } = await supabase.from('slideshow').delete().eq('id', id);
+    if (error) throw error;
+    return { data: null };
+  }
+
+  // Site Settings
+  async getSiteSettings() {
+    const { data, error } = await supabase.from('site_settings').select('*');
+    if (error) throw error;
+    const settings: Record<string, string> = {};
+    data?.forEach(s => { settings[s.key] = s.value; });
+    return { data: { data: settings } };
+  }
+
+  async updateSiteSetting(key: string, value: string) {
+    const { data, error } = await supabase.from('site_settings').update({ value, updated_at: new Date().toISOString() }).eq('key', key).select().single();
+    if (error) throw error;
+    return { data };
+  }
+
+  async getAllSiteSettings() {
+    const { data, error } = await supabase.from('site_settings').select('*').order('section');
+    if (error) throw error;
+    return { data: { data } };
+  }
+
+  // Popups
+  async getPopups() {
+    const { data, error } = await supabase.from('popups').select('*').eq('is_active', true);
+    if (error) throw error;
+    return { data: { data } };
+  }
+
+  async getAllPopups() {
+    const { data, error } = await supabase.from('popups').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return { data: { data } };
+  }
+
+  async createPopup(popup: any) {
+    const { data, error } = await supabase.from('popups').insert(popup).select().single();
+    if (error) throw error;
+    return { data };
+  }
+
+  async updatePopup(id: string, popup: any) {
+    const { data, error } = await supabase.from('popups').update(popup).eq('id', id).select().single();
+    if (error) throw error;
+    return { data };
+  }
+
+  async deletePopup(id: string) {
+    const { error } = await supabase.from('popups').delete().eq('id', id);
+    if (error) throw error;
+    return { data: null };
+  }
+
+  // Store Reviews
+  async reviewStore(storeId: string, reviewerId: string, rating: number, comment?: string) {
+    const { data, error } = await supabase.from('store_reviews').upsert({ store_id: storeId, reviewer_id: reviewerId, rating, comment }).select().single();
+    if (error) throw error;
+    const { count } = await supabase.from('store_reviews').select('*', { count: 'exact', head: true }).eq('store_id', storeId);
+    const { data: avg } = await supabase.from('store_reviews').select('rating').eq('store_id', storeId);
+    const avgRating = avg ? avg.reduce((sum: number, r: any) => sum + r.rating, 0) / avg.length : 0;
+    await supabase.from('stores').update({ rating: avgRating, reviews_count: count }).eq('id', storeId);
+    return { data };
+  }
+
+  async getStoreReviews(storeId: string) {
+    const { data, error } = await supabase.from('store_reviews').select('*').eq('store_id', storeId).order('created_at', { ascending: false });
+    if (error) throw error;
+    return { data: { data } };
+  }
 }
 
 export default new SupabaseService();

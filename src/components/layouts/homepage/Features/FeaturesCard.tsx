@@ -1,25 +1,27 @@
 import { motion } from "framer-motion";
-import { Library, Gamepad2, Radio } from "lucide-react";
+import { Library, Gamepad2, Radio, Briefcase } from "lucide-react";
 import Button from "../../../common/Button";
 
 const features = [
   {
     title: "Resource Hub",
-    description:
-      "Access a comprehensive library of past questions, study notes, and academic materials to enhance your learning experience.",
+    description: "Access a comprehensive library of past questions, study notes, and academic materials to enhance your learning experience.",
     icon: Library,
   },
   {
     title: "Gaming Platform",
-    description:
-      "Participate in exciting intra and inter-university gaming competitions that foster teamwork and healthy competition.",
+    description: "Compete in Univyx Arena × FragNaija — Nigeria's premier private university esports league with NPUGA rankings.",
     icon: Gamepad2,
   },
   {
     title: "Entertainment",
-    description:
-      "Stay updated with university news, articles, trending topics, and events to keep you informed and engaged.",
+    description: "Stay updated with university news, articles, trending topics, and events to keep you informed and engaged.",
     icon: Radio,
+  },
+  {
+    title: "Jobs & Placements",
+    description: "Find verified jobs, SIWES placements, NYSC postings and internships — only from employers with proven pay records.",
+    icon: Briefcase,
   },
 ];
 
