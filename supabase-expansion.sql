@@ -3,6 +3,35 @@
 -- Jobs Platform, Skills Marketplace, Store Enhancements
 -- =============================================
 
+-- Ensure base tables exist before referencing them
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS universities (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  abbreviation TEXT,
+  website TEXT,
+  location TEXT,
+  description TEXT,
+  established_year INTEGER,
+  logo TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS stores (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL,
+  description TEXT,
+  logo TEXT,
+  whatsapp TEXT,
+  instagram TEXT,
+  twitter TEXT,
+  facebook TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Jobs Table (CivilProviding integration)
 CREATE TABLE IF NOT EXISTS jobs (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

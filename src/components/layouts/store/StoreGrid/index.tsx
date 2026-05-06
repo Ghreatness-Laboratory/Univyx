@@ -1,7 +1,7 @@
 "use client";
 
 import { School } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useStore } from "../../../../hooks/useStore";
 import { StoreItem } from "../../../../types/api";
 import Button from "../../../common/Button";
