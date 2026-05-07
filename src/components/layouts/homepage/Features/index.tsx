@@ -4,7 +4,7 @@ import FeaturesCard from "./FeaturesCard";
 export default function Features() {
   return (
     <div id="services">
-      <section className="max-w-[1120px] w-full mx-auto flex justify-between max-md:flex-col max-lg:gap-7 sm:px-6 lg:px-0 py-12 md:py-[100px]">
+      <section className="max-w-[1120px] w-full mx-auto flex justify-between max-md:flex-col max-lg:gap-7 sm:px-6 lg:px-0 py-8 md:py-12">
         <motion.div
           className="md:max-w-[364px] w-full px-6 md:px-0 max-md:text-center"
           initial={{ opacity: 0, x: -50 }}

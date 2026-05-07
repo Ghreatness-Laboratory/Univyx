@@ -5,7 +5,7 @@ import CreativeAndUniqueSolutions from "./CreativeAndUniqueSolutions";
 export default function WhyChooseUs() {
   return (
     <div>
-      <section className="max-w-[1120px] w-full mx-auto flex flex-col gap-[30px] md:gap-[50px] px-6 lg:px-0 py-12 md:py-[100px]">
+      <section className="max-w-[1120px] w-full mx-auto flex flex-col gap-[30px] md:gap-[50px] px-6 lg:px-0 py-8 md:py-12">
         <div className="flex max-md:flex-col items-center gap-3 justify-between">
           <motion.h1 
             className="text-primary text-4xl md:text-5xl font-semibold md:font-medium leading-[44px] md:leading-[60px] tracking-[-0.72px] md:tracking-[-0.96px] max-w-[567px] text-center md:text-left"

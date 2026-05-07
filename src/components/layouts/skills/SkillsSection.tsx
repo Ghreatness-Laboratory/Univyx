@@ -148,7 +148,7 @@ export default function SkillsSection() {
   const filtered = skills.filter(s => !search || s.title?.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <section className="max-w-7xl mx-auto px-6 lg:px-8 py-16 border-t border-gray-100">
+    <section className="max-w-7xl mx-auto px-6 lg:px-8 py-8 border-t border-gray-100">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
         <div>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Student Skills Marketplace</h2>

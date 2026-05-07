@@ -127,10 +127,10 @@ export default function Hero() {
       )}
 
       {/* Main Hero Content */}
-      <section className="relative z-20 w-full mx-auto flex flex-col px-6 lg:px-8 py-16 md:py-24 max-w-7xl">
+      <section className="relative z-20 w-full mx-auto flex flex-col px-6 lg:px-8 py-8 md:py-12 max-w-7xl">
         <div className="text-center mb-16">
           <motion.div
-            className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-blue-200 rounded-full px-4 py-2 mb-8 shadow-sm"
+            className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-blue-200 rounded-full px-4 py-2 mb-4 shadow-sm"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -140,7 +140,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.h1
-            className="max-w-5xl mx-auto text-primary font-bold text-5xl md:text-7xl lg:text-8xl leading-tight tracking-tight mb-8"
+            className="max-w-5xl mx-auto text-primary font-bold text-5xl md:text-7xl lg:text-8xl leading-tight tracking-tight mb-4"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -150,7 +150,7 @@ export default function Hero() {
             </span>
             <br />
             <span className="relative">
-              Student Life
+              Student Experience
               <motion.div
                 className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"
                 initial={{ scaleX: 0 }}
@@ -161,16 +161,16 @@ export default function Hero() {
           </motion.h1>
 
           <motion.p
-            className="max-w-2xl mx-auto text-xl md:text-2xl text-gray-600 leading-relaxed mb-12"
+            className="max-w-2xl mx-auto text-xl md:text-2xl text-gray-600 leading-relaxed mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Connect, learn, and thrive. Entertainment, gaming, jobs, and a campus store — all in one place for private university students.
+            Connect, learn, and thrive. Entertainment, gaming, jobs, and a campus store, all in one place for private university students.
           </motion.p>
 
           <motion.div
-            className="flex flex-wrap justify-center gap-4 mb-16"
+            className="flex flex-wrap justify-center gap-4 mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
@@ -192,7 +192,7 @@ export default function Hero() {
 
           {/* Stats */}
           <motion.div
-            className="flex flex-wrap justify-center gap-8 md:gap-16 mb-16"
+            className="flex flex-wrap justify-center gap-8 md:gap-16 mb-8"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}

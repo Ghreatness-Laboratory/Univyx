@@ -32,62 +32,69 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer aria-label="footer">
-      <section className="bg-[#F9F9FB]">
-        <div className="max-w-[1120px] w-full mx-auto pb-16 md:pb-[50px] pt-12 md:pt-[100px] px-4 lg:px-0 flex flex-col md:flex-row items-center gap-4 justify-between">
-          <div className="max-w-[423px] w-full min-h-[148px] md:h-[286px] md:self-start">
-            <div className="flex justify-center md:justify-normal">
-              <span className="sr-only">Logo</span>
-              <img
-                src={UnivyxLogo}
-                alt="Univyx logo and title"
-                width={310}
-                height={60}
-                className="rounded-lg"
-              />
+    <footer aria-label="footer" className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          {/* Logo & Description */}
+          <div className="lg:col-span-2">
+            <div className="mb-4">
+              <img src={UnivyxLogo} alt="Univyx" className="h-12" />
             </div>
-          </div>
-
-          <div className="max-w-[647px] w-full flex flex-col md:self-start gap-5 px-4 md:px-0">
-            <h1 className="text-primary text-4xl md:text-5xl font-semibold md:font-medium leading-[44px] md:leading-[60px] tracking-[-0.72px] md:tracking-[-0.96px]">
-              The ultimate platform for private university students
-            </h1>
-            <p className="text-secondary font-normal leading-6">
-              The ultimate platform for private university students, combining
-              academics, business, gaming, and entertainment in one place.
+            <p className="text-gray-300 mb-6 max-w-md">
+              The ultimate platform for private university students, combining academics, business, gaming, and entertainment in one place.
             </p>
-            <div className="flex gap-3 md:gap-5 mt-4 flex-wrap">
-              {footerMenu.map((menu, index) => (
-                <Link
+            <div className="flex gap-3">
+              {socialMediaPlatforms.map((platform, index) => (
+                <a
                   key={index}
-                  to={menu.href}
-                  className="px-4 md:px-5 py-2 rounded-full font-semibold leading-6 border border-[var(--Text-Colors-200,#D6D6D6)] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)]"
+                  href={platform.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 bg-white/10 hover:bg-white/20 rounded-full transition-all"
+                  aria-label={platform.name}
                 >
-                  {menu.menu}
-                </Link>
+                  {platform.icon}
+                </a>
               ))}
             </div>
           </div>
-        </div>
-      </section>
 
-      <section className="bg-primary py-8 px-4">
-        <div className="max-w-[1120px] w-full mx-auto flex flex-col md:flex-row items-center gap-8 justify-between text-white text-lg font-normal text-center">
-          <h6>Copyright @ {currentYear} Univyx, All rights reserved.</h6>
-          <div className="flex items-center gap-[15px]">
-            {socialMediaPlatforms.map((platform, index) => (
-              <Link
-                key={index}
-                to={platform.link}
-                className="p-2.5 border border-white rounded-full"
-                target="_blank"
-              >
-                {platform.icon}
-              </Link>
-            ))}
+          {/* Quick Links */}
+          <div>
+            <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
+            <ul className="space-y-2">
+              {footerMenu.map((menu, index) => (
+                <li key={index}>
+                  <Link to={menu.href} className="text-gray-300 hover:text-white transition-colors">
+                    {menu.menu}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div>
+            <h3 className="font-semibold text-lg mb-4">Resources</h3>
+            <ul className="space-y-2">
+              <li><Link to="/jobs" className="text-gray-300 hover:text-white transition-colors">Jobs</Link></li>
+              <li><Link to="/about" className="text-gray-300 hover:text-white transition-colors">About Us</Link></li>
+              <li><Link to="/contact" className="text-gray-300 hover:text-white transition-colors">Contact</Link></li>
+              <li><Link to="/privacy" className="text-gray-300 hover:text-white transition-colors">Privacy Policy</Link></li>
+            </ul>
           </div>
         </div>
-      </section>
+
+        {/* Bottom Bar */}
+        <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-gray-400 text-sm">© {currentYear} Univyx. All rights reserved.</p>
+          <div className="flex gap-6 text-sm">
+            <Link to="/terms" className="text-gray-400 hover:text-white transition-colors">Terms</Link>
+            <Link to="/privacy" className="text-gray-400 hover:text-white transition-colors">Privacy</Link>
+            <Link to="/cookies" className="text-gray-400 hover:text-white transition-colors">Cookies</Link>
+          </div>
+        </div>
+      </div>
     </footer>
   );
 }

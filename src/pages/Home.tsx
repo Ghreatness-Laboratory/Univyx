@@ -2,15 +2,21 @@ import { motion } from "framer-motion";
 import AboutUs from "../components/layouts/homepage/About";
 import FAQ from "../components/layouts/homepage/FAQ";
 import Features from "../components/layouts/homepage/Features";
+import FeaturesMarquee from "../components/layouts/homepage/FeaturesMarquee";
 import GetStarted from "../components/layouts/homepage/GetStarted";
 import Hero from "../components/layouts/homepage/Hero";
+import LiveStatsSection from "../components/layouts/homepage/LiveStatsSection";
 import Partners from "../components/layouts/homepage/Partners";
+import QuickLinksSection from "../components/layouts/homepage/QuickLinksSection";
 import Team from "../components/layouts/homepage/Team";
+import TestimonialsSection from "../components/layouts/homepage/TestimonialsSection";
 import WhyChooseUs from "../components/layouts/homepage/WhyChooseUs";
 
+import SkillsSection from "../components/layouts/skills/SkillsSection";
+
 const sectionVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
 };
 
 export default function Home() {
@@ -20,13 +26,20 @@ export default function Home() {
         initial="hidden"
         whileInView="visible"
         variants={sectionVariants}
+        viewport={{ once: true }}
       >
         <Hero />
       </motion.div>
+      
+      <FeaturesMarquee />
+      
+      <LiveStatsSection />
+      
       <motion.div
         initial="hidden"
         whileInView="visible"
         variants={sectionVariants}
+        viewport={{ once: true }}
       >
         <AboutUs />
       </motion.div>
@@ -34,13 +47,18 @@ export default function Home() {
         initial="hidden"
         whileInView="visible"
         variants={sectionVariants}
+        viewport={{ once: true }}
       >
         <Features />
       </motion.div>
+      
+      <QuickLinksSection />
+      
       <motion.div
         initial="hidden"
         whileInView="visible"
         variants={sectionVariants}
+        viewport={{ once: true }}
       >
         <WhyChooseUs />
       </motion.div>
@@ -48,6 +66,7 @@ export default function Home() {
         initial="hidden"
         whileInView="visible"
         variants={sectionVariants}
+        viewport={{ once: true }}
       >
         <Team />
       </motion.div>
@@ -55,13 +74,26 @@ export default function Home() {
         initial="hidden"
         whileInView="visible"
         variants={sectionVariants}
+        viewport={{ once: true }}
       >
-        <GetStarted />
+        <SkillsSection />
       </motion.div>
       <motion.div
         initial="hidden"
         whileInView="visible"
         variants={sectionVariants}
+        viewport={{ once: true }}
+      >
+        <GetStarted />
+      </motion.div>
+      
+      <TestimonialsSection />
+      
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        variants={sectionVariants}
+        viewport={{ once: true }}
       >
         <Partners />
       </motion.div>
@@ -69,6 +101,7 @@ export default function Home() {
         initial="hidden"
         whileInView="visible"
         variants={sectionVariants}
+        viewport={{ once: true }}
       >
         <FAQ />
       </motion.div>

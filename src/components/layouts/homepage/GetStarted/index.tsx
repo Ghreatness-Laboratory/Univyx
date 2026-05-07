@@ -20,7 +20,7 @@ const features: GetStartedProps[] = [
 export default function GetStarted() {
   return (
     <div id="features">
-      <section className="max-w-[1120px] w-full mx-auto flex flex-col gap-[50px] py-12 md:py-[100px] lg:px-0">
+      <section className="max-w-[1120px] w-full mx-auto flex flex-col gap-[50px] py-8 md:py-12 lg:px-0">
         <GetStartedCard
           title={features[0].title}
           content={features[0].content}

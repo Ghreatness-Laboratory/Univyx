@@ -25,7 +25,7 @@ export default function Team() {
 
   return (
     <div className="bg-white">
-      <section className="flex flex-col py-12 md:py-[100px]">
+      <section className="flex flex-col py-8 md:py-12">
         <div className="px-6 md:px-4 flex flex-col items-center gap-3 md:gap-8">
           <h1 className="text-primary text-4xl md:text-5xl font-semibold md:font-medium leading-[44px] md:leading-[60px] tracking-[-0.72px] md:tracking-[-0.96px] text-center">
             The great minds behind our work

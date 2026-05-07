@@ -52,7 +52,7 @@ export default function FAQ() {
 
   return (
     <div>
-      <section className="max-w-[1120px] w-full mx-auto flex max-lg:flex-col justify-between gap-3 md:gap-[50px] py-12 md:py-[100px] px-6 lg:px-0">
+      <section className="max-w-[1120px] w-full mx-auto flex max-lg:flex-col justify-between gap-3 md:gap-[50px] py-8 md:py-12 px-6 lg:px-0">
         <motion.div
           className="md:max-w-md flex flex-col gap-5 max-md:text-center"
           initial={{ opacity: 0, y: 30 }}

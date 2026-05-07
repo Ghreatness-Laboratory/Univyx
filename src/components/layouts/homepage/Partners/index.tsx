@@ -73,7 +73,7 @@ export default function Partners() {
 
   return (
     <div>
-      <section className="max-w-screen-lg w-full mx-auto flex flex-col gap-8 px-6 lg:px-0 py-12 md:py-24 overflow-hidden">
+      <section className="max-w-screen-lg w-full mx-auto flex flex-col gap-8 px-6 lg:px-0 py-8 md:py-12 overflow-hidden">
         <div className="flex flex-col gap-4 text-center">
           <h1 className="text-primary text-4xl md:text-5xl font-semibold md:font-medium leading-tight tracking-tight">
             Trusted by thousand businesses
