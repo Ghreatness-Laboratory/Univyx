@@ -176,3 +176,7 @@ html {
 * {
   font-weight: inherit !important;
 }
+.name{
+  background-image: url(/src/assets/images/homepage/hero-image.png);
+
+}

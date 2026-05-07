@@ -750,6 +750,104 @@ class SupabaseApiService {
   async getStoreReviews(storeId: string) {
     return supabaseDb.getStoreReviews(storeId);
   }
+
+  // Hall of Fame
+  async getHallOfFamePlayers() {
+    const { data } = await supabase.from('hall_of_fame_players').select('*').order('display_order');
+    return { data: { data } };
+  }
+
+  async createHallOfFamePlayer(data: any) {
+    if (data instanceof FormData) {
+      const file = data.get('avatar') as File;
+      const playerData: any = {
+        name: data.get('name'), gamertag: data.get('gamertag'), university: data.get('university'),
+        bio: data.get('bio'), favorite_game: data.get('favorite_game'), rank: data.get('rank'),
+        total_wins: parseInt(data.get('total_wins') as string) || 0,
+        total_tournaments: parseInt(data.get('total_tournaments') as string) || 0,
+        is_featured: data.get('is_featured') === 'true',
+        display_order: parseInt(data.get('display_order') as string) || 0,
+        achievements: data.get('achievements') ? (data.get('achievements') as string).split(',').map(a => a.trim()) : [],
+        social_links: data.get('social_links') ? JSON.parse(data.get('social_links') as string) : {},
+        stats: data.get('stats') ? JSON.parse(data.get('stats') as string) : {}
+      };
+      if (file) playerData.avatar = await supabaseDb.uploadFile('images', `hall-of-fame/${Date.now()}_${file.name}`, file);
+      const { data: result } = await supabase.from('hall_of_fame_players').insert(playerData).select().single();
+      return { data: { data: result } };
+    }
+    const { data: result } = await supabase.from('hall_of_fame_players').insert(data).select().single();
+    return { data: { data: result } };
+  }
+
+  async updateHallOfFamePlayer(id: string, data: any) {
+    const { data: result } = await supabase.from('hall_of_fame_players').update(data).eq('id', id).select().single();
+    return { data: { data: result } };
+  }
+
+  async deleteHallOfFamePlayer(id: string) {
+    await supabase.from('hall_of_fame_players').delete().eq('id', id);
+    return { data: { message: 'Player deleted' } };
+  }
+
+  // Gaming Wiki
+  async getGamingWiki(filters?: { category?: string; search?: string }) {
+    let query = supabase.from('gaming_wiki').select('*').eq('is_published', true);
+    if (filters?.category) query = query.eq('category', filters.category);
+    if (filters?.search) query = query.or(`title.ilike.%${filters.search}%,summary.ilike.%${filters.search}%`);
+    const { data } = await query.order('created_at', { ascending: false });
+    return { data: { data } };
+  }
+
+  async getWikiEntry(slug: string) {
+    const { data } = await supabase.from('gaming_wiki').select('*').eq('slug', slug).single();
+    await supabase.from('gaming_wiki').update({ views: (data?.views || 0) + 1 }).eq('id', data?.id);
+    return { data: { data } };
+  }
+
+  async createWikiEntry(data: any) {
+    if (data instanceof FormData) {
+      const file = data.get('image') as File;
+      const wikiData: any = {
+        title: data.get('title'), slug: data.get('slug'), category: data.get('category'),
+        content: data.get('content'), summary: data.get('summary'),
+        tags: data.get('tags') ? (data.get('tags') as string).split(',').map(t => t.trim()) : [],
+        is_published: data.get('is_published') !== 'false'
+      };
+      if (file) wikiData.image = await supabaseDb.uploadFile('images', `wiki/${Date.now()}_${file.name}`, file);
+      const { data: result } = await supabase.from('gaming_wiki').insert(wikiData).select().single();
+      return { data: { data: result } };
+    }
+    const { data: result } = await supabase.from('gaming_wiki').insert(data).select().single();
+    return { data: { data: result } };
+  }
+
+  async updateWikiEntry(id: string, data: any) {
+    const { data: result } = await supabase.from('gaming_wiki').update(data).eq('id', id).select().single();
+    return { data: { data: result } };
+  }
+
+  async deleteWikiEntry(id: string) {
+    await supabase.from('gaming_wiki').delete().eq('id', id);
+    return { data: { message: 'Wiki entry deleted' } };
+  }
+
+  // Gaming Teams
+  async getGamingTeams() {
+    const { data } = await supabase.from('gaming_teams').select('*').eq('is_active', true).order('rank');
+    return { data: { data } };
+  }
+
+  // Gaming Records
+  async getGamingRecords() {
+    const { data } = await supabase.from('gaming_records').select('*').eq('is_verified', true).order('date_achieved', { ascending: false });
+    return { data: { data } };
+  }
+
+  // Gaming Highlights
+  async getGamingHighlights() {
+    const { data } = await supabase.from('gaming_highlights').select('*').order('created_at', { ascending: false });
+    return { data: { data } };
+  }
 }
 
 export default new SupabaseApiService();

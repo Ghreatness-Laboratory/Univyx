@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import Events from "../components/layouts/gaming/Events";
 import Gallery from "../components/layouts/gaming/Gallery";
+import GamingWiki from "../components/layouts/gaming/GamingWiki";
+import HallOfFame from "../components/layouts/gaming/HallOfFame";
 import Header from "../components/layouts/gaming/Header";
 import Leaderboards from "../components/layouts/gaming/leaderboard";
 import Tournaments from "../components/layouts/gaming/Tournament";
@@ -54,6 +56,20 @@ export default function Gaming() {
           loading={leaderboardLoading}
           error={leaderboardError}
         />
+      </motion.div>
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        variants={sectionVariants}
+      >
+        <HallOfFame />
+      </motion.div>
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        variants={sectionVariants}
+      >
+        <GamingWiki />
       </motion.div>
       <motion.div
         initial="hidden"

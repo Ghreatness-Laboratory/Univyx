@@ -4,7 +4,7 @@ import FAQ from "../components/layouts/homepage/FAQ";
 import Features from "../components/layouts/homepage/Features";
 import FeaturesMarquee from "../components/layouts/homepage/FeaturesMarquee";
 import GetStarted from "../components/layouts/homepage/GetStarted";
-import Hero from "../components/layouts/homepage/Hero";
+import HeroNew from "../components/layouts/homepage/HeroNew";
 import LiveStatsSection from "../components/layouts/homepage/LiveStatsSection";
 import Partners from "../components/layouts/homepage/Partners";
 import QuickLinksSection from "../components/layouts/homepage/QuickLinksSection";
@@ -28,7 +28,7 @@ export default function Home() {
         variants={sectionVariants}
         viewport={{ once: true }}
       >
-        <Hero />
+        <HeroNew />
       </motion.div>
       
       <FeaturesMarquee />
