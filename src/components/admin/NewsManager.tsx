@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2 } from 'lucide-react';
-import api from '../../services/api';
+import supabaseDb from '../../services/supabase-db';
 import ImageUpload from '../common/ImageUpload';
-import { News } from '../../types/api';
-import { getImageUrl } from '../../utils/imageUrl';
+
 
 export default function NewsManager() {
-  const [news, setNews] = useState<News[]>([]);
+  const [news, setNews] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -21,13 +20,10 @@ export default function NewsManager() {
 
   const fetchNews = async () => {
     try {
-      const response = await api.getNews();
-      let data = response.data.data || response.data || [];
-      data = data.map((item: any) => ({ ...item, id: item.id || item._id, image: getImageUrl(item.image) }));
-      setNews(Array.isArray(data) ? data : []);
+      const response = await supabaseDb.getNews();
+      setNews(response.data.data || []);
     } catch (error) {
       console.error('Failed to fetch news:', error);
-      setNews([]);
     }
   };
 
@@ -41,30 +37,29 @@ export default function NewsManager() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      const data = new FormData();
-      data.append('title', formData.title);
-      data.append('content', formData.content);
-      data.append('category', formData.category);
-      if (image) data.append('image', image);
-
-      if (editingId) {
-        await api.updateNews(editingId, data as any);
-      } else {
-        await api.createNews(data as any);
+      let imageUrl = imagePreview;
+      if (image) {
+        const fileName = `news/${Date.now()}-${image.name}`;
+        imageUrl = await supabaseDb.uploadFile('images', fileName, image);
       }
-
+      const data = { ...formData, image: imageUrl };
+      if (editingId) {
+        await supabaseDb.updateNews(editingId, data);
+      } else {
+        await supabaseDb.createNews(data);
+      }
       resetForm();
       fetchNews();
     } catch (error) {
       console.error('Failed to save news:', error);
+      alert('Failed to save news');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEdit = (item: News) => {
+  const handleEdit = (item: any) => {
     setEditingId(item.id!);
     setFormData({ title: item.title || '', content: item.content || '', category: (item as any).category || 'Campus' });
     setImagePreview(item.image || '');
@@ -75,7 +70,7 @@ export default function NewsManager() {
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this news?')) return;
     try {
-      await api.deleteNews(id);
+      await supabaseDb.deleteNews(id);
       fetchNews();
     } catch (error) {
       console.error('Failed to delete news:', error);

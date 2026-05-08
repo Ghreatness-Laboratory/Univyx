@@ -20,7 +20,13 @@ import SlideshowManager from '../components/admin/SlideshowManager';
 import SiteSettingsManager from '../components/admin/SiteSettingsManager';
 import PopupManager from '../components/admin/PopupManager';
 
-type AdminSection = 'articles' | 'events' | 'news' | 'store' | 'universities' | 'tournaments' | 'leaderboards' | 'team' | 'partners' | 'stats' | 'faqs' | 'gallery' | 'jobs' | 'slideshow' | 'settings' | 'popups';
+import GamingEventManager from '../components/admin/GamingEventManager';
+import HallOfFameManager from '../components/admin/HallOfFameManager';
+import GamingWikiManager from '../components/admin/GamingWikiManager';
+import SkillsManager from '../components/admin/SkillsManager';
+import UserManager from '../components/admin/UserManager';
+
+type AdminSection = 'articles' | 'events' | 'news' | 'store' | 'universities' | 'tournaments' | 'leaderboards' | 'team' | 'partners' | 'stats' | 'faqs' | 'gallery' | 'jobs' | 'slideshow' | 'settings' | 'popups' | 'gaming-events' | 'hall-of-fame' | 'gaming-wiki' | 'skills' | 'users';
 
 const adminSections = [
   { id: 'articles' as AdminSection, label: 'Articles', icon: Edit, color: 'purple', category: 'Content' },
@@ -28,9 +34,13 @@ const adminSections = [
   { id: 'news' as AdminSection, label: 'News', icon: BookOpen, color: 'blue', category: 'Content' },
   { id: 'store' as AdminSection, label: 'Store', icon: Store, color: 'green', category: 'Commerce' },
   { id: 'jobs' as AdminSection, label: 'Jobs & Placements', icon: Briefcase, color: 'blue', category: 'Commerce' },
+  { id: 'skills' as AdminSection, label: 'Skills & Courses', icon: Award, color: 'teal', category: 'Commerce' },
   { id: 'universities' as AdminSection, label: 'Universities', icon: Users, color: 'indigo', category: 'Academics' },
-  { id: 'tournaments' as AdminSection, label: 'Tournaments', icon: Trophy, color: 'yellow', category: 'Gaming' },
-  { id: 'leaderboards' as AdminSection, label: 'Leaderboards', icon: Award, color: 'amber', category: 'Gaming' },
+  { id: 'gaming-events' as AdminSection, label: 'Gaming Events', icon: Trophy, color: 'yellow', category: 'Gaming' },
+  { id: 'tournaments' as AdminSection, label: 'Tournaments', icon: Trophy, color: 'amber', category: 'Gaming' },
+  { id: 'leaderboards' as AdminSection, label: 'Leaderboards', icon: Award, color: 'orange', category: 'Gaming' },
+  { id: 'hall-of-fame' as AdminSection, label: 'Hall of Fame', icon: Award, color: 'amber', category: 'Gaming' },
+  { id: 'gaming-wiki' as AdminSection, label: 'Gaming Wiki', icon: BookOpen, color: 'indigo', category: 'Gaming' },
   { id: 'gallery' as AdminSection, label: 'Gallery', icon: Image, color: 'pink', category: 'Gaming' },
   { id: 'team' as AdminSection, label: 'Team', icon: UserCircle, color: 'blue', category: 'Homepage' },
   { id: 'partners' as AdminSection, label: 'Partners', icon: Handshake, color: 'purple', category: 'Homepage' },
@@ -39,6 +49,7 @@ const adminSections = [
   { id: 'slideshow' as AdminSection, label: 'Slideshow', icon: Layers, color: 'purple', category: 'Site' },
   { id: 'popups' as AdminSection, label: 'Popups', icon: Bell, color: 'orange', category: 'Site' },
   { id: 'settings' as AdminSection, label: 'Site Settings', icon: Settings, color: 'gray', category: 'Site' },
+  { id: 'users' as AdminSection, label: 'Users', icon: Users, color: 'blue', category: 'Site' },
 ];
 
 export default function Admin() {
@@ -69,17 +80,22 @@ export default function Admin() {
       case 'news': return <NewsManager />;
       case 'store': return <StoreManager />;
       case 'universities': return <UniversityManager />;
+      case 'gaming-events': return <GamingEventManager />;
       case 'tournaments': return <TournamentManager />;
       case 'leaderboards': return <LeaderboardManager />;
+      case 'hall-of-fame': return <HallOfFameManager />;
+      case 'gaming-wiki': return <GamingWikiManager />;
       case 'team': return <TeamManager />;
       case 'partners': return <PartnerManager />;
       case 'stats': return <StatsManager />;
       case 'faqs': return <FAQManager />;
       case 'gallery': return <GalleryManager />;
       case 'jobs': return <JobManager />;
+      case 'skills': return <SkillsManager />;
       case 'slideshow': return <SlideshowManager />;
       case 'settings': return <SiteSettingsManager />;
       case 'popups': return <PopupManager />;
+      case 'users': return <UserManager />;
       default: return <ArticleManager />;
     }
   };

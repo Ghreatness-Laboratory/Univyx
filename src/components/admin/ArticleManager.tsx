@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2 } from 'lucide-react';
-import api from '../../services/api';
+import supabaseDb from '../../services/supabase-db';
 import ImageUpload from '../common/ImageUpload';
-import { Article } from '../../types/api';
-import { getImageUrl } from '../../utils/imageUrl';
+
 
 export default function ArticleManager() {
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [articles, setArticles] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -21,17 +20,10 @@ export default function ArticleManager() {
 
   const fetchArticles = async () => {
     try {
-      const response = await api.getArticles();
-      let data = response.data.data || response.data || [];
-      data = data.map((article: any) => ({
-        ...article,
-        id: article.id || article._id,
-        image: getImageUrl(article.image)
-      }));
-      setArticles(Array.isArray(data) ? data : []);
+      const response = await supabaseDb.getArticles();
+      setArticles(response.data.data || []);
     } catch (error) {
       console.error('Failed to fetch articles:', error);
-      setArticles([]);
     }
   };
 
@@ -45,45 +37,39 @@ export default function ArticleManager() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      const data = new FormData();
-      data.append('title', formData.title);
-      data.append('content', formData.content);
-      data.append('category', formData.category);
-      if (image) data.append('image', image);
-
-      if (editingId) {
-        await api.updateArticle(editingId, data as any);
-      } else {
-        await api.createArticle(data as any);
+      let imageUrl = imagePreview;
+      if (image) {
+        const fileName = `articles/${Date.now()}-${image.name}`;
+        imageUrl = await supabaseDb.uploadFile('images', fileName, image);
       }
-
+      const data = { ...formData, image: imageUrl };
+      if (editingId) {
+        await supabaseDb.updateArticle(editingId, data);
+      } else {
+        await supabaseDb.createArticle(data);
+      }
       resetForm();
       fetchArticles();
     } catch (error: any) {
       console.error('Failed to save article:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to save article';
-      alert(`Error: ${errorMessage}`);
+      alert('Failed to save article');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEdit = (article: Article) => {
-    const articleId = article.id || article._id;
-    setEditingId(articleId!);
-    setFormData({ title: article.title || '', content: article.content || '', category: 'Other' });
+  const handleEdit = (article: any) => {
+    setEditingId(article.id);
+    setFormData({ title: article.title || '', content: article.content || '', category: article.category || 'Other' });
     setImagePreview(article.image || '');
     setShowForm(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDelete = async (id: string | undefined) => {
-    if (!id) return alert('Invalid article ID');
+  const handleDelete = async (id: string) => {
     if (!confirm('Delete this article?')) return;
     try {
-      await api.deleteArticle(id);
+      await supabaseDb.deleteArticle(id);
       fetchArticles();
     } catch (error) {
       console.error('Failed to delete article:', error);
@@ -160,26 +146,23 @@ export default function ArticleManager() {
       )}
 
       <div className="space-y-4">
-        {articles.map((article) => {
-          const articleId = article.id || article._id;
-          return (
-            <div key={articleId} className="flex gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-              {article.image && <img src={article.image} alt={article.title} className="w-24 h-24 object-cover rounded-lg" />}
-              <div className="flex-1">
-                <h3 className="font-semibold text-lg text-gray-900">{article.title}</h3>
-                <p className="text-gray-600 text-sm mt-1 line-clamp-2">{article.content}</p>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={() => handleEdit(article)} className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg">
-                  <Edit size={18} />
-                </button>
-                <button onClick={() => handleDelete(articleId)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
-                  <Trash2 size={18} />
-                </button>
-              </div>
+        {articles.map((article) => (
+          <div key={article.id} className="flex gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+            {article.image && <img src={article.image} alt={article.title} className="w-24 h-24 object-cover rounded-lg" />}
+            <div className="flex-1">
+              <h3 className="font-semibold text-lg text-gray-900">{article.title}</h3>
+              <p className="text-gray-600 text-sm mt-1 line-clamp-2">{article.content}</p>
             </div>
-          );
-        })}
+            <div className="flex gap-2">
+              <button onClick={() => handleEdit(article)} className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg">
+                <Edit size={18} />
+              </button>
+              <button onClick={() => handleDelete(article.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
+                <Trash2 size={18} />
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

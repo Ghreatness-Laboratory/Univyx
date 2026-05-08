@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Calendar, MapPin } from 'lucide-react';
-import api from '../../services/api';
+import supabaseDb from '../../services/supabase-db';
 import ImageUpload from '../common/ImageUpload';
-import { Event } from '../../types/api';
-import { getImageUrl } from '../../utils/imageUrl';
+
 
 export default function EventManager() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -27,17 +26,10 @@ export default function EventManager() {
 
   const fetchEvents = async () => {
     try {
-      const response = await api.getEvents();
-      let data = response.data.data || response.data || [];
-      data = data.map((event: any) => ({ 
-        ...event, 
-        id: event.id || event._id,
-        image: getImageUrl(event.image) 
-      }));
-      setEvents(Array.isArray(data) ? data : []);
+      const response = await supabaseDb.getEvents();
+      setEvents(response.data.data || []);
     } catch (error) {
       console.error('Failed to fetch events:', error);
-      setEvents([]);
     }
   };
 
@@ -56,50 +48,46 @@ export default function EventManager() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      const data = new FormData();
-      data.append('title', formData.title);
-      data.append('description', formData.description);
-      data.append('date', formData.date);
-      data.append('time', formData.time);
-      data.append('location', formData.location);
-      if (image) data.append('image', image);
-
-      if (editingId) {
-        await api.updateEventById(editingId, data as any);
-      } else {
-        await api.createEvent(data as any);
+      let imageUrl = imagePreview;
+      if (image) {
+        const fileName = `events/${Date.now()}-${image.name}`;
+        imageUrl = await supabaseDb.uploadFile('images', fileName, image);
       }
-
+      const data = { ...formData, image: imageUrl };
+      if (editingId) {
+        await supabaseDb.updateEvent(editingId, data);
+      } else {
+        await supabaseDb.createEvent(data);
+      }
       resetForm();
       fetchEvents();
     } catch (error) {
       console.error('Failed to save event:', error);
+      alert('Failed to save event');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEdit = (event: Event) => {
-    setEditingId(event.id!);
+  const handleEdit = (event: any) => {
+    setEditingId(event.id);
     setFormData({
       title: event.title || '',
       description: event.description || '',
       date: event.date || '',
-      time: (event as any).time || '',
+      time: event.time || '',
       location: event.location || '',
     });
     setImagePreview(event.image || '');
     setShowForm(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this event?')) return;
     
     try {
-      await api.deleteEventById(id);
+      await supabaseDb.deleteEvent(id);
       fetchEvents();
     } catch (error) {
       console.error('Failed to delete event:', error);
