@@ -76,14 +76,15 @@ export default function HallOfFame() {
                 onClick={() => setSelectedPlayer(player)}
               >
                 {/* Rank Badge */}
-                {index < 3 && (
+                {player.rank <= 10 && (
                   <div className="absolute top-4 right-4 z-10">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
-                      index === 0 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-gray-900' :
-                      index === 1 ? 'bg-gradient-to-br from-gray-300 to-gray-500 text-gray-900' :
-                      'bg-gradient-to-br from-orange-400 to-orange-600 text-white'
+                      player.rank === 1 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-gray-900' :
+                      player.rank === 2 ? 'bg-gradient-to-br from-gray-300 to-gray-500 text-gray-900' :
+                      player.rank === 3 ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-white' :
+                      'bg-gradient-to-br from-purple-400 to-purple-600 text-white'
                     }`}>
-                      #{index + 1}
+                      #{player.rank}
                     </div>
                   </div>
                 )}
@@ -101,7 +102,7 @@ export default function HallOfFame() {
                   <div className="absolute bottom-4 left-4 right-4">
                     <div className="inline-flex items-center gap-2 bg-yellow-500/90 backdrop-blur-sm px-3 py-1 rounded-full">
                       <Star className="w-4 h-4 fill-yellow-900 text-yellow-900" />
-                      <span className="text-sm font-bold text-gray-900">{player.rank || 'Pro'}</span>
+                      <span className="text-sm font-bold text-gray-900">Rank #{player.rank}</span>
                     </div>
                   </div>
                 </div>
@@ -117,18 +118,25 @@ export default function HallOfFame() {
                   {/* Stats */}
                   <div className="grid grid-cols-3 gap-3 mb-4">
                     <div className="bg-gray-800/50 rounded-lg p-3 text-center">
-                      <div className="text-2xl font-bold text-yellow-400">{player.total_wins}</div>
-                      <div className="text-xs text-gray-400">Wins</div>
+                      <div className="text-2xl font-bold text-yellow-400">{player.total_mvps || 0}</div>
+                      <div className="text-xs text-gray-400">MVPs</div>
                     </div>
                     <div className="bg-gray-800/50 rounded-lg p-3 text-center">
-                      <div className="text-2xl font-bold text-purple-400">{player.total_tournaments}</div>
+                      <div className="text-2xl font-bold text-purple-400">{player.total_championships || 0}</div>
+                      <div className="text-xs text-gray-400">Championships</div>
+                    </div>
+                    <div className="bg-gray-800/50 rounded-lg p-3 text-center">
+                      <div className="text-2xl font-bold text-blue-400">{player.total_tournaments || 0}</div>
                       <div className="text-xs text-gray-400">Tournaments</div>
                     </div>
-                    <div className="bg-gray-800/50 rounded-lg p-3 text-center">
-                      <Trophy className="w-6 h-6 text-yellow-400 mx-auto mb-1" />
-                      <div className="text-xs text-gray-400">Legend</div>
-                    </div>
                   </div>
+
+                  {/* Experience */}
+                  {player.experience && (
+                    <div className="mb-4 text-sm">
+                      <span className="text-gray-500">Experience:</span> <span className="text-white font-semibold">{player.experience}</span>
+                    </div>
+                  )}
 
                   {/* Achievements Preview */}
                   {player.achievements && player.achievements.length > 0 && (
