@@ -1,7 +1,15 @@
 import Groq from "groq-sdk";
 
+const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+
+if (!apiKey) {
+  console.error('⚠️ VITE_GROQ_API_KEY is not set in .env file');
+  console.error('Please add: VITE_GROQ_API_KEY=your_api_key_here');
+  console.error('Then restart the dev server');
+}
+
 const groq = new Groq({
-  apiKey: import.meta.env.VITE_GROQ_API_KEY,
+  apiKey: apiKey || 'dummy-key-for-build',
   dangerouslyAllowBrowser: true
 });
 
@@ -80,6 +88,10 @@ export async function chatWithAI(
   universityData?: UniversityData
 ): Promise<string> {
   try {
+    if (!apiKey || apiKey === 'dummy-key-for-build') {
+      throw new Error('Groq API key is not configured. Please add VITE_GROQ_API_KEY to your .env file and restart the server.');
+    }
+
     const contextPrompt = universityData
       ? `\n\nUniversity Context:\nName: ${universityData.name || "N/A"}\nLocation: ${universityData.location || "N/A"}\nDescription: ${universityData.description || "N/A"}\nPrograms: ${universityData.programs?.join(", ") || "N/A"}\nFacilities: ${universityData.facilities?.join(", ") || "N/A"}\nContact: ${universityData.contact || "N/A"}`
       : "";
@@ -113,6 +125,10 @@ export async function streamChatWithAI(
   onChunk: (chunk: string) => void
 ): Promise<void> {
   try {
+    if (!apiKey || apiKey === 'dummy-key-for-build') {
+      throw new Error('Groq API key is not configured. Please add VITE_GROQ_API_KEY to your .env file and restart the server.');
+    }
+
     const contextPrompt = universityData
       ? `\n\nUniversity Context:\nName: ${universityData.name || "N/A"}\nLocation: ${universityData.location || "N/A"}\nDescription: ${universityData.description || "N/A"}\nPrograms: ${universityData.programs?.join(", ") || "N/A"}\nFacilities: ${universityData.facilities?.join(", ") || "N/A"}\nContact: ${universityData.contact || "N/A"}`
       : "";
