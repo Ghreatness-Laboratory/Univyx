@@ -35,12 +35,13 @@ export interface Tournament {
 
 export interface LeaderboardEntry {
   id: string;
-  user_id: string;
-  username: string;
-  points: number;
+  game: string;
+  season?: string;
+  player_name: string;
+  score: number;
   wins: number;
-  losses: number;
-  rank: number;
+  rank?: number;
+  created_at?: string;
 }
 
 export function useGamingEvents() {
@@ -152,16 +153,16 @@ export function useLeaderboard() {
   const fetchLeaderboard = async () => {
     try {
       setLoading(true);
-      // Mock data for now - you can create a leaderboard table later
-      const mockData: LeaderboardEntry[] = [
-        { id: '1', user_id: '1', username: 'ProGamer123', points: 2500, wins: 45, losses: 12, rank: 1 },
-        { id: '2', user_id: '2', username: 'ElitePlayer', points: 2300, wins: 40, losses: 15, rank: 2 },
-        { id: '3', user_id: '3', username: 'ChampionX', points: 2100, wins: 38, losses: 18, rank: 3 },
-      ];
-      setLeaderboard(mockData);
-      setLoading(false);
+      const { data, error } = await supabase
+        .from('leaderboards')
+        .select('*')
+        .order('score', { ascending: false });
+
+      if (error) throw error;
+      setLeaderboard(data || []);
     } catch (err: any) {
       setError(err.message);
+    } finally {
       setLoading(false);
     }
   };

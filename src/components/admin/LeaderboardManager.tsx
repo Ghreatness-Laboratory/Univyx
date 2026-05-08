@@ -106,15 +106,15 @@ export default function LeaderboardManager() {
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Leaderboards</h2>
-          <p className="text-sm text-gray-500 mt-1">Manage game leaderboards and rankings</p>
+          <h2 className="text-2xl font-bold text-gray-900">Power Rankings</h2>
+          <p className="text-sm text-gray-500 mt-1">Manage game power rankings and player standings</p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
           className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
         >
           <Plus size={20} />
-          {showForm ? 'Cancel' : 'Add Leaderboard'}
+          {showForm ? 'Cancel' : 'Add Ranking'}
         </button>
       </div>
 
@@ -190,7 +190,7 @@ export default function LeaderboardManager() {
         {leaderboards.length === 0 ? (
           <div className="text-center py-12 text-gray-500">
             <Trophy size={48} className="mx-auto mb-4 text-gray-300" />
-            <p>No leaderboard entries yet. Create your first one!</p>
+            <p>No power rankings yet. Create your first one!</p>
           </div>
         ) : (
           <div className="grid gap-4">

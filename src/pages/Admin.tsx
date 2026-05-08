@@ -38,7 +38,7 @@ const adminSections = [
   { id: 'universities' as AdminSection, label: 'Universities', icon: Users, color: 'indigo', category: 'Academics' },
   { id: 'gaming-events' as AdminSection, label: 'Gaming Events', icon: Trophy, color: 'yellow', category: 'Gaming' },
   { id: 'tournaments' as AdminSection, label: 'Tournaments', icon: Trophy, color: 'amber', category: 'Gaming' },
-  { id: 'leaderboards' as AdminSection, label: 'Leaderboards', icon: Award, color: 'orange', category: 'Gaming' },
+  { id: 'leaderboards' as AdminSection, label: 'Power Rankings', icon: Award, color: 'orange', category: 'Gaming' },
   { id: 'hall-of-fame' as AdminSection, label: 'Hall of Fame', icon: Award, color: 'amber', category: 'Gaming' },
   { id: 'gaming-wiki' as AdminSection, label: 'Gaming Wiki', icon: BookOpen, color: 'indigo', category: 'Gaming' },
   { id: 'gallery' as AdminSection, label: 'Gallery', icon: Image, color: 'pink', category: 'Gaming' },

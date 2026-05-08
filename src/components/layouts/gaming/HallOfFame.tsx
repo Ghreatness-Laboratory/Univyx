@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Trophy, Award, Target, Star, ExternalLink, Instagram, Twitter } from "lucide-react";
-import api from "../../../services/api";
+import { supabase } from "../../../lib/supabase";
 
 export default function HallOfFame() {
   const [players, setPlayers] = useState<any[]>([]);
@@ -14,8 +14,9 @@ export default function HallOfFame() {
 
   const fetchPlayers = async () => {
     try {
-      const response = await api.getHallOfFamePlayers();
-      setPlayers(response.data?.data || []);
+      const { data, error } = await supabase.from('hall_of_fame_players').select('*').order('display_order');
+      if (error) throw error;
+      setPlayers(data || []);
     } catch (error) {
       console.error("Failed to fetch hall of fame players:", error);
     } finally {

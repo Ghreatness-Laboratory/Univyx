@@ -63,7 +63,7 @@ export default function Leaderboards({ leaderboard, loading, error }: { leaderbo
     <section className="max-w-[1120px] w-full mx-auto flex flex-col gap-8 py-12 md:py-16 px-6 lg:px-0">
       <div>
         <h2 className="text-4xl md:text-5xl font-semibold">
-          Gaming Champions
+          Power Rankings
         </h2>
         <p className="text-secondary text-lg mt-1">
           Top players dominating competitive gaming
@@ -93,49 +93,54 @@ export default function Leaderboards({ leaderboard, loading, error }: { leaderbo
 
         <div className="grid grid-cols-12 gap-2 px-4 py-3 border-b border-gray-200 bg-gray-50 text-sm font-medium text-gray-600">
           <div className="col-span-1 text-center">#</div>
-          <div className="col-span-6">Player</div>
+          <div className="col-span-5">Player</div>
+          <div className="col-span-2 text-center">Game</div>
           <div className="col-span-2 text-center">Wins</div>
-          <div className="col-span-3 text-right">Points</div>
+          <div className="col-span-2 text-right">Points</div>
         </div>
 
         {displayEntries?.map((entry, index) => (
           <div
             key={entry.id || index}
             className={`grid grid-cols-12 gap-2 px-4 py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors ${
-              entry.rank === 1 ? "bg-yellow-50" : ""
+              index === 0 ? "bg-yellow-50" : ""
             }`}
           >
             <div className="col-span-1 flex justify-center items-center">
-              {entry.rank === 1 ? (
+              {index === 0 ? (
                 <div className="w-7 h-7 rounded-full bg-yellow-400 flex items-center justify-center text-white font-bold">
                   1
                 </div>
-              ) : entry.rank === 2 ? (
+              ) : index === 1 ? (
                 <div className="w-7 h-7 rounded-full bg-gray-300 flex items-center justify-center text-gray-700 font-bold">
                   2
                 </div>
-              ) : entry.rank === 3 ? (
+              ) : index === 2 ? (
                 <div className="w-7 h-7 rounded-full bg-orange-300 flex items-center justify-center text-white font-bold">
                   3
                 </div>
               ) : (
                 <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-medium text-sm">
-                  {entry.rank}
+                  {index + 1}
                 </div>
               )}
             </div>
 
-            <div className="col-span-6 flex items-center gap-3">
+            <div className="col-span-5 flex items-center gap-3">
               <User size={20} className="text-gray-400" />
-              <div className="font-medium">{entry.username}</div>
+              <div className="font-medium">{entry.player_name}</div>
+            </div>
+
+            <div className="col-span-2 flex items-center justify-center text-sm text-gray-600">
+              {entry.game}
             </div>
 
             <div className="col-span-2 flex items-center justify-center text-green-600 font-semibold">
-              {entry.wins}
+              {entry.wins || 0}
             </div>
 
-            <div className="col-span-3 flex items-center justify-end font-bold text-amber-600 text-lg">
-              {entry.points.toLocaleString()}
+            <div className="col-span-2 flex items-center justify-end font-bold text-amber-600 text-lg">
+              {entry.score?.toLocaleString() || 0}
             </div>
           </div>
         ))}
