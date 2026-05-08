@@ -8,6 +8,7 @@ export default function HallOfFameManager() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [fetchLoading, setFetchLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     gamertag: '',
@@ -32,11 +33,20 @@ export default function HallOfFameManager() {
 
   const fetchPlayers = async () => {
     try {
+      console.log('Fetching Hall of Fame players...');
+      setFetchLoading(true);
       const { data, error } = await supabase.from('hall_of_fame_players').select('*').order('display_order');
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error fetching players:', error);
+        throw error;
+      }
+      console.log('Fetched players:', data);
       setPlayers(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch players:', error);
+      alert(`Error fetching players: ${error.message}`);
+    } finally {
+      setFetchLoading(false);
     }
   };
 
@@ -50,28 +60,49 @@ export default function HallOfFameManager() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    console.log('Submitting form data:', formData);
+    
     try {
       let avatarUrl = avatarPreview;
       if (avatar) {
+        console.log('Uploading avatar...');
         const fileName = `hall-of-fame/${Date.now()}-${avatar.name}`;
         const { data: uploadData, error: uploadError } = await supabase.storage.from('images').upload(fileName, avatar, { upsert: true });
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          console.error('Upload error:', uploadError);
+          throw uploadError;
+        }
         const { data: { publicUrl } } = supabase.storage.from('images').getPublicUrl(fileName);
         avatarUrl = publicUrl;
+        console.log('Avatar uploaded:', avatarUrl);
       }
+      
       const data = { ...formData, avatar: avatarUrl };
+      console.log('Saving player data:', data);
+      
       if (editingId) {
+        console.log('Updating player:', editingId);
         const { error } = await supabase.from('hall_of_fame_players').update(data).eq('id', editingId);
-        if (error) throw error;
+        if (error) {
+          console.error('Update error:', error);
+          throw error;
+        }
+        alert('Player updated successfully!');
       } else {
+        console.log('Creating new player');
         const { error } = await supabase.from('hall_of_fame_players').insert(data);
-        if (error) throw error;
+        if (error) {
+          console.error('Insert error:', error);
+          throw error;
+        }
+        alert('Player created successfully!');
       }
+      
       resetForm();
-      fetchPlayers();
-    } catch (error) {
+      await fetchPlayers();
+    } catch (error: any) {
       console.error('Failed to save player:', error);
-      alert('Failed to save player');
+      alert(`Failed to save player: ${error.message || 'Unknown error'}. Check console for details.`);
     } finally {
       setLoading(false);
     }
@@ -98,13 +129,24 @@ export default function HallOfFameManager() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this player?')) return;
+    console.log('Attempting to delete player with ID:', id);
+    if (!confirm('Are you sure you want to delete this player? This action cannot be undone.')) return;
+    
     try {
+      console.log('Deleting player from database...');
       const { error } = await supabase.from('hall_of_fame_players').delete().eq('id', id);
-      if (error) throw error;
-      fetchPlayers();
-    } catch (error) {
+      
+      if (error) {
+        console.error('Supabase delete error:', error);
+        throw error;
+      }
+      
+      console.log('Player deleted successfully');
+      alert('Player deleted successfully!');
+      await fetchPlayers();
+    } catch (error: any) {
       console.error('Failed to delete player:', error);
+      alert(`Failed to delete player: ${error.message || 'Unknown error'}. Check console for details.`);
     }
   };
 
@@ -210,29 +252,46 @@ export default function HallOfFameManager() {
       )}
 
       <div className="space-y-4">
-        {players.map((player) => (
-          <div key={player.id} className="flex gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-            {player.avatar && <img src={player.avatar} alt={player.name} className="w-20 h-20 object-cover rounded-full" />}
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-semibold text-lg text-gray-900">{player.name}</h3>
-                {player.is_featured && <Star size={16} className="text-amber-500 fill-amber-500" />}
-                <span className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded">{player.gamertag}</span>
-              </div>
-              <p className="text-gray-600 text-sm line-clamp-1">{player.bio}</p>
-              <div className="flex gap-4 mt-2 text-sm text-gray-500">
-                <span className="flex items-center gap-1"><Trophy size={14} />Rank #{player.rank}</span>
-                <span>{player.total_mvps} MVPs</span>
-                <span>{player.total_championships} Championships</span>
-                {player.experience && <span>{player.experience}</span>}
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <button onClick={() => handleEdit(player)} className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg"><Edit size={18} /></button>
-              <button onClick={() => handleDelete(player.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={18} /></button>
-            </div>
+        {fetchLoading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto"></div>
+            <p className="text-gray-500 mt-4">Loading players...</p>
           </div>
-        ))}
+        ) : players.length === 0 ? (
+          <div className="text-center py-12 bg-gray-50 rounded-lg">
+            <Trophy size={48} className="mx-auto mb-4 text-gray-300" />
+            <p className="text-gray-500 mb-2">No Hall of Fame players yet</p>
+            <p className="text-sm text-gray-400">Click "Add Player" to create your first entry</p>
+          </div>
+        ) : (
+          players.map((player) => (
+            <div key={player.id} className="flex gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+              {player.avatar && <img src={player.avatar} alt={player.name} className="w-20 h-20 object-cover rounded-full" />}
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-semibold text-lg text-gray-900">{player.name}</h3>
+                  {player.is_featured && <Star size={16} className="text-amber-500 fill-amber-500" />}
+                  <span className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded">{player.gamertag}</span>
+                </div>
+                <p className="text-gray-600 text-sm line-clamp-1">{player.bio}</p>
+                <div className="flex gap-4 mt-2 text-sm text-gray-500">
+                  <span className="flex items-center gap-1"><Trophy size={14} />Rank #{player.rank}</span>
+                  <span>{player.total_mvps} MVPs</span>
+                  <span>{player.total_championships} Championships</span>
+                  {player.experience && <span>{player.experience}</span>}
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => handleEdit(player)} className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg" title="Edit player">
+                  <Edit size={18} />
+                </button>
+                <button onClick={() => handleDelete(player.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg" title="Delete player">
+                  <Trash2 size={18} />
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
