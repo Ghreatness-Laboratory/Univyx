@@ -1,36 +1,64 @@
 import { useState, useEffect } from 'react';
-import { University, PaginatedResponse } from '../types/api';
-import apiService from '../services/api';
+import { supabase } from '../services/supabase-client';
 
-export const useUniversities = () => {
+export interface University {
+  id: string;
+  name: string;
+  location: string;
+  description: string;
+  logo_url?: string;
+  website_url?: string;
+  contact_email?: string;
+  contact_phone?: string;
+  established_year?: number;
+  programs?: string[];
+  facilities?: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+export function useUniversities() {
   const [universities, setUniversities] = useState<University[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    fetchUniversities();
+  }, []);
+
   const fetchUniversities = async () => {
     try {
       setLoading(true);
-      const response = await apiService.getUniversities();
-      const universitiesData = Array.isArray(response.data) ? response.data : response.data.results || [];
-      setUniversities(universitiesData);
-      setError(null);
+      const { data, error } = await supabase
+        .from('universities')
+        .select('*')
+        .order('name', { ascending: true });
+
+      if (error) throw error;
+      
+      // Fetch programs for each university
+      const universitiesWithPrograms = await Promise.all(
+        (data || []).map(async (uni) => {
+          const { data: programs } = await supabase
+            .from('programs')
+            .select('name')
+            .eq('university_id', uni.id);
+          
+          return {
+            ...uni,
+            programs: programs?.map(p => p.name) || [],
+            facilities: [] // Can be populated from another table if needed
+          };
+        })
+      );
+
+      setUniversities(universitiesWithPrograms);
     } catch (err: any) {
-      console.error('Universities fetch error:', err);
-      if (err.response?.status === 401) {
-        setError('Authentication required');
-      } else if (err.response?.status === 404) {
-        setError('Universities endpoint not found');
-      } else {
-        setError('Failed to fetch universities');
-      }
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchUniversities();
-  }, []);
 
   return {
     universities,
@@ -38,70 +66,4 @@ export const useUniversities = () => {
     error,
     refetch: fetchUniversities
   };
-};
-
-export const useUniversity = (id: number) => {
-  const [university, setUniversity] = useState<University | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchUniversity = async () => {
-    try {
-      setLoading(true);
-      const response = await apiService.getUniversity(id);
-      setUniversity(response.data);
-      setError(null);
-    } catch (err: any) {
-      console.error('University fetch error:', err);
-      setError('Failed to fetch university');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (id) {
-      fetchUniversity();
-    }
-  }, [id]);
-
-  return {
-    university,
-    loading,
-    error,
-    refetch: fetchUniversity
-  };
-};
-
-export const useUniversityResources = (universityId: number) => {
-  const [resources, setResources] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchResources = async () => {
-    try {
-      setLoading(true);
-      const response = await apiService.getUniversityResources(universityId);
-      setResources(response.data || []);
-      setError(null);
-    } catch (err: any) {
-      console.error('Resources fetch error:', err);
-      setError('Failed to fetch resources');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (universityId) {
-      fetchResources();
-    }
-  }, [universityId]);
-
-  return {
-    resources,
-    loading,
-    error,
-    refetch: fetchResources
-  };
-};
+}

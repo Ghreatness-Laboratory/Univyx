@@ -6,8 +6,7 @@ import HallOfFame from "../components/layouts/gaming/HallOfFame";
 import Header from "../components/layouts/gaming/Header";
 import Leaderboards from "../components/layouts/gaming/leaderboard";
 import Tournaments from "../components/layouts/gaming/Tournament";
-import { useTournaments, useLeaderboard } from "../hooks/useGaming";
-import { useEvents } from "../hooks/useEntertainment";
+import { useTournaments, useLeaderboard, useGamingEvents } from "../hooks/useGaming";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -17,7 +16,7 @@ const sectionVariants = {
 export default function Gaming() {
   const { tournaments, loading: tournamentsLoading, error: tournamentsError } = useTournaments();
   const { leaderboard, loading: leaderboardLoading, error: leaderboardError } = useLeaderboard();
-  const { events, loading: eventsLoading } = useEvents();
+  const { events, loading: eventsLoading } = useGamingEvents();
 
   return (
     <main data-testid="gaming-page">

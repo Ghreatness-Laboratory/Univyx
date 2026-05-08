@@ -1,28 +1,139 @@
 import { useState, useEffect } from 'react';
-import apiService from '../services/api';
+import { supabase } from '../services/supabase-client';
 
-export const useTournaments = () => {
-  const [tournaments, setTournaments] = useState<any[]>([]);
+export interface GamingEvent {
+  id: string;
+  title: string;
+  description: string;
+  game_name: string;
+  event_type: 'tournament' | 'competition' | 'casual';
+  event_date: string;
+  end_date?: string;
+  location: string;
+  image_url?: string;
+  prize_pool?: string;
+  max_participants?: number;
+  current_participants: number;
+  registration_deadline?: string;
+  rules?: string;
+  organizer_id?: string;
+  is_featured: boolean;
+  status: 'upcoming' | 'ongoing' | 'completed';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Tournament {
+  id: string;
+  gaming_event_id: string;
+  bracket_type: string;
+  current_round: number;
+  total_rounds: number;
+  winner_id?: string;
+  gaming_event?: GamingEvent;
+}
+
+export interface LeaderboardEntry {
+  id: string;
+  user_id: string;
+  username: string;
+  points: number;
+  wins: number;
+  losses: number;
+  rank: number;
+}
+
+export function useGamingEvents() {
+  const [events, setEvents] = useState<GamingEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTournaments = async () => {
+  useEffect(() => {
+    fetchGamingEvents();
+  }, []);
+
+  const fetchGamingEvents = async () => {
     try {
       setLoading(true);
-      const response = await apiService.getTournaments();
-      setTournaments(response.data.data || response.data || []);
-      setError(null);
-    } catch (err) {
-      console.error('Failed to fetch tournaments:', err);
-      setError('Failed to load tournaments');
+      const { data, error } = await supabase
+        .from('gaming_events')
+        .select('*')
+        .order('event_date', { ascending: true });
+
+      if (error) throw error;
+      setEvents(data || []);
+    } catch (err: any) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  const registerForEvent = async (eventId: string, userId: string, teamName?: string) => {
+    try {
+      const { error } = await supabase
+        .from('gaming_registrations')
+        .insert({
+          gaming_event_id: eventId,
+          user_id: userId,
+          team_name: teamName,
+          status: 'registered'
+        });
+
+      if (error) throw error;
+
+      const event = events.find(e => e.id === eventId);
+      if (event) {
+        await supabase
+          .from('gaming_events')
+          .update({ current_participants: event.current_participants + 1 })
+          .eq('id', eventId);
+      }
+
+      await fetchGamingEvents();
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message };
+    }
+  };
+
+  return {
+    events,
+    loading,
+    error,
+    registerForEvent,
+    refetch: fetchGamingEvents
+  };
+}
+
+export function useTournaments() {
+  const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     fetchTournaments();
   }, []);
+
+  const fetchTournaments = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('tournaments')
+        .select(`
+          *,
+          gaming_event:gaming_events(*)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setTournaments(data || []);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return {
     tournaments,
@@ -30,44 +141,38 @@ export const useTournaments = () => {
     error,
     refetch: fetchTournaments
   };
-};
+}
 
-export const useLeaderboard = () => {
-  const [leaderboard, setLeaderboard] = useState<any[]>([]);
+export function useLeaderboard() {
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const fetchLeaderboard = async () => {
-    try {
-      setLoading(true);
-      const response = await apiService.getLeaderboards();
-      setLeaderboard(response.data.data || response.data || []);
-      setError(null);
-    } catch (err) {
-      console.error('Failed to fetch leaderboards:', err);
-      setError('Failed to load leaderboards');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     fetchLeaderboard();
   }, []);
+
+  const fetchLeaderboard = async () => {
+    try {
+      setLoading(true);
+      // Mock data for now - you can create a leaderboard table later
+      const mockData: LeaderboardEntry[] = [
+        { id: '1', user_id: '1', username: 'ProGamer123', points: 2500, wins: 45, losses: 12, rank: 1 },
+        { id: '2', user_id: '2', username: 'ElitePlayer', points: 2300, wins: 40, losses: 15, rank: 2 },
+        { id: '3', user_id: '3', username: 'ChampionX', points: 2100, wins: 38, losses: 18, rank: 3 },
+      ];
+      setLeaderboard(mockData);
+      setLoading(false);
+    } catch (err: any) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
 
   return {
     leaderboard,
     loading,
     error,
     refetch: fetchLeaderboard
-  };
-};
-
-export const useLeaderboardById = (_id: string) => {
-  return {
-    leaderboard: null,
-    loading: false,
-    error: null,
-    refetch: () => {}
   };
 }

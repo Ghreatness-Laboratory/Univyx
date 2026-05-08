@@ -652,6 +652,31 @@ export class SupabaseService {
     if (error) throw error;
     return { data: { data } };
   }
+
+  // Gaming Events (separate from entertainment events)
+  async getGamingEvents() {
+    const { data, error } = await supabase.from('gaming_events').select('*').order('date', { ascending: false });
+    if (error) throw error;
+    return { data: { data } };
+  }
+
+  async createGamingEvent(event: any) {
+    const { data, error } = await supabase.from('gaming_events').insert(event).select().single();
+    if (error) throw error;
+    return { data };
+  }
+
+  async updateGamingEvent(id: string, event: any) {
+    const { data, error } = await supabase.from('gaming_events').update(event).eq('id', id).select().single();
+    if (error) throw error;
+    return { data };
+  }
+
+  async deleteGamingEvent(id: string) {
+    const { error } = await supabase.from('gaming_events').delete().eq('id', id);
+    if (error) throw error;
+    return { data: null };
+  }
 }
 
 export default new SupabaseService();

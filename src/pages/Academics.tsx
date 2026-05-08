@@ -3,6 +3,7 @@ import Intro from "../components/layouts/academics/Intro";
 import ResourceSection from "../components/layouts/academics/resourceSection";
 import Tech from "../components/layouts/academics/Tech";
 import UniversitiesProfile from "../components/layouts/academics/UniversitiesProfile";
+import AIChatbot from "../components/common/AIChatbot";
 import { useUniversities } from "../hooks/useAcademics";
 
 const sectionVariants = {
@@ -43,6 +44,8 @@ export default function Academics() {
       >
         <Tech />
       </motion.div>
+      
+      <AIChatbot universityData={universities[0]} />
     </div>
   );
 }

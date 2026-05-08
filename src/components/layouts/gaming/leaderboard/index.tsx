@@ -24,13 +24,13 @@ interface Leaderboard {
   entries: LeaderboardEntry[];
 }
 
-export default function Leaderboards({ leaderboard, loading, error }: { leaderboard: Leaderboard[], loading: boolean, error: string | null }) {
+export default function Leaderboards({ leaderboard, loading, error }: { leaderboard: any[], loading: boolean, error: string | null }) {
   const [selectedGame, setSelectedGame] = useState<string>('');
   const [expandedView, setExpandedView] = useState(false);
 
   useEffect(() => {
-    if (leaderboard.length > 0 && !selectedGame) {
-      setSelectedGame(leaderboard[0]._id);
+    if (leaderboard && leaderboard.length > 0 && !selectedGame) {
+      setSelectedGame('all');
     }
   }, [leaderboard]);
 
@@ -44,7 +44,7 @@ export default function Leaderboards({ leaderboard, loading, error }: { leaderbo
     );
   }
 
-  if (error || leaderboard.length === 0) {
+  if (error || !leaderboard || leaderboard.length === 0) {
     return (
       <section className="max-w-[1120px] w-full mx-auto flex flex-col gap-8 py-12 md:py-16 px-6 lg:px-0">
         <div className="text-center py-12">
@@ -55,10 +55,9 @@ export default function Leaderboards({ leaderboard, loading, error }: { leaderbo
     );
   }
 
-  const currentLeaderboard = leaderboard.find((lb) => lb._id === selectedGame);
   const displayEntries = expandedView
-    ? currentLeaderboard?.entries
-    : currentLeaderboard?.entries.slice(0, 10);
+    ? leaderboard
+    : leaderboard.slice(0, 10);
 
   return (
     <section className="max-w-[1120px] w-full mx-auto flex flex-col gap-8 py-12 md:py-16 px-6 lg:px-0">
@@ -72,43 +71,36 @@ export default function Leaderboards({ leaderboard, loading, error }: { leaderbo
       </div>
 
       <div className="flex flex-wrap gap-2 mb-2">
-        {leaderboard.map((lb) => (
-          <button
-            key={lb._id}
-            onClick={() => setSelectedGame(lb._id)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all mb-1 ${
-              selectedGame === lb._id
-                ? "bg-primary text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            {lb.name}
-          </button>
-        ))}
+        <button
+          key="all"
+          onClick={() => setSelectedGame('all')}
+          className="px-4 py-2 rounded-full text-sm font-medium transition-all mb-1 bg-primary text-white"
+        >
+          All Games
+        </button>
       </div>
 
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         <div className="bg-gray-50 py-3 px-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
-            <h3 className="font-semibold text-xl">
-              {currentLeaderboard?.name}
-            </h3>
+            <h3 className="font-semibold text-xl">Top Players</h3>
             <div className="flex gap-2 items-center">
               <Trophy size={18} className="text-yellow-500" />
-              <span className="text-sm text-gray-600">{currentLeaderboard?.game}</span>
+              <span className="text-sm text-gray-600">All Games</span>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-12 gap-2 px-4 py-3 border-b border-gray-200 bg-gray-50 text-sm font-medium text-gray-600">
           <div className="col-span-1 text-center">#</div>
-          <div className="col-span-8">Player</div>
-          <div className="col-span-3 text-right">Score</div>
+          <div className="col-span-6">Player</div>
+          <div className="col-span-2 text-center">Wins</div>
+          <div className="col-span-3 text-right">Points</div>
         </div>
 
-        {displayEntries?.map((entry) => (
+        {displayEntries?.map((entry, index) => (
           <div
-            key={entry.rank}
+            key={entry.id || index}
             className={`grid grid-cols-12 gap-2 px-4 py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors ${
               entry.rank === 1 ? "bg-yellow-50" : ""
             }`}
@@ -133,18 +125,22 @@ export default function Leaderboards({ leaderboard, loading, error }: { leaderbo
               )}
             </div>
 
-            <div className="col-span-8 flex items-center gap-3">
+            <div className="col-span-6 flex items-center gap-3">
               <User size={20} className="text-gray-400" />
-              <div className="font-medium">{entry.player}</div>
+              <div className="font-medium">{entry.username}</div>
+            </div>
+
+            <div className="col-span-2 flex items-center justify-center text-green-600 font-semibold">
+              {entry.wins}
             </div>
 
             <div className="col-span-3 flex items-center justify-end font-bold text-amber-600 text-lg">
-              {entry.score.toLocaleString()}
+              {entry.points.toLocaleString()}
             </div>
           </div>
         ))}
 
-        {currentLeaderboard && currentLeaderboard.entries.length > 10 && (
+        {leaderboard && leaderboard.length > 10 && (
           <div
             className="py-3 px-4 text-center text-primary font-medium cursor-pointer hover:bg-gray-50 transition-colors"
             onClick={() => setExpandedView(!expandedView)}
@@ -156,7 +152,7 @@ export default function Leaderboards({ leaderboard, loading, error }: { leaderbo
               </div>
             ) : (
               <div className="flex items-center justify-center">
-                <span>Show All ({currentLeaderboard.entries.length} players)</span>
+                <span>Show All ({leaderboard.length} players)</span>
                 <ChevronDown size={18} className="ml-1" />
               </div>
             )}

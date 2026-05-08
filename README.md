@@ -2,13 +2,14 @@
 
 A comprehensive React + TypeScript + Vite application for the Univyx student platform, featuring entertainment, academics, gaming, and store sections with **Supabase backend integration**.
 
-## 🚀 Now Powered by Supabase!
+## 🚀 Now Powered by Supabase + AI!
 
 The platform has been migrated from Django backend to **Supabase** for:
 - ⚡ **10x faster** performance
 - 🛡️ **Better security** with Row Level Security
 - 💰 **Lower costs** and better scalability
 - 🎨 **Better developer experience**
+- 🤖 **AI-Powered Chatbot** with Groq API (Llama 3.3 70B)
 
 ## Quick Start
 
@@ -22,12 +23,13 @@ Create `.env` file:
 ```env
 VITE_SUPABASE_URL=https://jkhqrzsaswhbewlumtyc.supabase.co
 VITE_SUPABASE_ANON_KEY=your_anon_key_here
+VITE_GROQ_API_KEY=your_groq_api_key_here
 ```
 
 ### 3. Set Up Database
 1. Go to [Supabase Dashboard](https://supabase.com/dashboard/project/jkhqrzsaswhbewlumtyc)
 2. Open SQL Editor
-3. Run `supabase-schema.sql`
+3. Run `supabase-complete-schema.sql`
 
 ### 4. Start Development
 ```bash
@@ -35,6 +37,7 @@ npm run dev
 ```
 
 📖 **Full setup guide**: See `SUPABASE_QUICKSTART.md`
+🤖 **AI Integration guide**: See `AI_INTEGRATION_GUIDE.md`
 
 ## Features
 
@@ -56,14 +59,26 @@ npm run dev
 - Category-based browsing
 - Pagination support
 
-### 🎮 Gaming & 📚 Academics
-- Existing static content (ready for API integration)
-- Tournament tracking
-- Resource management
+### 🎮 Gaming
+- Esports tournaments (separate from entertainment events)
+- Gaming competitions with prize pools
+- Player registration system
+- Tournament brackets and tracking
+- Game-specific events
+
+### 📚 Academics
+- University profiles and programs
+- Academic resources
+- **🤖 AI Chatbot Assistant** - Ask anything about the university!
+- Powered by Groq API (Llama 3.3 70B)
+- Real-time streaming responses
+- Context-aware answers
 
 ## Tech Stack
 
 - **Frontend**: React 18, TypeScript, Vite
+- **Backend**: Supabase (PostgreSQL, Auth, Storage)
+- **AI**: Groq API (Llama 3.3 70B)
 - **Styling**: Tailwind CSS
 - **State Management**: React Context API
 - **Forms**: React Hook Form
@@ -146,7 +161,9 @@ src/
 
 ### Custom Hooks
 - `useArticles` - Manage articles data and interactions
-- `useEvents` - Handle events data
+- `useEvents` - Handle entertainment events data
+- `useGamingEvents` - Handle gaming tournaments and competitions
+- `useUniversities` - Manage university data for AI chatbot
 - `useNews` - Manage news content
 - `useStore` - Store items management
 - `useComments` - Comment system functionality
