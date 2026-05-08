@@ -1,18 +1,24 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Trophy, User, Medal } from 'lucide-react';
-import api from '../../services/api';
+import supabaseDb from '../../services/supabase-db';
 
 interface LeaderboardEntry {
-  player: string;
+  id?: string;
+  player_name: string;
   score: number;
+  wins?: number;
   rank?: number;
 }
 
 interface Leaderboard {
-  _id?: string;
-  name: string;
+  id?: string;
   game: string;
-  entries: LeaderboardEntry[];
+  season?: string;
+  player_name: string;
+  score: number;
+  wins: number;
+  rank?: number;
+  created_at?: string;
 }
 
 export default function LeaderboardManager() {
@@ -20,8 +26,7 @@ export default function LeaderboardManager() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ name: '', game: '' });
-  const [entries, setEntries] = useState<LeaderboardEntry[]>([{ player: '', score: 0 }]);
+  const [formData, setFormData] = useState({ game: '', season: 'All Time', player_name: '', score: 0, wins: 0 });
 
   useEffect(() => {
     fetchLeaderboards();
@@ -29,99 +34,58 @@ export default function LeaderboardManager() {
 
   const fetchLeaderboards = async () => {
     try {
-      const response = await api.getLeaderboards();
-      console.log('Leaderboards response:', response.data);
-      const data = response.data.data || response.data || [];
-      console.log('Parsed leaderboards:', data);
-      setLeaderboards(Array.isArray(data) ? data : []);
+      const response = await supabaseDb.getLeaderboards();
+      setLeaderboards(response.data.data || []);
     } catch (error) {
       console.error('Failed to fetch leaderboards:', error);
-      setLeaderboards([]);
     }
   };
 
-  const addEntry = () => {
-    setEntries([...entries, { player: '', score: 0 }]);
-  };
 
-  const removeEntry = (index: number) => {
-    if (entries.length > 1) {
-      setEntries(entries.filter((_, i) => i !== index));
-    }
-  };
-
-  const updateEntry = (index: number, field: 'player' | 'score', value: string | number) => {
-    const updated = [...entries];
-    updated[index] = { ...updated[index], [field]: field === 'score' ? Number(value) : value };
-    setEntries(updated);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      const sortedEntries = entries
-        .filter(e => e.player.trim() && e.score > 0)
-        .sort((a, b) => b.score - a.score)
-        .map((entry, index) => ({ ...entry, rank: index + 1 }));
-
-      if (sortedEntries.length === 0) {
-        alert('Please add at least one valid player entry');
-        setLoading(false);
-        return;
-      }
-
-      const data = { ...formData, entries: sortedEntries };
-
       if (editingId) {
-        await api.updateLeaderboard(editingId, data);
+        await supabaseDb.updateLeaderboard(editingId, formData);
       } else {
-        await api.createLeaderboard(data);
+        await supabaseDb.createLeaderboard(formData);
       }
-
       resetForm();
       fetchLeaderboards();
     } catch (error: any) {
       console.error('Failed to save leaderboard:', error);
-      alert(error.response?.data?.message || 'Failed to save leaderboard');
+      alert('Failed to save leaderboard');
     } finally {
       setLoading(false);
     }
   };
 
   const handleEdit = (leaderboard: Leaderboard) => {
-    setEditingId(leaderboard._id!);
-    setFormData({ name: leaderboard.name, game: leaderboard.game });
-    setEntries(leaderboard.entries.length > 0 
-      ? leaderboard.entries.map(e => ({ player: e.player, score: e.score }))
-      : [{ player: '', score: 0 }]
-    );
+    setEditingId(leaderboard.id!);
+    setFormData({ 
+      game: leaderboard.game, 
+      season: leaderboard.season || 'All Time',
+      player_name: leaderboard.player_name,
+      score: leaderboard.score,
+      wins: leaderboard.wins
+    });
     setShowForm(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDelete = async (id: string | undefined) => {
-    if (!id) {
-      alert('Invalid leaderboard ID');
-      console.error('Attempted to delete leaderboard with undefined ID');
-      return;
-    }
-    if (!confirm('Delete this leaderboard? This action cannot be undone.')) return;
-    
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete this leaderboard entry?')) return;
     try {
-      console.log('Deleting leaderboard with ID:', id);
-      await api.deleteLeaderboard(id);
+      await supabaseDb.deleteLeaderboard(id);
       fetchLeaderboards();
     } catch (error) {
       console.error('Failed to delete leaderboard:', error);
-      alert('Failed to delete leaderboard');
     }
   };
 
   const resetForm = () => {
-    setFormData({ name: '', game: '' });
-    setEntries([{ player: '', score: 0 }]);
+    setFormData({ game: '', season: 'All Time', player_name: '', score: 0, wins: 0 });
     setEditingId(null);
     setShowForm(false);
   };
@@ -156,18 +120,7 @@ export default function LeaderboardManager() {
 
       {showForm && (
         <form onSubmit={handleSubmit} className="mb-8 p-6 bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg space-y-4 border border-amber-200">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Leaderboard Name *</label>
-              <input
-                type="text"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                placeholder="e.g., Weekly Champions"
-              />
-            </div>
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Game *</label>
               <input
@@ -175,76 +128,60 @@ export default function LeaderboardManager() {
                 required
                 value={formData.game}
                 onChange={(e) => setFormData({ ...formData, game: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                placeholder="e.g., Chess, FIFA, Valorant"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
+                placeholder="e.g., FIFA, Valorant"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Season</label>
+              <input
+                type="text"
+                value={formData.season}
+                onChange={(e) => setFormData({ ...formData, season: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
+                placeholder="e.g., Season 1, 2024"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Player Name *</label>
+              <input
+                type="text"
+                required
+                value={formData.player_name}
+                onChange={(e) => setFormData({ ...formData, player_name: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
+                placeholder="Player name"
               />
             </div>
           </div>
-
-          <div>
-            <div className="flex justify-between items-center mb-3">
-              <label className="block text-sm font-medium text-gray-700">Players & Scores *</label>
-              <button
-                type="button"
-                onClick={addEntry}
-                className="text-sm text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1"
-              >
-                <Plus size={16} />
-                Add Player
-              </button>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Score/Points *</label>
+              <input
+                type="number"
+                required
+                min="0"
+                value={formData.score}
+                onChange={(e) => setFormData({ ...formData, score: parseInt(e.target.value) })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
+              />
             </div>
-            <div className="space-y-2 max-h-96 overflow-y-auto">
-              {entries.map((entry, index) => (
-                <div key={`entry-${index}`} className="flex gap-2 items-center bg-white p-2 rounded-lg">
-                  <span className="text-gray-500 font-semibold w-8 text-center">{index + 1}</span>
-                  <input
-                    type="text"
-                    required
-                    value={entry.player}
-                    onChange={(e) => updateEntry(index, 'player', e.target.value)}
-                    placeholder="Player name"
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                  />
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    value={entry.score}
-                    onChange={(e) => updateEntry(index, 'score', e.target.value)}
-                    placeholder="Score"
-                    className="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                  />
-                  {entries.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeEntry(index)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Remove entry"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  )}
-                </div>
-              ))}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Wins</label>
+              <input
+                type="number"
+                min="0"
+                value={formData.wins}
+                onChange={(e) => setFormData({ ...formData, wins: parseInt(e.target.value) })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
+              />
             </div>
-            <p className="text-xs text-gray-500 mt-2">Rankings will be automatically sorted by score (highest first)</p>
           </div>
-
           <div className="flex gap-3 pt-2">
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 bg-amber-600 text-white py-2 rounded-lg hover:bg-amber-700 transition-colors disabled:opacity-50 font-medium"
-            >
-              {loading ? 'Saving...' : editingId ? 'Update Leaderboard' : 'Create Leaderboard'}
+            <button type="submit" disabled={loading} className="flex-1 bg-amber-600 text-white py-2 rounded-lg hover:bg-amber-700 disabled:opacity-50 font-medium">
+              {loading ? 'Saving...' : editingId ? 'Update Entry' : 'Create Entry'}
             </button>
-            <button 
-              type="button" 
-              onClick={resetForm} 
-              className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-            >
-              Cancel
-            </button>
+            <button type="button" onClick={resetForm} className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium">Cancel</button>
           </div>
         </form>
       )}
@@ -253,64 +190,36 @@ export default function LeaderboardManager() {
         {leaderboards.length === 0 ? (
           <div className="text-center py-12 text-gray-500">
             <Trophy size={48} className="mx-auto mb-4 text-gray-300" />
-            <p>No leaderboards yet. Create your first one!</p>
+            <p>No leaderboard entries yet. Create your first one!</p>
           </div>
         ) : (
-          leaderboards.map((leaderboard) => (
-            <div key={leaderboard._id} className="p-5 border border-gray-200 rounded-lg hover:shadow-lg transition-shadow bg-white">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="font-bold text-xl text-gray-900 flex items-center gap-2">
-                    <Trophy size={22} className="text-amber-600" />
-                    {leaderboard.name}
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-1">Game: <span className="font-medium">{leaderboard.game}</span></p>
-                  <p className="text-xs text-gray-500 mt-1">{leaderboard.entries?.length || 0} players</p>
+          <div className="grid gap-4">
+            {leaderboards.map((entry, idx) => (
+              <div key={entry.id} className={`flex justify-between items-center p-4 rounded-lg border ${getRankColor(idx + 1)}`}>
+                <div className="flex items-center gap-4 flex-1">
+                  <span className="w-10 flex items-center justify-center">{getRankIcon(idx + 1)}</span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <User size={16} className="text-gray-400" />
+                      <span className="font-semibold text-lg">{entry.player_name}</span>
+                    </div>
+                    <div className="flex gap-3 text-sm text-gray-600 mt-1">
+                      <span>Game: {entry.game}</span>
+                      {entry.season && <span>• {entry.season}</span>}
+                      {entry.wins > 0 && <span>• {entry.wins} Wins</span>}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <button 
-                    onClick={() => handleEdit(leaderboard)} 
-                    className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-                    title="Edit leaderboard"
-                  >
-                    <Edit size={18} />
-                  </button>
-                  <button 
-                    onClick={() => handleDelete(leaderboard._id!)} 
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                    title="Delete leaderboard"
-                  >
-                    <Trash2 size={18} />
-                  </button>
+                <div className="flex items-center gap-4">
+                  <span className="font-bold text-2xl text-amber-600">{entry.score.toLocaleString()}</span>
+                  <div className="flex gap-2">
+                    <button onClick={() => handleEdit(entry)} className="p-2 text-amber-600 hover:bg-amber-100 rounded-lg"><Edit size={18} /></button>
+                    <button onClick={() => handleDelete(entry.id!)} className="p-2 text-red-600 hover:bg-red-100 rounded-lg"><Trash2 size={18} /></button>
+                  </div>
                 </div>
               </div>
-              
-              {leaderboard.entries && leaderboard.entries.length > 0 ? (
-                <div className="space-y-2">
-                  {leaderboard.entries.slice(0, 10).map((entry, idx) => (
-                    <div 
-                      key={`${leaderboard._id}-entry-${idx}`}
-                      className={`flex justify-between items-center text-sm py-2 px-3 rounded-lg ${getRankColor(entry.rank || idx + 1)}`}
-                    >
-                      <span className="flex items-center gap-3 flex-1">
-                        <span className="w-8 flex items-center justify-center">
-                          {getRankIcon(entry.rank || idx + 1)}
-                        </span>
-                        <User size={14} className="text-gray-400" />
-                        <span className="font-medium">{entry.player}</span>
-                      </span>
-                      <span className="font-bold text-amber-600 text-lg">{entry.score.toLocaleString()}</span>
-                    </div>
-                  ))}
-                  {leaderboard.entries.length > 10 && (
-                    <p className="text-xs text-gray-500 text-center pt-2">+ {leaderboard.entries.length - 10} more players</p>
-                  )}
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500 text-center py-4">No entries yet</p>
-              )}
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </div>
