@@ -58,7 +58,7 @@ export function useGamingEvents() {
       const { data, error } = await supabase
         .from('gaming_events')
         .select('*')
-        .order('event_date', { ascending: true });
+        .order('date', { ascending: true });
 
       if (error) throw error;
       setEvents(data || []);
@@ -120,10 +120,7 @@ export function useTournaments() {
       setLoading(true);
       const { data, error } = await supabase
         .from('tournaments')
-        .select(`
-          *,
-          gaming_event:gaming_events(*)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Book, Search, Tag, Eye, Clock, ArrowRight, Gamepad2, Lightbulb, Users, Trophy, History, BookOpen } from "lucide-react";
+import { Book, Search, Tag, Eye, Clock, ArrowRight, Gamepad2, Lightbulb, Users, Trophy, History, BookOpen, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "../../../services/api";
 
