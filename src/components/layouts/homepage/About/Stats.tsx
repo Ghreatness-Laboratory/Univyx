@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
+import { Star } from "lucide-react";
 
 interface StatisticsProps {
   count: string;
   content: string;
+  hasIcon?: boolean;
 }
 
 const statistics: StatisticsProps[] = [
@@ -17,9 +19,10 @@ const statistics: StatisticsProps[] = [
       "With a network of dedicated partners, we drive impactful initiatives and innovative solutions that support student growth and success.",
   },
   {
-    count: "20✦",
+    count: "20",
     content:
       "Our student ambassadors bridge connections between students, creating a vibrant, inclusive, and supportive campus environment.",
+    hasIcon: true,
   },
   {
     count: "18+",
@@ -80,12 +83,13 @@ export default function Stats() {
           variants={itemVariants}
           whileHover={{ y: -5, transition: { duration: 0.2 } }}
         >
-          <motion.h1 
-            className="text-4xl md:text-5xl font-medium leading-[44px] md:leading-[60px] tracking-[-0.72px] md:tracking-[-0.96px]"
+          <motion.div 
+            className="text-4xl md:text-5xl font-medium leading-[44px] md:leading-[60px] tracking-[-0.72px] md:tracking-[-0.96px] flex items-center gap-2"
             variants={countVariants}
           >
-            {stats.count}
-          </motion.h1>
+            <span>{stats.count}</span>
+            {stats.hasIcon && <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />}
+          </motion.div>
           <motion.p 
             className="text-secondary font-normal text-base max-md:text-balance"
             initial={{ opacity: 0 }}

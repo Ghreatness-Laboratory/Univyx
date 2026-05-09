@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import ActivityTicker from "../components/layouts/homepage/ActivityTicker";
 import AboutUs from "../components/layouts/homepage/About";
 import FAQ from "../components/layouts/homepage/FAQ";
 import Features from "../components/layouts/homepage/Features";
@@ -11,6 +12,9 @@ import QuickLinksSection from "../components/layouts/homepage/QuickLinksSection"
 import Team from "../components/layouts/homepage/Team";
 import TestimonialsSection from "../components/layouts/homepage/TestimonialsSection";
 import WhyChooseUs from "../components/layouts/homepage/WhyChooseUs";
+import FloatingActions from "../components/common/FloatingActions";
+import FontSizeController from "../components/common/FontSizeController";
+import OnlineUsersIndicator from "../components/common/OnlineUsersIndicator";
 
 import SkillsSection from "../components/layouts/skills/SkillsSection";
 
@@ -22,6 +26,7 @@ const sectionVariants = {
 export default function Home() {
   return (
     <main data-testid="home-page">
+      <ActivityTicker />
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -105,6 +110,10 @@ export default function Home() {
       >
         <FAQ />
       </motion.div>
+      
+      <FloatingActions />
+      <FontSizeController />
+      <OnlineUsersIndicator />
     </main>
   );
 }

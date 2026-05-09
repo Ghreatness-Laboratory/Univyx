@@ -4,6 +4,7 @@ import Events from "../components/layouts/entertainment/Events";
 import Header from "../components/layouts/entertainment/Header";
 import News from "../components/layouts/entertainment/News";
 import TrendingTopics from "../components/layouts/entertainment/TrendingTopics";
+import FloatingActions from "../components/common/FloatingActions";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -12,7 +13,7 @@ const sectionVariants = {
 
 export default function Entertainment() {
   return (
-    <main data-testid="entertainment-page">
+    <main data-testid="entertainment-page" className="busy-bg">
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -48,6 +49,7 @@ export default function Entertainment() {
       >
         <TrendingTopics />
       </motion.div>
+      <FloatingActions />
     </main>
   );
 }

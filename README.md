@@ -2,14 +2,14 @@
 
 A comprehensive React + TypeScript + Vite application for the Univyx student platform, featuring entertainment, academics, gaming, and store sections with **Supabase backend integration**.
 
-## 🚀 Now Powered by Supabase + AI!
+## [ROCKET] Now Powered by Supabase + AI!
 
 The platform has been migrated from Django backend to **Supabase** for:
-- ⚡ **10x faster** performance
-- 🛡️ **Better security** with Row Level Security
-- 💰 **Lower costs** and better scalability
-- 🎨 **Better developer experience**
-- 🤖 **AI-Powered Chatbot** with Groq API (Llama 3.3 70B)
+- [LIGHTNING] **10x faster** performance
+- [SHIELD] **Better security** with Row Level Security
+- [DOLLAR] **Lower costs** and better scalability
+- [PALETTE] **Better developer experience**
+- [ROBOT] **AI-Powered Chatbot** with Groq API (Llama 3.3 70B)
 
 ## Quick Start
 
@@ -36,40 +36,40 @@ VITE_GROQ_API_KEY=your_groq_api_key_here
 npm run dev
 ```
 
-📖 **Full setup guide**: See `SUPABASE_QUICKSTART.md`
-🤖 **AI Integration guide**: See `AI_INTEGRATION_GUIDE.md`
+[BOOK] **Full setup guide**: See `SUPABASE_QUICKSTART.md`
+[ROBOT] **AI Integration guide**: See `AI_INTEGRATION_GUIDE.md`
 
 ## Features
 
-### 🔐 Authentication
+### [LOCK] Authentication
 - User registration and login
 - Google OAuth integration
 - JWT token management with automatic refresh
 - Protected routes and user sessions
 
-### 🎭 Entertainment
+### [THEATER] Entertainment
 - Student-written articles with like/bookmark functionality
 - Campus events with calendar view
 - University news feed
 - Comment system for all content
 - Real-time interaction tracking
 
-### 🏪 Store
+### [STORE] Store
 - Product catalog with search and filtering
 - Category-based browsing
 - Pagination support
 
-### 🎮 Gaming
+### [GAMEPAD] Gaming
 - Esports tournaments (separate from entertainment events)
 - Gaming competitions with prize pools
 - Player registration system
 - Tournament brackets and tracking
 - Game-specific events
 
-### 📚 Academics
+### [BOOKS] Academics
 - University profiles and programs
 - Academic resources
-- **🤖 AI Chatbot Assistant** - Ask anything about the university!
+- **[ROBOT] AI Chatbot Assistant** - Ask anything about the university!
 - Powered by Groq API (Llama 3.3 70B)
 - Real-time streaming responses
 - Context-aware answers

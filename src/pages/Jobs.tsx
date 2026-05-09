@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import JobsHero from "../components/layouts/jobs/Hero";
 import JobsGrid from "../components/layouts/jobs/JobsGrid";
 import SkillsSection from "../components/layouts/skills/SkillsSection";
+import FloatingActions from "../components/common/FloatingActions";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -10,7 +11,7 @@ const sectionVariants = {
 
 export default function Jobs() {
   return (
-    <main data-testid="jobs-page">
+    <main data-testid="jobs-page" className="busy-bg">
       <motion.div initial="hidden" whileInView="visible" variants={sectionVariants}>
         <JobsHero />
       </motion.div>
@@ -20,6 +21,7 @@ export default function Jobs() {
       <motion.div initial="hidden" whileInView="visible" variants={sectionVariants}>
         <SkillsSection />
       </motion.div>
+      <FloatingActions />
     </main>
   );
 }

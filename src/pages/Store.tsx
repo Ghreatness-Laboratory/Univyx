@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import StoreGrid from "../components/layouts/store/StoreGrid";
+import FloatingActions from "../components/common/FloatingActions";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -8,8 +9,7 @@ const sectionVariants = {
 
 export default function Store() {
   return (
-    <main data-testid="store-page">
-
+    <main data-testid="store-page" className="busy-bg min-h-screen">
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -17,6 +17,7 @@ export default function Store() {
       >
         <StoreGrid />
       </motion.div>
+      <FloatingActions />
     </main>
   );
 }

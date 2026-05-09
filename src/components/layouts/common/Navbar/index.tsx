@@ -48,13 +48,13 @@ const ActiveMenuIndicator = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="5"
-      height="5"
-      viewBox="0 0 5 5"
+      width="3"
+      height="3"
+      viewBox="0 0 3 3"
       fill="none"
       className="absolute left-1/2 transform -translate-x-1/2 bottom-0"
     >
-      <circle cx="2.5" cy="2.5" r="2.5" fill="#64748B" />
+      <circle cx="1.5" cy="1.5" r="1.5" fill="#64748B" />
     </svg>
   );
 };

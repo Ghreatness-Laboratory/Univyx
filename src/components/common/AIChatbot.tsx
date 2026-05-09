@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Bot, X, Minimize2, Maximize2 } from "lucide-react";
+import { Send, Bot, X, Minimize2, Maximize2, Hand } from "lucide-react";
 import { streamChatWithAI } from "../../services/groq-ai";
 
 interface Message {
@@ -17,7 +17,7 @@ export default function AIChatbot({ universityData }: AIChatbotProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "👋 Hi! I'm your university assistant. Ask me anything about programs, facilities, admissions, or campus life!"
+      content: "Hi! I'm your university assistant. Ask me anything about programs, facilities, admissions, or campus life!"
     }
   ]);
   const [input, setInput] = useState("");

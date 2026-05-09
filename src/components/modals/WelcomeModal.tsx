@@ -57,7 +57,7 @@ export default function WelcomeModal({ isOpen, onClose, userName }: WelcomeModal
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                Welcome to Univyx, {userName}! 🎉
+                Welcome to Univyx, {userName}!
               </motion.h2>
 
               <motion.p

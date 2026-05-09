@@ -6,6 +6,7 @@ import HallOfFame from "../components/layouts/gaming/HallOfFame";
 import Header from "../components/layouts/gaming/Header";
 import Leaderboards from "../components/layouts/gaming/leaderboard";
 import Tournaments from "../components/layouts/gaming/Tournament";
+import FloatingActions from "../components/common/FloatingActions";
 import { useTournaments, useLeaderboard, useGamingEvents } from "../hooks/useGaming";
 
 const sectionVariants = {
@@ -19,7 +20,7 @@ export default function Gaming() {
   const { events, loading: eventsLoading } = useGamingEvents();
 
   return (
-    <main data-testid="gaming-page">
+    <main data-testid="gaming-page" className="busy-bg">
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -77,6 +78,7 @@ export default function Gaming() {
       >
         <Gallery />
       </motion.div>
+      <FloatingActions />
     </main>
   );
 }
