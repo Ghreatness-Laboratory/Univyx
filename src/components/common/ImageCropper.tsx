@@ -5,11 +5,12 @@ interface ImageCropperProps {
   image: string;
   onCropComplete: (croppedImage: File) => void;
   onCancel: () => void;
-  aspectRatio?: number; // width/height, e.g., 16/9, 1 for square
+  aspectRatio?: number;
 }
 
 export default function ImageCropper({ image, onCropComplete, onCancel, aspectRatio = 16/9 }: ImageCropperProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imageCanvasRef = useRef<HTMLCanvasElement>(null);
   const [img, setImg] = useState<HTMLImageElement | null>(null);
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
@@ -19,58 +20,83 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
 
   useEffect(() => {
     const imgElement = new Image();
+    imgElement.crossOrigin = 'anonymous';
     imgElement.src = image;
     imgElement.onload = () => {
       setImg(imgElement);
-      // Center the image
       if (canvasRef.current) {
         const canvas = canvasRef.current;
+        const scale = Math.min(canvas.width / imgElement.width, canvas.height / imgElement.height);
+        setZoom(scale * 0.8);
         setPosition({
-          x: (canvas.width - imgElement.width * zoom) / 2,
-          y: (canvas.height - imgElement.height * zoom) / 2
+          x: canvas.width / 2,
+          y: canvas.height / 2
         });
       }
     };
   }, [image]);
 
   useEffect(() => {
-    if (img && canvasRef.current) {
+    if (img && canvasRef.current && imageCanvasRef.current) {
       drawCanvas();
     }
   }, [img, zoom, rotation, position]);
 
   const drawCanvas = () => {
     const canvas = canvasRef.current;
+    const imageCanvas = imageCanvasRef.current;
     const ctx = canvas?.getContext('2d');
-    if (!canvas || !ctx || !img) return;
+    const imgCtx = imageCanvas?.getContext('2d');
+    if (!canvas || !ctx || !imageCanvas || !imgCtx || !img) return;
 
+    // Draw image on hidden canvas with transformations
+    imgCtx.clearRect(0, 0, imageCanvas.width, imageCanvas.height);
+    imgCtx.save();
+    imgCtx.translate(position.x, position.y);
+    imgCtx.rotate((rotation * Math.PI) / 180);
+    imgCtx.scale(zoom, zoom);
+    imgCtx.drawImage(img, -img.width / 2, -img.height / 2);
+    imgCtx.restore();
+
+    // Draw on visible canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.save();
-    
-    // Apply transformations
-    ctx.translate(position.x + (img.width * zoom) / 2, position.y + (img.height * zoom) / 2);
-    ctx.rotate((rotation * Math.PI) / 180);
-    ctx.scale(zoom, zoom);
-    ctx.drawImage(img, -img.width / 2, -img.height / 2);
-    
-    ctx.restore();
+    ctx.drawImage(imageCanvas, 0, 0);
 
-    // Draw crop area overlay
+    // Draw overlay
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Clear crop area
-    const cropWidth = canvas.width * 0.8;
-    const cropHeight = cropWidth / aspectRatio;
+    // Calculate crop area
+    const maxWidth = canvas.width * 0.8;
+    const maxHeight = canvas.height * 0.8;
+    let cropWidth = maxWidth;
+    let cropHeight = cropWidth / aspectRatio;
+    
+    if (cropHeight > maxHeight) {
+      cropHeight = maxHeight;
+      cropWidth = cropHeight * aspectRatio;
+    }
+    
     const cropX = (canvas.width - cropWidth) / 2;
     const cropY = (canvas.height - cropHeight) / 2;
     
+    // Clear crop area
     ctx.clearRect(cropX, cropY, cropWidth, cropHeight);
+    ctx.drawImage(imageCanvas, cropX, cropY, cropWidth, cropHeight, cropX, cropY, cropWidth, cropHeight);
     
     // Draw crop border
     ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     ctx.strokeRect(cropX, cropY, cropWidth, cropHeight);
+    
+    // Draw corner markers
+    ctx.fillStyle = '#fff';
+    const markerSize = 20;
+    const markerThickness = 3;
+    [[cropX, cropY], [cropX + cropWidth, cropY], [cropX, cropY + cropHeight], [cropX + cropWidth, cropY + cropHeight]].forEach(([x, y]) => {
+      ctx.fillRect(x - (x === cropX ? 0 : markerSize), y - (y === cropY ? 0 : markerThickness), markerSize, markerThickness);
+      ctx.fillRect(x - (x === cropX ? 0 : markerThickness), y - (y === cropY ? 0 : markerSize), markerThickness, markerSize);
+    });
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -91,31 +117,38 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
     setIsDragging(false);
   };
 
-  const handleCrop = async () => {
+  const handleCrop = () => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const imageCanvas = imageCanvasRef.current;
+    if (!canvas || !imageCanvas) return;
 
-    const cropWidth = canvas.width * 0.8;
-    const cropHeight = cropWidth / aspectRatio;
+    const maxWidth = canvas.width * 0.8;
+    const maxHeight = canvas.height * 0.8;
+    let cropWidth = maxWidth;
+    let cropHeight = cropWidth / aspectRatio;
+    
+    if (cropHeight > maxHeight) {
+      cropHeight = maxHeight;
+      cropWidth = cropHeight * aspectRatio;
+    }
+    
     const cropX = (canvas.width - cropWidth) / 2;
     const cropY = (canvas.height - cropHeight) / 2;
 
-    // Create a new canvas for the cropped image
     const croppedCanvas = document.createElement('canvas');
     croppedCanvas.width = cropWidth;
     croppedCanvas.height = cropHeight;
     const ctx = croppedCanvas.getContext('2d');
     
     if (ctx) {
-      ctx.drawImage(canvas, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+      ctx.drawImage(imageCanvas, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
       
-      // Convert to blob and then to file
       croppedCanvas.toBlob((blob) => {
         if (blob) {
           const file = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
           onCropComplete(file);
         }
-      }, 'image/jpeg', 0.9);
+      }, 'image/jpeg', 0.95);
     }
   };
 
@@ -129,12 +162,18 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
           </button>
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 relative">
+          <canvas
+            ref={imageCanvasRef}
+            width={800}
+            height={600}
+            className="hidden"
+          />
           <canvas
             ref={canvasRef}
             width={800}
             height={600}
-            className="border border-gray-300 cursor-move mx-auto"
+            className="border border-gray-300 cursor-move mx-auto rounded-lg"
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
