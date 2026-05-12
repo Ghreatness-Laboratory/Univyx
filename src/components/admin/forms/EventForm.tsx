@@ -35,14 +35,24 @@ export default function EventForm({ event, onClose }: EventFormProps) {
     setLoading(true);
 
     try {
+      const eventData = {
+        title: formData.title,
+        description: formData.description,
+        event_date: formData.date,
+        location: formData.location,
+        image_url: formData.image
+      };
+      
       if (event?.id) {
-        await apiService.updateEventById(event.id, formData);
+        await apiService.updateEventById(event.id, eventData);
       } else {
-        await apiService.createEvent(formData);
+        await apiService.createEvent(eventData);
       }
+      alert('Event saved successfully!');
       onClose();
     } catch (error) {
       console.error('Save failed:', error);
+      alert('Failed to save event. Please try again.');
     } finally {
       setLoading(false);
     }

@@ -98,17 +98,27 @@ class SupabaseApiService {
       const eventData: any = {
         title: data.get('title'),
         description: data.get('description'),
-        date: data.get('date'),
+        event_date: data.get('date') || data.get('event_date'),
         location: data.get('location')
       };
       
       if (file) {
-        eventData.image = await supabaseDb.uploadFile('images', `events/${Date.now()}_${file.name}`, file);
+        eventData.image_url = await supabaseDb.uploadFile('images', `events/${Date.now()}_${file.name}`, file);
       }
       
       return supabaseDb.createEvent(eventData);
     }
-    return supabaseDb.createEvent(data);
+    // Handle plain object
+    const eventData: any = {
+      title: data.title,
+      description: data.description,
+      event_date: data.date || data.event_date,
+      location: data.location
+    };
+    if (data.image || data.image_url) {
+      eventData.image_url = data.image || data.image_url;
+    }
+    return supabaseDb.createEvent(eventData);
   }
 
   async getEvent(id: string) {
@@ -122,17 +132,27 @@ class SupabaseApiService {
       const updates: any = {
         title: data.get('title'),
         description: data.get('description'),
-        date: data.get('date'),
+        event_date: data.get('date') || data.get('event_date'),
         location: data.get('location')
       };
       
       if (file) {
-        updates.image = await supabaseDb.uploadFile('images', `events/${Date.now()}_${file.name}`, file);
+        updates.image_url = await supabaseDb.uploadFile('images', `events/${Date.now()}_${file.name}`, file);
       }
       
       return supabaseDb.updateEvent(id, updates);
     }
-    return supabaseDb.updateEvent(id, data);
+    // Handle plain object
+    const updates: any = {
+      title: data.title,
+      description: data.description,
+      event_date: data.date || data.event_date,
+      location: data.location
+    };
+    if (data.image || data.image_url) {
+      updates.image_url = data.image || data.image_url;
+    }
+    return supabaseDb.updateEvent(id, updates);
   }
 
   async deleteEventById(id: string) {

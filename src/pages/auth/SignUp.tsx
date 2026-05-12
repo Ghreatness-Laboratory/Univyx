@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import UnivyxLogo from "../../assets/images/univyx-logo.svg";
 import WelcomeModal from "../../components/modals/WelcomeModal";
@@ -35,10 +35,10 @@ export default function SignUp() {
   const [loadingUniversities, setLoadingUniversities] = useState(true);
 
   // Fetch universities on component mount
-  useState(() => {
+  useEffect(() => {
     const fetchUniversities = async () => {
       try {
-        const { supabase } = await import('../../services/supabase-client');
+        const { supabase } = await import('../../lib/supabase');
         const { data, error } = await supabase
           .from('universities')
           .select('id, name, abbreviation')
@@ -53,7 +53,7 @@ export default function SignUp() {
       }
     };
     fetchUniversities();
-  });
+  }, []);
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -71,7 +71,7 @@ export default function SignUp() {
       
       // Update profile with university and role
       if (result.user) {
-        const { supabase } = await import('../../services/supabase-client');
+        const { supabase } = await import('../../lib/supabase');
         await supabase
           .from('profiles')
           .upsert({

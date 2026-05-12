@@ -33,8 +33,12 @@ export default function PopupManager() {
       if (image) data.append('image', image);
       if (editingId) await api.updatePopup(editingId, data);
       else await api.createPopup(data);
+      alert('Popup saved successfully!');
       reset(); fetchPopups();
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error(err); 
+      alert('Failed to save popup. Please try again.');
+    }
     finally { setLoading(false); }
   };
 

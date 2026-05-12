@@ -1,5 +1,6 @@
-import { useRef, DragEvent } from 'react';
-import { Upload, X } from 'lucide-react';
+import { useRef, DragEvent, useState } from 'react';
+import { Upload, X, Crop } from 'lucide-react';
+import ImageCropper from './ImageCropper';
 
 interface ImageUploadProps {
   image: File | null;
@@ -8,6 +9,9 @@ interface ImageUploadProps {
   onImageChange: (file: File) => void;
   onRemove: () => void;
   onDragStateChange: (isDragging: boolean) => void;
+  label?: string;
+  enableCrop?: boolean;
+  aspectRatio?: number;
 }
 
 export default function ImageUpload({
@@ -17,8 +21,13 @@ export default function ImageUpload({
   onImageChange,
   onRemove,
   onDragStateChange,
+  label = 'Image',
+  enableCrop = true,
+  aspectRatio = 16/9
 }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showCropper, setShowCropper] = useState(false);
+  const [tempImage, setTempImage] = useState<string>('');
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -35,20 +44,49 @@ export default function ImageUpload({
     
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith('image/')) {
-      onImageChange(file);
+      if (enableCrop) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setTempImage(reader.result as string);
+          setShowCropper(true);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        onImageChange(file);
+      }
     }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      onImageChange(file);
+      if (enableCrop) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setTempImage(reader.result as string);
+          setShowCropper(true);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        onImageChange(file);
+      }
     }
+  };
+
+  const handleCropComplete = (croppedFile: File) => {
+    onImageChange(croppedFile);
+    setShowCropper(false);
+    setTempImage('');
+  };
+
+  const handleCropCancel = () => {
+    setShowCropper(false);
+    setTempImage('');
   };
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">Image</label>
+      <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
       
       {!imagePreview ? (
         <div
@@ -64,18 +102,34 @@ export default function ImageUpload({
         >
           <Upload className="w-10 h-10 mx-auto mb-3 text-gray-400" />
           <p className="text-gray-600 mb-1">Drag and drop an image here, or click to select</p>
-          <p className="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
+          <p className="text-xs text-gray-400">PNG, JPG, GIF up to 10MB{enableCrop && ' • Will be cropped after selection'}</p>
         </div>
       ) : (
         <div className="relative rounded-xl overflow-hidden">
           <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover" />
-          <button
-            type="button"
-            onClick={onRemove}
-            className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <div className="absolute top-2 right-2 flex gap-2">
+            {enableCrop && (
+              <button
+                type="button"
+                onClick={() => {
+                  setTempImage(imagePreview);
+                  setShowCropper(true);
+                }}
+                className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
+                title="Crop image"
+              >
+                <Crop className="w-4 h-4" />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onRemove}
+              className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+              title="Remove image"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       )}
       
@@ -86,6 +140,15 @@ export default function ImageUpload({
         onChange={handleFileSelect}
         className="hidden"
       />
+
+      {showCropper && tempImage && (
+        <ImageCropper
+          image={tempImage}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+          aspectRatio={aspectRatio}
+        />
+      )}
     </div>
   );
 }
