@@ -14,7 +14,6 @@ export default function HeroSlideshow() {
   const [slides, setSlides] = useState<Slide[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [stats, setStats] = useState({ students: 5000, universities: 50, events: 200 });
-  const [onlineUsers, setOnlineUsers] = useState(127);
 
   useEffect(() => {
     fetchSlides();

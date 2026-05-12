@@ -6,10 +6,7 @@ import supabaseDb from '../../services/supabase-db';
 
 interface Slide {
   id?: string;
-  title: string;
-  description: string;
   image: string;
-  link: string;
   order: number;
   is_active: boolean;
 }
@@ -19,10 +16,7 @@ export default function SlideshowManager() {
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Slide>({
-    title: '',
-    description: '',
     image: '',
-    link: '',
     order: 0,
     is_active: true
   });
@@ -52,9 +46,39 @@ export default function SlideshowManager() {
   };
 
   const handleImageChange = (file: File) => {
-    setImageFile(file);
+    // Auto-resize to 16:9 ratio
     const reader = new FileReader();
-    reader.onloadend = () => setImagePreview(reader.result as string);
+    reader.onloadend = () => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const targetWidth = 1920;
+        const targetHeight = 1080;
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+        
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          // Calculate scaling to cover the canvas
+          const scale = Math.max(targetWidth / img.width, targetHeight / img.height);
+          const scaledWidth = img.width * scale;
+          const scaledHeight = img.height * scale;
+          const x = (targetWidth - scaledWidth) / 2;
+          const y = (targetHeight - scaledHeight) / 2;
+          
+          ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+          
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const resizedFile = new File([blob], file.name, { type: 'image/jpeg' });
+              setImageFile(resizedFile);
+              setImagePreview(canvas.toDataURL('image/jpeg', 0.9));
+            }
+          }, 'image/jpeg', 0.9);
+        }
+      };
+      img.src = reader.result as string;
+    };
     reader.readAsDataURL(file);
   };
 
@@ -78,10 +102,7 @@ export default function SlideshowManager() {
       }
 
       const slideData = {
-        title: formData.title,
-        description: formData.description,
         image: imageUrl,
-        link: formData.link,
         order: formData.order,
         is_active: formData.is_active
       };
@@ -116,10 +137,7 @@ export default function SlideshowManager() {
   const handleEdit = (slide: any) => {
     setEditingId(slide.id);
     setFormData({
-      title: slide.title,
-      description: slide.description,
       image: slide.image,
-      link: slide.link || '',
       order: slide.order,
       is_active: slide.is_active
     });
@@ -148,10 +166,7 @@ export default function SlideshowManager() {
   const resetForm = () => {
     setEditingId(null);
     setFormData({
-      title: '',
-      description: '',
       image: '',
-      link: '',
       order: 0,
       is_active: true
     });
@@ -174,28 +189,6 @@ export default function SlideshowManager() {
         </h3>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Title *</label>
-          <input
-            type="text"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Description *</label>
-          <textarea
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="w-full p-2 border rounded"
-            rows={3}
-            required
-          />
-        </div>
-
-        <div>
           <ImageUpload
             image={imageFile}
             imagePreview={imagePreview}
@@ -207,20 +200,9 @@ export default function SlideshowManager() {
             }}
             onDragStateChange={setIsDragging}
             label="Slide Image *"
-            enableCrop={true}
-            aspectRatio={16/9}
+            enableCrop={false}
           />
-          <p className="text-xs text-gray-500 mt-1">Recommended: 1920x1080px (16:9 ratio)</p>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Link (Optional)</label>
-          <input
-            type="url"
-            value={formData.link}
-            onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-            className="w-full p-2 border rounded"
-          />
+          <p className="text-xs text-gray-500 mt-1">Images will be auto-resized to 1920x1080px (16:9 ratio)</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -282,7 +264,6 @@ export default function SlideshowManager() {
               <tr>
                 <th className="px-4 py-3 text-left text-sm font-medium">Preview</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Order</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">Title</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Status</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Actions</th>
               </tr>
@@ -294,13 +275,12 @@ export default function SlideshowManager() {
                     {slide.image && (
                       <img 
                         src={slide.image} 
-                        alt={slide.title} 
-                        className="w-20 h-12 object-cover rounded"
+                        alt="Slide" 
+                        className="w-32 h-18 object-cover rounded"
                       />
                     )}
                   </td>
                   <td className="px-4 py-3">{slide.order}</td>
-                  <td className="px-4 py-3">{slide.title}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 rounded text-xs ${
                       slide.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
