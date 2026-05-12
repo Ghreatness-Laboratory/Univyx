@@ -60,6 +60,13 @@ export default function SlideshowManager() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate that we have an image
+    if (!imagePreview && !formData.image) {
+      alert('Please upload an image for the slide');
+      return;
+    }
+    
     setSaving(true);
     try {
       let imageUrl = formData.image;
@@ -71,8 +78,12 @@ export default function SlideshowManager() {
       }
 
       const slideData = {
-        ...formData,
-        image: imageUrl
+        title: formData.title,
+        description: formData.description,
+        image: imageUrl,
+        link: formData.link,
+        order: formData.order,
+        is_active: formData.is_active
       };
 
       if (editingId) {
@@ -261,47 +272,63 @@ export default function SlideshowManager() {
 
       {/* Slides List */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-sm font-medium">Order</th>
-              <th className="px-4 py-3 text-left text-sm font-medium">Title</th>
-              <th className="px-4 py-3 text-left text-sm font-medium">Status</th>
-              <th className="px-4 py-3 text-left text-sm font-medium">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {slides.map((slide: any) => (
-              <tr key={slide.id}>
-                <td className="px-4 py-3">{slide.order}</td>
-                <td className="px-4 py-3">{slide.title}</td>
-                <td className="px-4 py-3">
-                  <span className={`px-2 py-1 rounded text-xs ${
-                    slide.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {slide.is_active ? 'Active' : 'Inactive'}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEdit(slide)}
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(slide.id)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </td>
+        {slides.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">
+            <p>No slides yet. Create your first slide above!</p>
+          </div>
+        ) : (
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-medium">Preview</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Order</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Title</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Status</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y">
+              {slides.map((slide: any) => (
+                <tr key={slide.id}>
+                  <td className="px-4 py-3">
+                    {slide.image && (
+                      <img 
+                        src={slide.image} 
+                        alt={slide.title} 
+                        className="w-20 h-12 object-cover rounded"
+                      />
+                    )}
+                  </td>
+                  <td className="px-4 py-3">{slide.order}</td>
+                  <td className="px-4 py-3">{slide.title}</td>
+                  <td className="px-4 py-3">
+                    <span className={`px-2 py-1 rounded text-xs ${
+                      slide.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {slide.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(slide)}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(slide.id)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

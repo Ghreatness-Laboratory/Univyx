@@ -58,6 +58,8 @@ export default function ImageUpload({
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     const file = e.target.files?.[0];
     if (file) {
       if (enableCrop) {
@@ -77,6 +79,10 @@ export default function ImageUpload({
     onImageChange(croppedFile);
     setShowCropper(false);
     setTempImage('');
+    // Prevent any form submission
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const handleCropCancel = () => {
@@ -111,7 +117,9 @@ export default function ImageUpload({
             {enableCrop && (
               <button
                 type="button"
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   setTempImage(imagePreview);
                   setShowCropper(true);
                 }}
@@ -123,7 +131,11 @@ export default function ImageUpload({
             )}
             <button
               type="button"
-              onClick={onRemove}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onRemove();
+              }}
               className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
               title="Remove image"
             >
