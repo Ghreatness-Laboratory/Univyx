@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../../services/supabase-client';
+import { supabase } from '../../lib/supabase';
 import { Plus, Edit2, Trash2, Save, X } from 'lucide-react';
+import ImageUpload from '../common/ImageUpload';
+import supabaseDb from '../../services/supabase-db';
 
 interface Slide {
   id?: string;
@@ -24,6 +26,10 @@ export default function SlideshowManager() {
     order: 0,
     is_active: true
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetchSlides();
@@ -45,13 +51,34 @@ export default function SlideshowManager() {
     }
   };
 
+  const handleImageChange = (file: File) => {
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => setImagePreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSaving(true);
     try {
+      let imageUrl = formData.image;
+      
+      // Upload new image if selected
+      if (imageFile) {
+        const fileName = `slideshow/${Date.now()}-${imageFile.name}`;
+        imageUrl = await supabaseDb.uploadFile('images', fileName, imageFile);
+      }
+
+      const slideData = {
+        ...formData,
+        image: imageUrl
+      };
+
       if (editingId) {
         const { error } = await supabase
           .from('slideshow')
-          .update(formData)
+          .update(slideData)
           .eq('id', editingId);
 
         if (error) throw error;
@@ -59,7 +86,7 @@ export default function SlideshowManager() {
       } else {
         const { error } = await supabase
           .from('slideshow')
-          .insert([formData]);
+          .insert([slideData]);
 
         if (error) throw error;
         alert('Slide created successfully!');
@@ -70,6 +97,8 @@ export default function SlideshowManager() {
     } catch (error: any) {
       console.error('Error saving slide:', error);
       alert('Failed to save slide: ' + error.message);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -83,6 +112,8 @@ export default function SlideshowManager() {
       order: slide.order,
       is_active: slide.is_active
     });
+    setImagePreview(slide.image || '');
+    setImageFile(null);
   };
 
   const handleDelete = async (id: string) => {
@@ -113,6 +144,8 @@ export default function SlideshowManager() {
       order: 0,
       is_active: true
     });
+    setImageFile(null);
+    setImagePreview('');
   };
 
   if (loading) {
@@ -152,14 +185,21 @@ export default function SlideshowManager() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Image URL *</label>
-          <input
-            type="url"
-            value={formData.image}
-            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-            className="w-full p-2 border rounded"
-            required
+          <ImageUpload
+            image={imageFile}
+            imagePreview={imagePreview}
+            isDragging={isDragging}
+            onImageChange={handleImageChange}
+            onRemove={() => {
+              setImageFile(null);
+              setImagePreview('');
+            }}
+            onDragStateChange={setIsDragging}
+            label="Slide Image *"
+            enableCrop={true}
+            aspectRatio={16/9}
           />
+          <p className="text-xs text-gray-500 mt-1">Recommended: 1920x1080px (16:9 ratio)</p>
         </div>
 
         <div>
@@ -200,10 +240,11 @@ export default function SlideshowManager() {
         <div className="flex gap-2">
           <button
             type="submit"
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            disabled={saving}
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
-            {editingId ? 'Update' : 'Create'}
+            {saving ? 'Saving...' : editingId ? 'Update' : 'Create'}
           </button>
           {editingId && (
             <button
