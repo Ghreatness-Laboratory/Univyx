@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Users as UsersIcon } from 'lucide-react';
-import api from '../../services/api';
+import { supabase } from '../../services/supabase-client';
 import ImageUpload from '../common/ImageUpload';
 
 export default function TeamManager() {
@@ -19,9 +19,13 @@ export default function TeamManager() {
 
   const fetchMembers = async () => {
     try {
-      const response = await api.getTeamMembers();
-      const data = response.data.data || response.data || [];
-      setMembers(Array.isArray(data) ? data : []);
+      const { data, error } = await supabase
+        .from('team_members')
+        .select('*')
+        .order('order');
+      
+      if (error) throw error;
+      setMembers(data || []);
     } catch (error) {
       console.error('Failed to fetch team members:', error);
       setMembers([]);
@@ -40,50 +44,71 @@ export default function TeamManager() {
     setLoading(true);
 
     try {
-      const data = new FormData();
-      data.append('name', formData.name);
-      data.append('role', formData.role);
-      data.append('bio', formData.bio);
-      data.append('order', formData.order.toString());
-      data.append('social', JSON.stringify(formData.social));
-      if (image) data.append('image', image);
+      const memberData = {
+        name: formData.name,
+        role: formData.role,
+        bio: formData.bio,
+        order: formData.order,
+        social_links: formData.social,
+        avatar: imagePreview || null
+      };
 
       if (editingId) {
-        await api.updateTeamMember(editingId, data);
+        const { error } = await supabase
+          .from('team_members')
+          .update(memberData)
+          .eq('id', editingId);
+        
+        if (error) throw error;
+        alert('Team member updated successfully!');
       } else {
-        await api.createTeamMember(data);
+        const { error } = await supabase
+          .from('team_members')
+          .insert([memberData]);
+        
+        if (error) throw error;
+        alert('Team member created successfully!');
       }
 
       resetForm();
       fetchMembers();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save team member:', error);
+      alert('Failed to save team member: ' + error.message);
     } finally {
       setLoading(false);
     }
   };
 
   const handleEdit = (member: any) => {
-    setEditingId(member._id);
+    setEditingId(member.id);
     setFormData({
       name: member.name,
       role: member.role,
       bio: member.bio || '',
       order: member.order || 0,
-      social: member.social || { twitter: '', linkedin: '', github: '' }
+      social: member.social_links || { twitter: '', linkedin: '', github: '' }
     });
-    setImagePreview(member.image || '');
+    setImagePreview(member.avatar || '');
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this team member?')) return;
+    
     try {
-      await api.deleteTeamMember(id);
+      const { error } = await supabase
+        .from('team_members')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      alert('Team member deleted successfully!');
       fetchMembers();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to delete team member:', error);
+      alert('Failed to delete team member: ' + error.message);
     }
   };
 
@@ -212,8 +237,8 @@ export default function TeamManager() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {members.map((member) => (
-          <div key={member._id} className="flex gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-            {member.image && <img src={member.image} alt={member.name} className="w-20 h-20 object-cover rounded-full" />}
+          <div key={member.id} className="flex gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+            {member.avatar && <img src={member.avatar} alt={member.name} className="w-20 h-20 object-cover rounded-full" />}
             <div className="flex-1">
               <h3 className="font-semibold text-lg text-gray-900">{member.name}</h3>
               <p className="text-sm text-blue-600">{member.role}</p>
@@ -223,7 +248,7 @@ export default function TeamManager() {
               <button onClick={() => handleEdit(member)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
                 <Edit size={18} />
               </button>
-              <button onClick={() => handleDelete(member._id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
+              <button onClick={() => handleDelete(member.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
                 <Trash2 size={18} />
               </button>
             </div>

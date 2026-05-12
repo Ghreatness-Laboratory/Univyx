@@ -52,7 +52,7 @@ export class SupabaseService {
     const { data, error } = await supabase
       .from('events')
       .select('*')
-      .order('date', { ascending: false });
+      .order('event_date', { ascending: false });
     
     if (error) throw error;
     
@@ -655,7 +655,7 @@ export class SupabaseService {
 
   // Gaming Events (separate from entertainment events)
   async getGamingEvents() {
-    const { data, error } = await supabase.from('gaming_events').select('*').order('date', { ascending: false });
+    const { data, error } = await supabase.from('gaming_events').select('*').order('event_date', { ascending: false });
     if (error) throw error;
     return { data: { data } };
   }

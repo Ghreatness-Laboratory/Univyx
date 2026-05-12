@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BarChart3, Save } from 'lucide-react';
-import api from '../../services/api';
+import { supabase } from '../../services/supabase-client';
 
 export default function StatsManager() {
   const [loading, setLoading] = useState(false);
@@ -12,9 +12,21 @@ export default function StatsManager() {
 
   const fetchStats = async () => {
     try {
-      const response = await api.getHomepageStats();
-      const data = response.data.data || response.data || { students: 0, universities: 0, events: 0, tournaments: 0 };
-      setStats(data);
+      const { data, error } = await supabase
+        .from('homepage_stats')
+        .select('*')
+        .single();
+      
+      if (error && error.code !== 'PGRST116') throw error;
+      
+      if (data) {
+        setStats({
+          students: data.students || 0,
+          universities: data.universities || 0,
+          events: data.events || 0,
+          tournaments: data.tournaments || 0
+        });
+      }
     } catch (error) {
       console.error('Failed to fetch stats:', error);
       setStats({ students: 0, universities: 0, events: 0, tournaments: 0 });
@@ -26,12 +38,34 @@ export default function StatsManager() {
     setLoading(true);
 
     try {
-      await api.updateHomepageStats(stats);
-      await fetchStats();
+      // Check if stats exist
+      const { data: existing } = await supabase
+        .from('homepage_stats')
+        .select('id')
+        .single();
+
+      if (existing) {
+        // Update existing
+        const { error } = await supabase
+          .from('homepage_stats')
+          .update(stats)
+          .eq('id', existing.id);
+        
+        if (error) throw error;
+      } else {
+        // Insert new
+        const { error } = await supabase
+          .from('homepage_stats')
+          .insert([stats]);
+        
+        if (error) throw error;
+      }
+
       alert('Stats updated successfully!');
-    } catch (error) {
+      await fetchStats();
+    } catch (error: any) {
       console.error('Failed to update stats:', error);
-      alert('Failed to update stats');
+      alert('Failed to update stats: ' + error.message);
     } finally {
       setLoading(false);
     }

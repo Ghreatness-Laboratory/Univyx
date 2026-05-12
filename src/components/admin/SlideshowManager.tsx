@@ -1,140 +1,266 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, GripVertical, Eye, EyeOff } from 'lucide-react';
-import api from '../../services/api';
-import ImageUpload from '../common/ImageUpload';
+import { supabase } from '../../services/supabase-client';
+import { Plus, Edit2, Trash2, Save, X } from 'lucide-react';
 
-const emptyForm = { title: '', subtitle: '', cta_text: '', cta_link: '', order: 0, is_active: true };
+interface Slide {
+  id?: string;
+  title: string;
+  description: string;
+  image: string;
+  link: string;
+  order: number;
+  is_active: boolean;
+}
 
 export default function SlideshowManager() {
-  const [slides, setSlides] = useState<any[]>([]);
-  const [showForm, setShowForm] = useState(false);
+  const [slides, setSlides] = useState<Slide[]>([]);
+  const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState(emptyForm);
-  const [image, setImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState('');
-  const [isDragging, setIsDragging] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState<Slide>({
+    title: '',
+    description: '',
+    image: '',
+    link: '',
+    order: 0,
+    is_active: true
+  });
 
-  useEffect(() => { fetchSlides(); }, []);
+  useEffect(() => {
+    fetchSlides();
+  }, []);
 
   const fetchSlides = async () => {
     try {
-      const r = await api.getSlideshow();
-      setSlides(r.data?.data || []);
-    } catch { setSlides([]); }
+      const { data, error } = await supabase
+        .from('slideshow')
+        .select('*')
+        .order('order');
+
+      if (error) throw error;
+      setSlides(data || []);
+    } catch (error) {
+      console.error('Failed to fetch slides:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     try {
-      const data = new FormData();
-      Object.entries(form).forEach(([k, v]) => data.append(k, v.toString()));
-      if (image) data.append('image', image);
-      if (editingId) await api.updateSlide(editingId, data);
-      else await api.createSlide(data);
-      reset(); fetchSlides();
-    } catch (err) { console.error(err); }
-    finally { setLoading(false); }
+      if (editingId) {
+        const { error } = await supabase
+          .from('slideshow')
+          .update(formData)
+          .eq('id', editingId);
+
+        if (error) throw error;
+        alert('Slide updated successfully!');
+      } else {
+        const { error } = await supabase
+          .from('slideshow')
+          .insert([formData]);
+
+        if (error) throw error;
+        alert('Slide created successfully!');
+      }
+
+      resetForm();
+      fetchSlides();
+    } catch (error: any) {
+      console.error('Error saving slide:', error);
+      alert('Failed to save slide: ' + error.message);
+    }
   };
 
   const handleEdit = (slide: any) => {
     setEditingId(slide.id);
-    setForm({ title: slide.title || '', subtitle: slide.subtitle || '', cta_text: slide.cta_text || '', cta_link: slide.cta_link || '', order: slide.order || 0, is_active: slide.is_active !== false });
-    setImagePreview(slide.image || '');
-    setShowForm(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setFormData({
+      title: slide.title,
+      description: slide.description,
+      image: slide.image,
+      link: slide.link || '',
+      order: slide.order,
+      is_active: slide.is_active
+    });
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this slide?')) return;
-    try { await api.deleteSlide(id); fetchSlides(); } catch {}
+    if (!confirm('Are you sure you want to delete this slide?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('slideshow')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      alert('Slide deleted successfully!');
+      fetchSlides();
+    } catch (error: any) {
+      console.error('Error deleting slide:', error);
+      alert('Failed to delete slide: ' + error.message);
+    }
   };
 
-  const reset = () => { setForm(emptyForm); setImage(null); setImagePreview(''); setEditingId(null); setShowForm(false); };
-  const f = (k: keyof typeof form, v: any) => setForm(prev => ({ ...prev, [k]: v }));
+  const resetForm = () => {
+    setEditingId(null);
+    setFormData({
+      title: '',
+      description: '',
+      image: '',
+      link: '',
+      order: 0,
+      is_active: true
+    });
+  };
+
+  if (loading) {
+    return <div className="text-center py-8">Loading slides...</div>;
+  }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">Homepage Slideshow Manager</h2>
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow space-y-4">
+        <h3 className="text-lg font-semibold">
+          {editingId ? 'Edit Slide' : 'Add New Slide'}
+        </h3>
+
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Slideshow Manager</h2>
-          <p className="text-sm text-gray-500 mt-1">Manage homepage hero slideshow banners</p>
+          <label className="block text-sm font-medium mb-1">Title *</label>
+          <input
+            type="text"
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            className="w-full p-2 border rounded"
+            required
+          />
         </div>
-        <button onClick={() => setShowForm(!showForm)} className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-          <Plus size={20} />{showForm ? 'Cancel' : 'Add Slide'}
-        </button>
-      </div>
 
-      {showForm && (
-        <form onSubmit={handleSubmit} className="mb-8 p-6 bg-gray-50 rounded-lg space-y-4">
-          <ImageUpload image={image} imagePreview={imagePreview} isDragging={isDragging}
-            onImageChange={f => { setImage(f); const r = new FileReader(); r.onloadend = () => setImagePreview(r.result as string); r.readAsDataURL(f); }}
-            onRemove={() => { setImage(null); setImagePreview(''); }}
-            onDragStateChange={setIsDragging} label="Slide Background Image" />
+        <div>
+          <label className="block text-sm font-medium mb-1">Description *</label>
+          <textarea
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            className="w-full p-2 border rounded"
+            rows={3}
+            required
+          />
+        </div>
 
+        <div>
+          <label className="block text-sm font-medium mb-1">Image URL *</label>
+          <input
+            type="url"
+            value={formData.image}
+            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Link (Optional)</label>
+          <input
+            type="url"
+            value={formData.link}
+            onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
-            <input required value={form.title} onChange={e => f('title', e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" />
+            <label className="block text-sm font-medium mb-1">Order</label>
+            <input
+              type="number"
+              value={formData.order}
+              onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) })}
+              className="w-full p-2 border rounded"
+              min="0"
+            />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Subtitle</label>
-            <input value={form.subtitle} onChange={e => f('subtitle', e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" />
+
+          <div className="flex items-center">
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.is_active}
+                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                className="mr-2"
+              />
+              <span className="text-sm font-medium">Active</span>
+            </label>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">CTA Button Text</label>
-              <input value={form.cta_text} onChange={e => f('cta_text', e.target.value)} placeholder="e.g. Learn More" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">CTA Link</label>
-              <input value={form.cta_link} onChange={e => f('cta_link', e.target.value)} placeholder="e.g. /jobs" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Order</label>
-              <input type="number" value={form.order} onChange={e => f('order', parseInt(e.target.value))} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" />
-            </div>
-            <div className="flex items-end pb-2">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={form.is_active} onChange={e => f('is_active', e.target.checked)} className="rounded" />
-                <span className="text-sm text-gray-700">Active (visible on site)</span>
-              </label>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <button type="submit" disabled={loading} className="flex-1 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50">
-              {loading ? 'Saving...' : editingId ? 'Update Slide' : 'Create Slide'}
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            type="submit"
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            <Save className="w-4 h-4" />
+            {editingId ? 'Update' : 'Create'}
+          </button>
+          {editingId && (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="flex items-center gap-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+            >
+              <X className="w-4 h-4" />
+              Cancel
             </button>
-            <button type="button" onClick={reset} className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
-          </div>
-        </form>
-      )}
+          )}
+        </div>
+      </form>
 
-      <div className="space-y-3">
-        {slides.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            <p>No slides yet. Add your first slide to enable the homepage slideshow!</p>
-          </div>
-        ) : slides.map(slide => (
-          <div key={slide.id} className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-            <GripVertical size={18} className="text-gray-300 shrink-0" />
-            {slide.image && <img src={slide.image} alt={slide.title} className="w-20 h-12 object-cover rounded-lg shrink-0" />}
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 truncate">{slide.title}</h3>
-              {slide.subtitle && <p className="text-sm text-gray-500 truncate">{slide.subtitle}</p>}
-              {slide.cta_text && <span className="text-xs text-purple-600">CTA: {slide.cta_text} → {slide.cta_link}</span>}
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <span className={`text-xs px-2 py-1 rounded-full ${slide.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                {slide.is_active ? 'Active' : 'Hidden'}
-              </span>
-              <button onClick={() => handleEdit(slide)} className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg"><Edit size={18} /></button>
-              <button onClick={() => handleDelete(slide.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={18} /></button>
-            </div>
-          </div>
-        ))}
+      {/* Slides List */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-3 text-left text-sm font-medium">Order</th>
+              <th className="px-4 py-3 text-left text-sm font-medium">Title</th>
+              <th className="px-4 py-3 text-left text-sm font-medium">Status</th>
+              <th className="px-4 py-3 text-left text-sm font-medium">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y">
+            {slides.map((slide: any) => (
+              <tr key={slide.id}>
+                <td className="px-4 py-3">{slide.order}</td>
+                <td className="px-4 py-3">{slide.title}</td>
+                <td className="px-4 py-3">
+                  <span className={`px-2 py-1 rounded text-xs ${
+                    slide.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    {slide.is_active ? 'Active' : 'Inactive'}
+                  </span>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(slide)}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(slide.id)}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

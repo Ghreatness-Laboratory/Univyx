@@ -13,7 +13,7 @@ export default function GamingEventManager() {
     description: '',
     game: '',
     event_type: 'tournament',
-    date: '',
+    event_date: '',
     location: '',
     max_participants: 0,
     registration_url: ''
@@ -74,7 +74,7 @@ export default function GamingEventManager() {
       description: event.description,
       game: event.game,
       event_type: event.event_type,
-      date: event.date,
+      event_date: event.event_date,
       location: event.location,
       max_participants: event.max_participants,
       registration_url: event.registration_url || ''
@@ -99,7 +99,7 @@ export default function GamingEventManager() {
       description: '',
       game: '',
       event_type: 'tournament',
-      date: '',
+      event_date: '',
       location: '',
       max_participants: 0,
       registration_url: ''
@@ -148,7 +148,7 @@ export default function GamingEventManager() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
-              <input type="date" required value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500" />
+              <input type="date" required value={formData.event_date} onChange={(e) => setFormData({ ...formData, event_date: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Max Participants</label>
@@ -186,7 +186,7 @@ export default function GamingEventManager() {
               <p className="text-gray-600 text-sm mt-1 line-clamp-2">{event.description}</p>
               <div className="flex gap-4 mt-2 text-sm text-gray-500">
                 <span className="flex items-center gap-1"><Gamepad2 size={14} />{event.game}</span>
-                <span className="flex items-center gap-1"><Calendar size={14} />{new Date(event.date).toLocaleDateString()}</span>
+                <span className="flex items-center gap-1"><Calendar size={14} />{new Date(event.event_date).toLocaleDateString()}</span>
                 <span className="flex items-center gap-1"><MapPin size={14} />{event.location}</span>
               </div>
             </div>

@@ -12,7 +12,7 @@ export default function EventManager() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    date: '',
+    event_date: '',
     time: '',
     location: '',
   });
@@ -75,7 +75,7 @@ export default function EventManager() {
     setFormData({
       title: event.title || '',
       description: event.description || '',
-      date: event.date || '',
+      event_date: event.event_date || '',
       time: event.time || '',
       location: event.location || '',
     });
@@ -95,7 +95,7 @@ export default function EventManager() {
   };
 
   const resetForm = () => {
-    setFormData({ title: '', description: '', date: '', time: '', location: '' });
+    setFormData({ title: '', description: '', event_date: '', time: '', location: '' });
     setImage(null);
     setImagePreview('');
     setEditingId(null);
@@ -154,8 +154,8 @@ export default function EventManager() {
               <input
                 type="date"
                 required
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                value={formData.event_date}
+                onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -213,7 +213,7 @@ export default function EventManager() {
               <div className="flex gap-4 mt-2 text-sm text-gray-500">
                 <span className="flex items-center gap-1">
                   <Calendar size={14} />
-                  {event.date && new Date(event.date).toLocaleDateString()}
+                  {event.event_date && new Date(event.event_date).toLocaleDateString()}
                 </span>
                 <span className="flex items-center gap-1">
                   <MapPin size={14} />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, HelpCircle } from 'lucide-react';
-import api from '../../services/api';
+import { supabase } from '../../services/supabase-client';
 
 export default function FAQManager() {
   const [faqs, setFaqs] = useState<any[]>([]);
@@ -15,9 +15,13 @@ export default function FAQManager() {
 
   const fetchFAQs = async () => {
     try {
-      const response = await api.getFAQs();
-      const data = response.data.data || response.data || [];
-      setFaqs(Array.isArray(data) ? data : []);
+      const { data, error } = await supabase
+        .from('faqs')
+        .select('*')
+        .order('order');
+      
+      if (error) throw error;
+      setFaqs(data || []);
     } catch (error) {
       console.error('Failed to fetch FAQs:', error);
       setFaqs([]);
@@ -30,22 +34,34 @@ export default function FAQManager() {
 
     try {
       if (editingId) {
-        await api.updateFAQ(editingId, formData);
+        const { error } = await supabase
+          .from('faqs')
+          .update(formData)
+          .eq('id', editingId);
+        
+        if (error) throw error;
+        alert('FAQ updated successfully!');
       } else {
-        await api.createFAQ(formData);
+        const { error } = await supabase
+          .from('faqs')
+          .insert([formData]);
+        
+        if (error) throw error;
+        alert('FAQ created successfully!');
       }
 
       resetForm();
       fetchFAQs();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save FAQ:', error);
+      alert('Failed to save FAQ: ' + error.message);
     } finally {
       setLoading(false);
     }
   };
 
   const handleEdit = (faq: any) => {
-    setEditingId(faq._id);
+    setEditingId(faq.id);
     setFormData({
       question: faq.question,
       answer: faq.answer,
@@ -58,11 +74,19 @@ export default function FAQManager() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this FAQ?')) return;
+    
     try {
-      await api.deleteFAQ(id);
+      const { error } = await supabase
+        .from('faqs')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      alert('FAQ deleted successfully!');
       fetchFAQs();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to delete FAQ:', error);
+      alert('Failed to delete FAQ: ' + error.message);
     }
   };
 
@@ -150,7 +174,7 @@ export default function FAQManager() {
 
       <div className="space-y-4">
         {faqs.map((faq) => (
-          <div key={faq._id} className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+          <div key={faq.id} className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start">
               <div className="flex-1">
                 <h3 className="font-semibold text-lg text-gray-900 flex items-center gap-2">
@@ -164,7 +188,7 @@ export default function FAQManager() {
                 <button onClick={() => handleEdit(faq)} className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg">
                   <Edit size={18} />
                 </button>
-                <button onClick={() => handleDelete(faq._id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
+                <button onClick={() => handleDelete(faq.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
                   <Trash2 size={18} />
                 </button>
               </div>

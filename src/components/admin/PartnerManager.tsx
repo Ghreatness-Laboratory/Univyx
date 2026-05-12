@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Trash2, Handshake } from 'lucide-react';
-import api from '../../services/api';
+import { supabase } from '../../services/supabase-client';
 import ImageUpload from '../common/ImageUpload';
 
 export default function PartnerManager() {
@@ -18,9 +18,13 @@ export default function PartnerManager() {
 
   const fetchPartners = async () => {
     try {
-      const response = await api.getPartners();
-      const data = response.data.data || response.data || [];
-      setPartners(Array.isArray(data) ? data : []);
+      const { data, error } = await supabase
+        .from('partners')
+        .select('*')
+        .order('order');
+      
+      if (error) throw error;
+      setPartners(data || []);
     } catch (error) {
       console.error('Failed to fetch partners:', error);
       setPartners([]);
@@ -39,17 +43,24 @@ export default function PartnerManager() {
     setLoading(true);
 
     try {
-      const data = new FormData();
-      data.append('name', formData.name);
-      data.append('website', formData.website);
-      data.append('order', formData.order.toString());
-      if (logo) data.append('logo', logo);
+      const partnerData = {
+        name: formData.name,
+        website: formData.website,
+        order: formData.order,
+        logo: logoPreview || null
+      };
 
-      await api.createPartner(data);
+      const { error } = await supabase
+        .from('partners')
+        .insert([partnerData]);
+      
+      if (error) throw error;
+      alert('Partner added successfully!');
       resetForm();
       fetchPartners();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save partner:', error);
+      alert('Failed to save partner: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -57,11 +68,19 @@ export default function PartnerManager() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this partner?')) return;
+    
     try {
-      await api.deletePartner(id);
+      const { error } = await supabase
+        .from('partners')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      alert('Partner deleted successfully!');
       fetchPartners();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to delete partner:', error);
+      alert('Failed to delete partner: ' + error.message);
     }
   };
 
@@ -148,11 +167,11 @@ export default function PartnerManager() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {partners.map((partner) => (
-          <div key={partner._id} className="relative p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow group">
+          <div key={partner.id} className="relative p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow group">
             {partner.logo && <img src={partner.logo} alt={partner.name} className="w-full h-24 object-contain mb-2" />}
             <p className="text-sm font-medium text-gray-900 text-center">{partner.name}</p>
             <button
-              onClick={() => handleDelete(partner._id)}
+              onClick={() => handleDelete(partner.id)}
               className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <Trash2 size={14} />

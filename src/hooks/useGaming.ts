@@ -38,7 +38,7 @@ export interface LeaderboardEntry {
   game: string;
   season?: string;
   player_name: string;
-  score: number;
+  points: number;
   wins: number;
   rank?: number;
   created_at?: string;
@@ -59,7 +59,7 @@ export function useGamingEvents() {
       const { data, error } = await supabase
         .from('gaming_events')
         .select('*')
-        .order('date', { ascending: true });
+        .order('event_date', { ascending: true });
 
       if (error) throw error;
       setEvents(data || []);
@@ -156,7 +156,7 @@ export function useLeaderboard() {
       const { data, error } = await supabase
         .from('leaderboards')
         .select('*')
-        .order('score', { ascending: false });
+        .order('points', { ascending: false });
 
       if (error) throw error;
       setLeaderboard(data || []);

@@ -140,7 +140,7 @@ export default function Leaderboards({ leaderboard, loading, error }: { leaderbo
             </div>
 
             <div className="col-span-2 flex items-center justify-end font-bold text-amber-600 text-lg">
-              {entry.score?.toLocaleString() || 0}
+              {entry.points?.toLocaleString() || 0}
             </div>
           </div>
         ))}

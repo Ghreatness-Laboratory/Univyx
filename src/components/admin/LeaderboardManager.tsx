@@ -26,7 +26,7 @@ export default function LeaderboardManager() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ game: '', season: 'All Time', player_name: '', score: 0, wins: 0 });
+  const [formData, setFormData] = useState({ game: '', season: 'All Time', player_name: '', points: 0, wins: 0 });
 
   useEffect(() => {
     fetchLeaderboards();
@@ -68,7 +68,7 @@ export default function LeaderboardManager() {
       game: leaderboard.game, 
       season: leaderboard.season || 'All Time',
       player_name: leaderboard.player_name,
-      score: leaderboard.score,
+      points: leaderboard.points,
       wins: leaderboard.wins
     });
     setShowForm(true);
@@ -85,7 +85,7 @@ export default function LeaderboardManager() {
   };
 
   const resetForm = () => {
-    setFormData({ game: '', season: 'All Time', player_name: '', score: 0, wins: 0 });
+    setFormData({ game: '', season: 'All Time', player_name: '', points: 0, wins: 0 });
     setEditingId(null);
     setShowForm(false);
   };
@@ -156,13 +156,13 @@ export default function LeaderboardManager() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Score/Points *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Points *</label>
               <input
                 type="number"
                 required
                 min="0"
-                value={formData.score}
-                onChange={(e) => setFormData({ ...formData, score: parseInt(e.target.value) })}
+                value={formData.points}
+                onChange={(e) => setFormData({ ...formData, points: parseInt(e.target.value) })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
               />
             </div>
@@ -211,7 +211,7 @@ export default function LeaderboardManager() {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="font-bold text-2xl text-amber-600">{entry.score.toLocaleString()}</span>
+                  <span className="font-bold text-2xl text-amber-600">{entry.points.toLocaleString()}</span>
                   <div className="flex gap-2">
                     <button onClick={() => handleEdit(entry)} className="p-2 text-amber-600 hover:bg-amber-100 rounded-lg"><Edit size={18} /></button>
                     <button onClick={() => handleDelete(entry.id!)} className="p-2 text-red-600 hover:bg-red-100 rounded-lg"><Trash2 size={18} /></button>

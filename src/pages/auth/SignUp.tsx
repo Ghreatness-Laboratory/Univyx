@@ -13,6 +13,7 @@ interface FormData {
   email: string;
   password: string;
   confirmPassword: string;
+  universityId: string;
 }
 
 export default function SignUp() {
@@ -30,13 +31,58 @@ export default function SignUp() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [welcomeName, setWelcomeName] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [universities, setUniversities] = useState<any[]>([]);
+  const [loadingUniversities, setLoadingUniversities] = useState(true);
+
+  // Fetch universities on component mount
+  useState(() => {
+    const fetchUniversities = async () => {
+      try {
+        const { supabase } = await import('../../services/supabase-client');
+        const { data, error } = await supabase
+          .from('universities')
+          .select('id, name, abbreviation')
+          .order('name');
+        
+        if (error) throw error;
+        setUniversities(data || []);
+      } catch (error) {
+        console.error('Failed to load universities:', error);
+      } finally {
+        setLoadingUniversities(false);
+      }
+    };
+    fetchUniversities();
+  });
 
   const onSubmit = async (data: FormData) => {
     try {
       setIsLoading(true);
       setApiError(null);
       
-      await registerUser(data.firstName, data.lastName, data.email, data.password);
+      // Determine user role based on university selection
+      const selectedUniversity = universities.find(u => u.id === parseInt(data.universityId));
+      const userRole = selectedUniversity?.name === 'Other (Non-Private University)' 
+        ? 'non_private_student' 
+        : 'private_student';
+      
+      // Register user with university and role
+      const result = await registerUser(data.firstName, data.lastName, data.email, data.password);
+      
+      // Update profile with university and role
+      if (result.user) {
+        const { supabase } = await import('../../services/supabase-client');
+        await supabase
+          .from('profiles')
+          .upsert({
+            id: result.user.id,
+            email: data.email,
+            first_name: data.firstName,
+            last_name: data.lastName,
+            university_id: parseInt(data.universityId),
+            user_role: userRole
+          });
+      }
       
       // Show welcome modal and prepare for redirect
       setWelcomeName(data.firstName);
@@ -144,6 +190,32 @@ export default function SignUp() {
               )}
             </div>
           </div>
+        </div>
+
+        <div>
+          <label className="block text-[14px] text-primary font-mormal mb-1">
+            University *
+          </label>
+          <select
+            {...register("universityId", {
+              required: "Please select your university",
+            })}
+            className="w-full p-4 border border-gray-300 rounded-md text-sm"
+            disabled={loadingUniversities}
+          >
+            <option value="">Select your university</option>
+            {universities.map((uni) => (
+              <option key={uni.id} value={uni.id}>
+                {uni.name} {uni.abbreviation ? `(${uni.abbreviation})` : ''}
+              </option>
+            ))}
+          </select>
+          {errors.universityId && (
+            <p className="text-red-500 text-sm">{errors.universityId.message}</p>
+          )}
+          <p className="text-xs text-gray-500 mt-1">
+            Non-private university students can view content but cannot post or engage.
+          </p>
         </div>
 
         <div>
