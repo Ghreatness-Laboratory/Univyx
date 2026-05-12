@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { supabase } from '../../../services/supabase-client';
+import { Briefcase, Users, GraduationCap, Calendar, TrendingUp, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { supabase } from '../../../lib/supabase';
 
 interface Slide {
   id: string;
-  title: string;
-  description: string;
   image: string;
-  link?: string;
   order: number;
   is_active: boolean;
 }
@@ -15,19 +13,19 @@ interface Slide {
 export default function HeroSlideshow() {
   const [slides, setSlides] = useState<Slide[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ students: 5000, universities: 50, events: 200 });
+  const [onlineUsers, setOnlineUsers] = useState(127);
 
   useEffect(() => {
     fetchSlides();
+    fetchStats();
   }, []);
 
   useEffect(() => {
     if (slides.length === 0) return;
-    
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000); // Auto-advance every 5 seconds
-
+    }, 5000);
     return () => clearInterval(timer);
   }, [slides.length]);
 
@@ -35,127 +33,167 @@ export default function HeroSlideshow() {
     try {
       const { data, error } = await supabase
         .from('slideshow')
-        .select('*')
+        .select('id, image, order, is_active')
         .eq('is_active', true)
         .order('order');
-
       if (error) throw error;
       setSlides(data || []);
     } catch (error) {
       console.error('Failed to fetch slides:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  const fetchStats = async () => {
+    try {
+      const { data } = await supabase.from('homepage_stats').select('*').single();
+      if (data) {
+        setStats({
+          students: data.students || 5000,
+          universities: data.universities || 50,
+          events: data.events || 200
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch stats:', error);
+    }
   };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-  };
-
-  if (loading) {
-    return (
-      <div className="relative h-[500px] md:h-[600px] bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-      </div>
-    );
-  }
-
-  if (slides.length === 0) {
-    return (
-      <div className="relative h-[500px] md:h-[600px] bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center text-white">
-        <div className="text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">Welcome to Univyx</h1>
-          <p className="text-xl">Your Ultimate Student Platform</p>
-        </div>
-      </div>
-    );
-  }
-
-  const slide = slides[currentSlide];
 
   return (
-    <div className="relative h-[500px] md:h-[600px] overflow-hidden">
-      {/* Slides */}
-      {slides.map((s, index) => (
-        <div
-          key={s.id}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === currentSlide ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${s.image})` }}
+    <div className="relative bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 overflow-hidden">
+      <div className="container mx-auto px-4 py-12">
+        {/* Top Bar */}
+        <div className="flex justify-start items-center mb-8">
+          <Link
+            to="/jobs"
+            className="inline-flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105"
           >
-            <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-          </div>
-          
-          <div className="relative h-full flex items-center justify-center text-white px-4">
-            <div className="text-center max-w-4xl">
-              <h1 className="text-4xl md:text-6xl font-bold mb-4 animate-fade-in">
-                {s.title}
+            <Briefcase size={20} />
+            Browse Jobs
+          </Link>
+        </div>
+
+        {/* Main Hero Section - Split Layout */}
+        <div className="grid lg:grid-cols-2 gap-8 items-center">
+          {/* LEFT SIDE - Content */}
+          <div className="space-y-8">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-blue-100/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-1">
+                  {stats.students >= 1000 ? `${Math.floor(stats.students / 1000)}K+` : `${stats.students}+`}
+                </div>
+                <div className="flex items-center gap-1.5 text-blue-700">
+                  <Users size={16} />
+                  <span className="text-sm font-medium">Students</span>
+                </div>
+              </div>
+              <div className="bg-purple-100/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                <div className="text-3xl md:text-4xl font-bold text-purple-600 mb-1">{stats.universities}+</div>
+                <div className="flex items-center gap-1.5 text-purple-700">
+                  <GraduationCap size={16} />
+                  <span className="text-sm font-medium">Universities</span>
+                </div>
+              </div>
+              <div className="bg-pink-100/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                <div className="text-3xl md:text-4xl font-bold text-pink-600 mb-1">{stats.events}+</div>
+                <div className="flex items-center gap-1.5 text-pink-700">
+                  <Calendar size={16} />
+                  <span className="text-sm font-medium">Events</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Hero Text */}
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-md">
+                <Sparkles size={18} className="text-purple-600" />
+                <span className="text-sm font-semibold text-gray-700">Nigeria's #1 Student Platform</span>
+              </div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                Connect, Compete,
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600"> Thrive</span>
               </h1>
-              <p className="text-xl md:text-2xl mb-8 animate-fade-in-delay">
-                {s.description}
+              <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
+                Join thousands of students across Nigeria. Discover events, compete in tournaments, find opportunities, and build your future.
               </p>
-              {s.link && (
-                <a
-                  href={s.link}
-                  className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors"
+              <div className="flex flex-wrap gap-4 pt-4">
+                <Link
+                  to="/signup"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-full font-bold shadow-lg hover:shadow-xl transition-all hover:scale-105"
                 >
-                  Learn More
-                </a>
+                  Get Started Free
+                </Link>
+                <Link
+                  to="/entertainment"
+                  className="inline-flex items-center gap-2 bg-white text-gray-800 px-8 py-4 rounded-full font-bold shadow-lg hover:shadow-xl transition-all hover:scale-105"
+                >
+                  Explore Platform
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT SIDE - Image Slideshow */}
+          <div className="relative">
+            <div className="absolute -top-4 -right-4 bg-green-500 text-white px-5 py-2.5 rounded-full font-bold shadow-lg flex items-center gap-2 z-10 animate-bounce">
+              <Sparkles size={18} />
+              Live Now!
+            </div>
+            
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+              {/* Slideshow Images */}
+              {slides.length > 0 ? (
+                slides.map((slide, index) => (
+                  <div
+                    key={slide.id}
+                    className={`transition-opacity duration-1000 ${
+                      index === currentSlide ? 'opacity-100' : 'opacity-0 absolute inset-0'
+                    }`}
+                  >
+                    <img
+                      src={slide.image}
+                      alt={`Slide ${index + 1}`}
+                      className="w-full h-[500px] object-cover"
+                    />
+                  </div>
+                ))
+              ) : (
+                <img
+                  src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=600&fit=crop"
+                  alt="Students"
+                  className="w-full h-[500px] object-cover"
+                />
+              )}
+              
+              {/* Trending Badge */}
+              <div className="absolute bottom-6 left-6">
+                <div className="bg-orange-500 text-white px-5 py-2.5 rounded-full font-bold shadow-lg flex items-center gap-2">
+                  <TrendingUp size={18} />
+                  Trending
+                </div>
+              </div>
+
+              {/* Slide Indicators */}
+              {slides.length > 1 && (
+                <div className="absolute bottom-6 right-6 flex gap-2">
+                  {slides.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      className={`h-2 rounded-full transition-all ${
+                        index === currentSlide
+                          ? 'bg-white w-8'
+                          : 'bg-white/50 w-2 hover:bg-white/75'
+                      }`}
+                      aria-label={`Go to slide ${index + 1}`}
+                    />
+                  ))}
+                </div>
               )}
             </div>
           </div>
         </div>
-      ))}
-
-      {/* Navigation Arrows */}
-      {slides.length > 1 && (
-        <>
-          <button
-            onClick={prevSlide}
-            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition-all z-10"
-            aria-label="Previous slide"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <button
-            onClick={nextSlide}
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition-all z-10"
-            aria-label="Next slide"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
-        </>
-      )}
-
-      {/* Dots Indicator */}
-      {slides.length > 1 && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all ${
-                index === currentSlide
-                  ? 'bg-white w-8'
-                  : 'bg-white/50 hover:bg-white/75'
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-      )}
+      </div>
     </div>
   );
 }
