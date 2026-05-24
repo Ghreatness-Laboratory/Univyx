@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Briefcase, Users, GraduationCap, Calendar, TrendingUp, Sparkles } from 'lucide-react';
+import { Briefcase, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
+import heroImage from '../../../assets/images/homepage/hero-image.png';
 
 interface Slide {
   id: string;
@@ -58,10 +59,10 @@ export default function HeroSlideshow() {
   };
 
   return (
-    <div className="relative bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 overflow-hidden">
+    <div className="relative bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 min-h-screen flex items-center overflow-hidden">
       <div className="container mx-auto px-4 py-12">
-        {/* Top Bar */}
-        <div className="flex justify-start items-center mb-8">
+        {/* Top Navigation Bar */}
+        <div className="flex justify-start items-center mb-12">
           <Link
             to="/jobs"
             className="inline-flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105"
@@ -71,125 +72,110 @@ export default function HeroSlideshow() {
           </Link>
         </div>
 
-        {/* Main Hero Section - Split Layout */}
-        <div className="grid lg:grid-cols-2 gap-8 items-center">
-          {/* LEFT SIDE - Content */}
+        {/* Main Hero Content */}
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* LEFT SIDE - Main Content */}
           <div className="space-y-8">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-blue-100/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all hover:scale-105">
-                <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-1">
-                  {stats.students >= 1000 ? `${Math.floor(stats.students / 1000)}K+` : `${stats.students}+`}
-                </div>
-                <div className="flex items-center gap-1.5 text-blue-700">
-                  <Users size={16} />
-                  <span className="text-sm font-medium">Students</span>
-                </div>
+            {/* Main Heading */}
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold">
+                <Sparkles size={16} />
+                Nigeria's #1 Platform
               </div>
-              <div className="bg-purple-100/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all hover:scale-105">
-                <div className="text-3xl md:text-4xl font-bold text-purple-600 mb-1">{stats.universities}+</div>
-                <div className="flex items-center gap-1.5 text-purple-700">
-                  <GraduationCap size={16} />
-                  <span className="text-sm font-medium">Universities</span>
-                </div>
-              </div>
-              <div className="bg-pink-100/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all hover:scale-105">
-                <div className="text-3xl md:text-4xl font-bold text-pink-600 mb-1">{stats.events}+</div>
-                <div className="flex items-center gap-1.5 text-pink-700">
-                  <Calendar size={16} />
-                  <span className="text-sm font-medium">Events</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Hero Text */}
-            <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-md">
-                <Sparkles size={18} className="text-purple-600" />
-                <span className="text-sm font-semibold text-gray-700">Nigeria's #1 Student Platform</span>
-              </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Connect, Compete,
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600"> Thrive</span>
+              
+              <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
+                Revolutionizing
+                <br />
+                <span className="text-blue-600">Student</span>
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+                  Experience
+                </span>
               </h1>
-              <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
-                Join thousands of students across Nigeria. Discover events, compete in tournaments, find opportunities, and build your future.
+              
+              <p className="text-xl text-gray-600 leading-relaxed max-w-lg">
+                Connect with thousands of students, discover opportunities, compete in tournaments, and build your future on Nigeria's fastest-growing student platform.
               </p>
-              <div className="flex flex-wrap gap-4 pt-4">
+              
+              <div className="flex flex-wrap gap-4">
                 <Link
                   to="/signup"
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-full font-bold shadow-lg hover:shadow-xl transition-all hover:scale-105"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105"
                 >
-                  Get Started Free
+                  Join Now →
                 </Link>
                 <Link
                   to="/entertainment"
-                  className="inline-flex items-center gap-2 bg-white text-gray-800 px-8 py-4 rounded-full font-bold shadow-lg hover:shadow-xl transition-all hover:scale-105"
+                  className="bg-white text-gray-800 px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 border border-gray-200"
                 >
                   Explore Platform
                 </Link>
               </div>
             </div>
+
+            {/* Stats Row */}
+            <div className="flex gap-8 pt-8">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-900">
+                  {stats.students >= 1000 ? `${Math.floor(stats.students / 1000)}K+` : `${stats.students}+`}
+                </div>
+                <div className="text-sm text-gray-600 font-medium">Students</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-900">{stats.universities}+</div>
+                <div className="text-sm text-gray-600 font-medium">Universities</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-900">{stats.events}+</div>
+                <div className="text-sm text-gray-600 font-medium">Events</div>
+              </div>
+            </div>
           </div>
 
-          {/* RIGHT SIDE - Image Slideshow */}
+          {/* RIGHT SIDE - Image */}
           <div className="relative">
-            <div className="absolute -top-4 -right-4 bg-green-500 text-white px-5 py-2.5 rounded-full font-bold shadow-lg flex items-center gap-2 z-10 animate-bounce">
-              <Sparkles size={18} />
-              Live Now!
-            </div>
-            
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-              {/* Slideshow Images */}
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-white p-4">
               {slides.length > 0 ? (
                 slides.map((slide, index) => (
                   <div
                     key={slide.id}
                     className={`transition-opacity duration-1000 ${
-                      index === currentSlide ? 'opacity-100' : 'opacity-0 absolute inset-0'
+                      index === currentSlide ? 'opacity-100' : 'opacity-0 absolute inset-4'
                     }`}
                   >
                     <img
                       src={slide.image}
                       alt={`Slide ${index + 1}`}
-                      className="w-full h-[500px] object-cover"
+                      className="w-full h-80 object-cover rounded-2xl"
                     />
                   </div>
                 ))
               ) : (
                 <img
-                  src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=600&fit=crop"
+                  src={heroImage}
                   alt="Students"
-                  className="w-full h-[500px] object-cover"
+                  className="w-full h-80 object-cover rounded-2xl"
                 />
               )}
-              
-              {/* Trending Badge */}
-              <div className="absolute bottom-6 left-6">
-                <div className="bg-orange-500 text-white px-5 py-2.5 rounded-full font-bold shadow-lg flex items-center gap-2">
-                  <TrendingUp size={18} />
-                  Trending
-                </div>
-              </div>
-
-              {/* Slide Indicators */}
-              {slides.length > 1 && (
-                <div className="absolute bottom-6 right-6 flex gap-2">
-                  {slides.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentSlide(index)}
-                      className={`h-2 rounded-full transition-all ${
-                        index === currentSlide
-                          ? 'bg-white w-8'
-                          : 'bg-white/50 w-2 hover:bg-white/75'
-                      }`}
-                      aria-label={`Go to slide ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              )}
             </div>
+            
+            {/* Slide Indicators */}
+            {slides.length > 1 && (
+              <div className="flex justify-center gap-2 mt-4">
+                {slides.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentSlide(index)}
+                    className={`h-2 rounded-full transition-all ${
+                      index === currentSlide
+                        ? 'bg-blue-600 w-8'
+                        : 'bg-gray-300 w-2 hover:bg-gray-400'
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))} 
+              </div>
+            )}
           </div>
         </div>
       </div>
