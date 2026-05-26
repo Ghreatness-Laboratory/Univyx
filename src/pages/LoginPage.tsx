@@ -19,12 +19,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-purple-50 to-pink-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Animated background elements */}
+    <div className="min-h-screen bg-gradient-to-br from-[#f5f1ff] via-[#f4edff] to-[#fdeeff] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none opacity-[0.16] [background-image:linear-gradient(to_right,rgba(255,255,255,0.7)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.7)_1px,transparent_1px)] [background-size:48px_48px]"></div>
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-orange-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
-        <div className="absolute top-40 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-8 left-1/2 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
+        <div className="absolute top-16 left-8 w-72 h-72 bg-[#ffbfd3] rounded-full blur-3xl opacity-35 animate-blob"></div>
+        <div className="absolute top-32 right-8 w-72 h-72 bg-[#bfa8ff] rounded-full blur-3xl opacity-35 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-10 left-1/2 w-80 h-80 bg-[#d0b5ff] rounded-full blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/80 rounded-full animate-float opacity-70"></div>
+        <div className="absolute top-2/3 right-1/4 w-1.5 h-1.5 bg-white/80 rounded-full animate-float animation-delay-2000 opacity-70"></div>
       </div>
 
       <div className="max-w-md w-full space-y-8 relative z-10">
@@ -36,15 +38,15 @@ export default function LoginPage() {
               className="h-20 mx-auto drop-shadow-lg"
             />
           </Link>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">
             Welcome back! 👋
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-base text-gray-600">
             Let's get you back to the action
           </p>
         </div>
         
-        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-white/20">
+        <div className="bg-white/45 backdrop-blur-2xl rounded-3xl shadow-[0_18px_60px_rgba(94,72,173,0.25)] p-8 border border-white/55">
           <Login />
         </div>
         
@@ -75,6 +77,13 @@ export default function LoginPage() {
         }
         .animation-delay-4000 {
           animation-delay: 4s;
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+        .animate-float {
+          animation: float 5s ease-in-out infinite;
         }
       `}</style>
     </div>
