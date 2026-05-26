@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import UnivyxLogo from "../../assets/images/univyx-logo.svg";
 
 interface FormData {
   email: string;
@@ -44,25 +43,25 @@ export default function Login() {
   };
 
   return (
-    <div data-testid="login-page" className="w-full md:max-w-[90%] mx-auto">
-      <img
-        src={UnivyxLogo}
-        alt="Univyx logo and title"
-        width={200}
-        height={100}
-        className="h-[80px] md:h-[100px] mx-auto"
-      />
-
-      <h1 className="py-3 text-xl md:text-3xl font-semibold text-center">
-        Welcome back to Univyx
-      </h1>
+    <div data-testid="login-page" className="w-full md:max-w-[95%] mx-auto">
+      <div className="mb-5 rounded-2xl border border-orange-100 bg-gradient-to-r from-orange-50 via-pink-50 to-purple-50 p-4 text-center">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-500">
+          Student Hub
+        </p>
+        <h1 className="pt-1 text-xl md:text-2xl font-bold text-gray-900">
+          Pull up, your campus feed is waiting ✨
+        </h1>
+        <p className="pt-1 text-sm text-gray-600">
+          Log in to catch updates, gigs, events & notes in one spot.
+        </p>
+      </div>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="w-full flex flex-col gap-4 pt-5"
       >
         <div>
-          <label className="block text-[14px] text-primary font-mormal mb-1">
+          <label className="block text-[14px] text-primary font-semibold mb-1">
             Email
           </label>
           <input
@@ -74,8 +73,8 @@ export default function Login() {
                 message: "Invalid email format",
               },
             })}
-            placeholder="Enter your email"
-            className="w-full p-4 border border-gray-300 rounded-md text-sm"
+            placeholder="you@school.edu"
+            className="w-full p-4 border border-orange-200 rounded-xl text-sm bg-white/80 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-300 transition-all"
           />
           {errors.email && (
             <p className="text-red-500 text-sm">{errors.email.message}</p>
@@ -83,7 +82,7 @@ export default function Login() {
         </div>
 
         <div>
-          <label className="block text-[14px] text-primary font-mormal mb-1">
+          <label className="block text-[14px] text-primary font-semibold mb-1">
             Password
           </label>
           <input
@@ -91,8 +90,8 @@ export default function Login() {
             {...register("password", {
               required: "Password is required",
             })}
-            placeholder="Enter your password"
-            className="w-full p-4 border border-gray-300 rounded-md text-sm"
+            placeholder="••••••••"
+            className="w-full p-4 border border-orange-200 rounded-xl text-sm bg-white/80 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-300 transition-all"
           />
           {errors.password && (
             <p className="text-red-500 text-sm">{errors.password.message}</p>
@@ -106,31 +105,31 @@ export default function Login() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-primary font-semibold text-[#FCFCFC] py-2 md:py-3 mt-2.5 rounded-md disabled:opacity-50"
+          className="w-full bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 font-semibold text-[#FCFCFC] py-3 mt-2.5 rounded-xl disabled:opacity-50 hover:scale-[1.01] transition-all shadow-lg shadow-pink-200"
         >
-          {isLoading ? 'Logging in...' : 'Login'}
+          {isLoading ? 'Logging in...' : 'Enter Hub'}
         </button>
       </form>
 
-      <p className="text-[#808080] text-sm text-center pt-2">
+      <p className="text-[#808080] text-sm text-center pt-3">
         Don't have an account?{" "}
         <Link
           to="/signup"
-          className="text-black hover:underline transition-all duration-300"
+          className="text-orange-600 font-semibold hover:underline transition-all duration-300"
         >
-          Sign up
+          Create one in 2 mins
         </Link>
       </p>
 
       <div className="flex items-center justify-center my-5 md:my-8">
         <div className="w-full h-px bg-gray-300"></div>
-        <span className="mx-2 text-gray-500">Or</span>
+        <span className="mx-2 text-gray-500 text-sm">or vibe-check with</span>
         <div className="w-full h-px bg-gray-300"></div>
       </div>
 
       <div className="flex max-sm:flex-col items-center justify-center gap-[13px] text-[#FCFCFC] text-sm font-semibold leading-4">
         <button
-          className="flex gap-1 items-center justify-center py-4 rounded-[5.35px] w-full bg-primary text-[#FCFCFC] border border-[#64748B] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] cursor-pointer"
+          className="flex gap-2 items-center justify-center py-3.5 rounded-xl w-full bg-gray-900 text-[#FCFCFC] border border-gray-700 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] cursor-pointer hover:bg-black transition-colors"
           aria-label="Login with google"
           data-testid="login-link"
         >
@@ -160,10 +159,10 @@ export default function Login() {
               fill="#1565C0"
             />
           </svg>
-          <p>Login with Google</p>
+          <p>Continue with Google</p>
         </button>
         <button
-          className="flex gap-1 items-center justify-center py-4 rounded-[5.35px] w-full bg-primary text-[#FCFCFC] border border-[#64748B] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] cursor-pointer"
+          className="flex gap-2 items-center justify-center py-3.5 rounded-xl w-full bg-gray-900 text-[#FCFCFC] border border-gray-700 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] cursor-pointer hover:bg-black transition-colors"
           aria-label="Login with apple"
           data-testid="login-link"
         >
@@ -181,7 +180,7 @@ export default function Login() {
               strokeWidth="0.668812"
             />
           </svg>
-          <p>Login with Apple</p>
+          <p>Continue with Apple</p>
         </button>
       </div>
     </div>
