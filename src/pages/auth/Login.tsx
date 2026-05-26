@@ -10,6 +10,22 @@ interface FormData {
   password: string;
 }
 
+function IntroCard() {
+  return (
+    <section className="mb-5 rounded-3xl border border-white/60 bg-white/35 p-5 text-center backdrop-blur-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]">
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7d2b11]">
+        STUDENT HUB
+      </p>
+      <h1 className="pt-2 text-[2rem] font-black leading-tight tracking-tight text-gray-900">
+        Pull up, your campus feed is waiting ✨
+      </h1>
+      <p className="pt-2 text-lg text-gray-700">
+        {"Log in to catch updates, gigs, events & notes in one spot."}
+      </p>
+    </section>
+  );
+}
+
 export default function Login() {
   const {
     register,
