@@ -146,6 +146,16 @@ export default function Login() {
           Continue with Apple
         </button>
       </div>
+      <style>{`
+        @keyframes buttonGradient {
+          0% { background-position: 0% 50%; background-image: linear-gradient(110deg, #3b1f87, #324ec7, #257f84, #b98b70); }
+          50% { background-position: 100% 50%; background-image: linear-gradient(110deg, #4a27a1, #2a5ddc, #2c8b7b, #c79d84); }
+          100% { background-position: 0% 50%; background-image: linear-gradient(110deg, #3b1f87, #324ec7, #257f84, #b98b70); }
+        }
+        .animate-btn-gradient {
+          animation: buttonGradient 10s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 }

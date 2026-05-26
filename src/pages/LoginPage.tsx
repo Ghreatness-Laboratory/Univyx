@@ -80,6 +80,14 @@ export default function LoginPage() {
         .animate-blob {
           animation: blob 7s infinite;
         }
+        @keyframes luxeGradient {
+          0% { background: linear-gradient(120deg, #2d1260, #3447a8, #1f7f85, #b6896e); }
+          50% { background: linear-gradient(120deg, #3c1f77, #2350bd, #287f74, #c39a7f); }
+          100% { background: linear-gradient(120deg, #2d1260, #3447a8, #1f7f85, #b6896e); }
+        }
+        .animate-luxe-gradient {
+          animation: luxeGradient 14s ease-in-out infinite;
+        }
         .animation-delay-2000 {
           animation-delay: 2s;
         }
