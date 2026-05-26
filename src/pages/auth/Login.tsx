@@ -16,7 +16,7 @@ export default function Login() {
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>();
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -26,16 +26,14 @@ export default function Login() {
     try {
       setIsLoading(true);
       setApiError(null);
-      console.log('Attempting login with:', data.email);
       await login(data.email, data.password);
-      console.log('Login successful, navigating to home');
-      navigate('/', { replace: true });
+      navigate("/", { replace: true });
     } catch (error: any) {
-      console.error('Login failed:', error);
-      const errorMessage = error.response?.data?.message || 
-                          error.response?.data?.detail || 
-                          error.message || 
-                          'Login failed. Please try again.';
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.detail ||
+        error?.message ||
+        "Login failed. Please try again.";
       setApiError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -66,9 +64,7 @@ export default function Login() {
             placeholder="you@school.edu"
 
           />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email.message}</p>
-          )}
+          {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
         </div>
 
         <div>
@@ -81,14 +77,10 @@ export default function Login() {
             placeholder="••••••••"
 
           />
-          {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password.message}</p>
-          )}
+          {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
         </div>
 
-        {apiError && (
-          <p className="text-red-500 text-sm text-center">{apiError}</p>
-        )}
+        {apiError && <p className="text-center text-sm text-red-500">{apiError}</p>}
 
         <button
           type="submit"
@@ -113,7 +105,7 @@ export default function Login() {
         <div className="w-full h-px bg-gray-300"></div>
       </div>
 
-      <div className="flex max-sm:flex-col items-center justify-center gap-[13px] text-[#FCFCFC] text-sm font-semibold leading-4">
+      <div className="flex items-center justify-center gap-[13px] text-sm font-semibold leading-4 text-[#FCFCFC] max-sm:flex-col">
         <button
           className="flex gap-2 items-center justify-center py-3.5 rounded-xl w-full bg-gray-900 text-[#FCFCFC] border border-gray-700 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] cursor-pointer hover:bg-black transition-colors"
           aria-label="Login with google"
