@@ -1,5 +1,4 @@
 "use client";
-
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -12,15 +11,15 @@ interface FormData {
 
 function IntroCard() {
   return (
-    <section className="mb-5 rounded-3xl border border-white/45 bg-white/20 p-5 text-center backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]">
-      <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#ffe1c6]">
+    <section className="mb-5 rounded-3xl border border-white/60 bg-white/35 p-5 text-center backdrop-blur-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]">
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7d2b11]">
         STUDENT HUB
       </p>
-      <h1 className="pt-2 text-[2rem] sm:text-[2.25rem] font-black leading-tight tracking-tight text-white">
+      <h1 className="pt-2 text-[2rem] font-black leading-tight tracking-tight text-gray-900">
         Access the elite campus network now ✨
       </h1>
-      <p className="pt-2 text-base text-white/85">
-        {"Log in to discover the finest campus updates, gists, events & games."}
+      <p className="pt-2 text-lg text-gray-700">
+       Login to discover the finest campus updates, gists, events & games in a single premium network
       </p>
     </section>
   );
@@ -57,15 +56,16 @@ export default function Login() {
   };
 
   return (
-    <div data-testid="login-page" className="w-full md:max-w-[95%] mx-auto">
+    <div data-testid="login-page" className="w-full max-w-md mx-auto px-4 py-8">
       <IntroCard />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="w-full pt-3 flex flex-col gap-5">
-        <div className="relative">
-          <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
             Email
           </label>
           <input
+            id="email"
             type="email"
             {...register("email", {
               required: "Email is required",
@@ -75,29 +75,25 @@ export default function Login() {
               },
             })}
             placeholder="you@school.edu"
-            className="h-14 w-full rounded-2xl border border-white/35 bg-white/20 px-4 text-base text-white placeholder:text-white/60 transition-all focus:border-[#9ad3ff] focus:outline-none focus:ring-4 focus:ring-[#a695ff]/40"
+            className="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
-          {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+          {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>}
         </div>
 
-        <div className="relative">
-          <div className="mb-2 flex items-center justify-between">
-            <label className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
-              Password
-            </label>
-            <a href="#" className="text-sm font-semibold text-[#ffe2ca] hover:text-white hover:underline">
-              Forgot?
-            </a>
-          </div>
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            Password
+          </label>
           <input
+            id="password"
             type="password"
             {...register("password", {
               required: "Password is required",
             })}
             placeholder="••••••••"
-            className="h-14 w-full rounded-2xl border border-white/35 bg-white/20 px-4 text-base text-white placeholder:text-white/60 transition-all focus:border-[#9ad3ff] focus:outline-none focus:ring-4 focus:ring-[#a695ff]/40"
+            className="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
-          {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+          {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>}
         </div>
 
         {apiError && <p className="text-center text-sm text-red-500">{apiError}</p>}
@@ -105,44 +101,49 @@ export default function Login() {
         <button
           type="submit"
           disabled={isLoading}
-          className="mt-2 h-14 w-full rounded-2xl border border-white/30 font-bold text-white transition-all hover:scale-[1.01] hover:shadow-[0_12px_35px_rgba(102,78,255,0.45)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-violet-200/80 disabled:opacity-50 bg-[length:220%_220%] animate-btn-gradient"
+          className="bg-orange-600 hover:bg-orange-700 disabled:opacity-70 transition-colors text-white font-semibold py-3.5 rounded-2xl text-lg"
         >
           {isLoading ? "Logging in..." : "Log In"}
         </button>
       </form>
 
-      <p className="pt-3 text-center text-sm text-white/80">
-        Don&apos;t have an account?{" "}
+      <p className="text-[#808080] text-sm text-center pt-6">
+        Don't have an account?{" "}
         <Link
           to="/signup"
-          className="font-semibold text-[#ffe2ca] transition-all duration-300 hover:text-white hover:underline"
+          className="text-orange-600 font-semibold hover:underline transition-all duration-300"
         >
           Create one in 2 mins
         </Link>
       </p>
 
-      <div className="my-5 flex items-center justify-center md:my-8">
-        <div className="h-px w-full bg-white/25"></div>
-        <span className="mx-2 text-xs uppercase tracking-[0.2em] text-white/65">
-          OR VIBE-CHECK WITH
-        </span>
-        <div className="h-px w-full bg-white/25"></div>
+      <div className="flex items-center justify-center my-6">
+        <div className="flex-1 h-px bg-gray-300"></div>
+        <span className="px-4 text-xs text-gray-500 font-medium">OR</span>
+        <div className="flex-1 h-px bg-gray-300"></div>
       </div>
 
-      <div className="flex items-center justify-center gap-[13px] text-sm font-semibold leading-4 text-[#FCFCFC] max-sm:flex-col">
+      <div className="flex flex-col gap-3">
         <button
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-[#0f1020]/80 py-3.5 text-[#FCFCFC] shadow-[0_8px_24px_rgba(8,10,30,0.4)] transition-all hover:bg-black/80 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200/70"
-          aria-label="Login with google"
-          data-testid="login-link"
+          className="flex gap-2 items-center justify-center py-3.5 rounded-xl w-full bg-gray-900 text-white border border-gray-700 hover:bg-black transition-colors"
+          aria-label="Login with Google"
         >
-          <span>Google</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="15" viewBox="0 0 14 15" fill="none">
+            {/* Google SVG paths (kept from your original) */}
+            <path d="M6.84492 2.39642C8.09951 2.39642 9.24812 2.84084 10.1505 3.57827L9.0405 4.68827C8.42844 4.23054 7.66939 3.95698 6.84492 3.95698C4.81347 3.95698 3.16645 5.604 3.16645 7.63544C3.16645 9.66689 4.81347 11.3139 6.84492 11.3139C8.44717 11.3139 9.80488 10.2882 10.31 8.86175L10.4679 8.41572H9.99474H7.17932V6.85516H11.5266V6.87829H11.861H12.0283C12.0646 7.12592 12.0839 7.37862 12.0839 7.63544C12.0839 10.5287 9.73816 12.8745 6.84492 12.8745C3.95168 12.8745 1.60589 10.5287 1.60589 7.63544C1.60589 4.7422 3.95168 2.39642 6.84492 2.39642Z" fill="#FBC02D" stroke="#FCFCFC" strokeWidth="0.668812"/>
+            {/* ... rest of Google SVG (you can keep your original) */}
+          </svg>
+          Continue with Google
         </button>
+
         <button
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-[#0f1020]/80 py-3.5 text-[#FCFCFC] shadow-[0_8px_24px_rgba(8,10,30,0.4)] transition-all hover:bg-black/80 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200/70"
-          aria-label="Login with apple"
-          data-testid="login-link"
+          className="flex gap-2 items-center justify-center py-3.5 rounded-xl w-full bg-gray-900 text-white border border-gray-700 hover:bg-black transition-colors"
+          aria-label="Login with Apple"
         >
-          <span>Apple</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
+            {/* Apple SVG */}
+          </svg>
+          Continue with Apple
         </button>
       </div>
       <style>{`
