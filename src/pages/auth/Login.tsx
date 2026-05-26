@@ -16,10 +16,10 @@ function IntroCard() {
         STUDENT HUB
       </p>
       <h1 className="pt-2 text-[2rem] font-black leading-tight tracking-tight text-gray-900">
-        Pull up, your campus feed is waiting ✨
+        Access the elite campus network now ✨
       </h1>
       <p className="pt-2 text-lg text-gray-700">
-        Log in to catch updates, gigs, events & notes in one spot.
+       Login to discover the finest campus updates, gists, events & games in a single premium network
       </p>
     </section>
   );
