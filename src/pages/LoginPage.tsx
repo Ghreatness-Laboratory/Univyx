@@ -8,8 +8,8 @@ export default function LoginPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-[#f8f5ff]">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#a84d0d]"></div>
       </div>
     );
   }
@@ -19,49 +19,57 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f5f1ff] via-[#f4edff] to-[#fdeeff] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none opacity-[0.16] [background-image:linear-gradient(to_right,rgba(255,255,255,0.7)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.7)_1px,transparent_1px)] [background-size:48px_48px]"></div>
+    <div className="min-h-screen relative overflow-hidden bg-[radial-gradient(circle_at_25%_35%,rgba(255,194,164,0.35),transparent_45%),radial-gradient(circle_at_78%_64%,rgba(188,154,255,0.35),transparent_42%),linear-gradient(135deg,#f2eff9_0%,#f6f1f9_48%,#efe9ff_100%)]">
+      
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.18] [background-image:radial-gradient(#ffffff_1px,transparent_1px)] [background-size:3px_3px]"></div>
+      
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-16 left-8 w-72 h-72 bg-[#ffbfd3] rounded-full blur-3xl opacity-35 animate-blob"></div>
-        <div className="absolute top-32 right-8 w-72 h-72 bg-[#bfa8ff] rounded-full blur-3xl opacity-35 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-10 left-1/2 w-80 h-80 bg-[#d0b5ff] rounded-full blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/80 rounded-full animate-float opacity-70"></div>
-        <div className="absolute top-2/3 right-1/4 w-1.5 h-1.5 bg-white/80 rounded-full animate-float animation-delay-2000 opacity-70"></div>
+        <div className="absolute top-24 left-8 sm:left-16 w-80 h-80 bg-orange-200/60 rounded-full blur-3xl animate-blob"></div>
+        <div className="absolute top-40 right-4 sm:right-16 w-96 h-96 bg-violet-300/45 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-24 left-1/3 w-80 h-80 bg-pink-200/55 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
       </div>
 
-      <div className="max-w-md w-full space-y-8 relative z-10">
-        <div className="text-center">
-          <Link to="/" className="inline-block transform hover:scale-105 transition-transform">
-            <img
-              src={UnivyxLogo}
-              alt="Univyx logo"
-              className="h-20 mx-auto drop-shadow-lg"
-            />
-          </Link>
-          <h2 className="mt-6 text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">
+      <main className="relative z-10 flex flex-col items-center px-4 sm:px-6 py-12 sm:py-16 min-h-screen">
+        
+        {/* Logo & Heading */}
+        <div className="text-center mb-8">
+          <div className="inline-flex p-2 rounded-2xl border border-white/40 bg-white/40 backdrop-blur-sm shadow-sm">
+            <img src={UnivyxLogo} alt="Univyx logo" className="h-7 w-auto" />
+          </div>
+          <h2 className="mt-6 text-4xl sm:text-5xl font-black text-gray-900 tracking-tight">
             Welcome back! 👋
           </h2>
-          <p className="mt-2 text-base text-gray-600">
+          <p className="mt-3 text-lg text-gray-700">
             Let's get you back to the action
           </p>
         </div>
-        
-        <div className="bg-white/45 backdrop-blur-2xl rounded-3xl shadow-[0_18px_60px_rgba(94,72,173,0.25)] p-8 border border-white/55">
+
+        {/* Login Form Container */}
+        <div className="w-full max-w-md sm:max-w-[480px] bg-white/48 backdrop-blur-2xl rounded-[2rem] shadow-[0_18px_50px_rgba(61,35,112,0.24)] p-5 sm:p-8 border border-white/60">
           <Login />
         </div>
-        
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
+
+        {/* Sign up prompt */}
+        <div className="text-center mt-10">
+          <p className="text-2xl text-gray-800">
             New here? 🚀{" "}
             <Link
               to="/signup"
-              className="font-bold text-orange-600 hover:text-orange-500 transition-colors underline decoration-wavy"
+              className="font-bold text-[#7d2b11] hover:text-[#5f1f0d] transition-colors"
             >
               Join the community
             </Link>
           </p>
         </div>
-      </div>
+      </main>
+
+      {/* Optional Minimal Footer - Remove if you still see double footer */}
+      {/* 
+      <footer className="relative z-10 border-t border-black/10 bg-white/55 backdrop-blur-md py-6 text-center text-sm text-black/60">
+        © 2024 Univyx. The Digital Campus.
+      </footer>
+      */}
 
       <style>{`
         @keyframes blob {
