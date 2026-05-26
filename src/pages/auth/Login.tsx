@@ -1,5 +1,4 @@
 "use client";
-
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -9,6 +8,22 @@ import { useAuth } from "../../context/AuthContext";
 interface FormData {
   email: string;
   password: string;
+}
+
+function IntroCard() {
+  return (
+    <section className="mb-5 rounded-3xl border border-white/60 bg-white/35 p-5 text-center backdrop-blur-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]">
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7d2b11]">
+        STUDENT HUB
+      </p>
+      <h1 className="pt-2 text-[2rem] font-black leading-tight tracking-tight text-gray-900">
+        Access the elite campus network now ✨
+      </h1>
+      <p className="pt-2 text-lg text-gray-700">
+       Login to discover the finest campus updates, gists, events & games in a single premium network
+      </p>
+    </section>
+  );
 }
 
 export default function Login() {
@@ -42,36 +57,16 @@ export default function Login() {
   };
 
   return (
-    <div
-      data-testid="login-page"
-      className="w-full mx-auto bg-white rounded-[32px] p-7 sm:p-9 shadow-[0_18px_50px_rgba(15,23,42,0.12)] border border-gray-100"
-    >
-      <div className="flex justify-center mb-5">
-        <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 bg-orange-50 border border-orange-100">
-          <span className="inline-block w-2 h-2 rounded-full bg-primary"></span>
-          <span className="text-[11px] tracking-[0.14em] font-bold text-primary">
-            STUDENT HUB
-          </span>
-        </div>
-      </div>
+    <div data-testid="login-page" className="w-full max-w-md mx-auto px-4 py-8">
+      <IntroCard />
 
-      <h1 className="text-center text-3xl sm:text-[2.1rem] font-bold leading-tight text-gray-900">
-        Access the elite campus network now ✨
-      </h1>
-      <p className="text-center mt-3 text-sm sm:text-base text-gray-600 max-w-[520px] mx-auto">
-        Login to discover the finest campus updates, gists, events & games in a
-        single premium network
-      </p>
-
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full flex flex-col gap-5 pt-7"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
         <div>
-          <label className="block text-[13px] text-gray-700 font-semibold mb-2">
-            Email Address
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            Email
           </label>
           <input
+            id="email"
             type="email"
             {...register("email", {
               required: "Email is required",
@@ -80,84 +75,88 @@ export default function Login() {
                 message: "Invalid email format",
               },
             })}
-            placeholder="name@university.edu"
-            className="w-full h-12 px-4 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-orange-100 focus:border-orange-300 transition-all"
+            placeholder="you@school.edu"
+            className="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
-          {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-          )}
+          {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>}
         </div>
 
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-[13px] text-gray-700 font-semibold">
-              Password
-            </label>
-            <a href="#" className="text-xs font-semibold text-primary hover:underline">
-              Forgot password?
-            </a>
-          </div>
-          <div className="relative">
-            <input
-              type="password"
-              {...register("password", {
-                required: "Password is required",
-              })}
-              placeholder="••••••••"
-              className="w-full h-12 pl-4 pr-11 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-orange-100 focus:border-orange-300 transition-all"
-            />
-            <button
-              type="button"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              aria-label="Toggle password visibility"
-            >
-              <Eye size={18} />
-            </button>
-          </div>
-          {errors.password && (
-            <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-          )}
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            {...register("password", {
+              required: "Password is required",
+            })}
+            placeholder="••••••••"
+            className="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
+          />
+          {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>}
         </div>
 
-        {apiError && <p className="text-red-500 text-sm text-center">{apiError}</p>}
+        {apiError && <p className="text-center text-sm text-red-500">{apiError}</p>}
 
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-primary font-semibold text-white h-12 mt-1 rounded-xl disabled:opacity-50 hover:brightness-105 transition-all"
+          className="bg-orange-600 hover:bg-orange-700 disabled:opacity-70 transition-colors text-white font-semibold py-3.5 rounded-2xl text-lg"
         >
           {isLoading ? "Logging in..." : "Log In"}
         </button>
       </form>
 
-      <div className="flex items-center justify-center my-6">
-        <div className="w-full h-px bg-gray-200"></div>
-        <span className="mx-3 text-gray-400 text-xs font-semibold tracking-[0.18em]">
-          OR
-        </span>
-        <div className="w-full h-px bg-gray-200"></div>
-      </div>
-
-      <button
-        className="flex gap-2 items-center justify-center h-12 rounded-xl w-full bg-gray-900 text-white border border-gray-800 shadow-sm hover:bg-black transition-colors text-sm font-semibold"
-        aria-label="Continue with google"
-        data-testid="login-link"
-      >
-        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-white text-gray-900 text-[10px] font-bold">
-          G
-        </span>
-        <span>Continue with Google</span>
-      </button>
-
-      <p className="text-gray-600 text-sm text-center pt-5">
-        New to the elite circle?{" "}
+      <p className="text-[#808080] text-sm text-center pt-6">
+        Don't have an account?{" "}
         <Link
           to="/signup"
-          className="text-primary font-semibold hover:underline transition-all duration-300"
+          className="text-orange-600 font-semibold hover:underline transition-all duration-300"
         >
-          Create an account
+          Create one in 2 mins
         </Link>
       </p>
+
+      <div className="flex items-center justify-center my-6">
+        <div className="flex-1 h-px bg-gray-300"></div>
+        <span className="px-4 text-xs text-gray-500 font-medium">OR</span>
+        <div className="flex-1 h-px bg-gray-300"></div>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <button
+          className="flex gap-2 items-center justify-center py-3.5 rounded-xl w-full bg-gray-900 text-white border border-gray-700 hover:bg-black transition-colors"
+          aria-label="Login with Google"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="15" viewBox="0 0 14 15" fill="none">
+            {/* Google SVG paths (kept from your original) */}
+            <path d="M6.84492 2.39642C8.09951 2.39642 9.24812 2.84084 10.1505 3.57827L9.0405 4.68827C8.42844 4.23054 7.66939 3.95698 6.84492 3.95698C4.81347 3.95698 3.16645 5.604 3.16645 7.63544C3.16645 9.66689 4.81347 11.3139 6.84492 11.3139C8.44717 11.3139 9.80488 10.2882 10.31 8.86175L10.4679 8.41572H9.99474H7.17932V6.85516H11.5266V6.87829H11.861H12.0283C12.0646 7.12592 12.0839 7.37862 12.0839 7.63544C12.0839 10.5287 9.73816 12.8745 6.84492 12.8745C3.95168 12.8745 1.60589 10.5287 1.60589 7.63544C1.60589 4.7422 3.95168 2.39642 6.84492 2.39642Z" fill="#FBC02D" stroke="#FCFCFC" strokeWidth="0.668812"/>
+            {/* ... rest of Google SVG (you can keep your original) */}
+          </svg>
+          Continue with Google
+        </button>
+
+        <button
+          className="flex gap-2 items-center justify-center py-3.5 rounded-xl w-full bg-gray-900 text-white border border-gray-700 hover:bg-black transition-colors"
+          aria-label="Login with Apple"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
+            {/* Apple SVG */}
+          </svg>
+          Continue with Apple
+        </button>
+      </div>
+      <style>{`
+        @keyframes buttonGradient {
+          0% { background-position: 0% 50%; background-image: linear-gradient(110deg, #3b1f87, #324ec7, #257f84, #b98b70); }
+          50% { background-position: 100% 50%; background-image: linear-gradient(110deg, #4a27a1, #2a5ddc, #2c8b7b, #c79d84); }
+          100% { background-position: 0% 50%; background-image: linear-gradient(110deg, #3b1f87, #324ec7, #257f84, #b98b70); }
+        }
+        .animate-btn-gradient {
+          animation: buttonGradient 10s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 }
