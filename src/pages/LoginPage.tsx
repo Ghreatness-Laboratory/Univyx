@@ -27,8 +27,8 @@ export default function LoginPage() {
         <div className="absolute bottom-24 left-1/3 w-80 h-80 bg-pink-200/55 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
       </div>
 
-      <header className="relative z-10 border-b border-black/10 bg-white/45 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      <header className="relative z-10 border-b border-black/10 bg-white/60 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
           <Link to="/" className="inline-flex items-center">
             <img
               src={UnivyxLogo}
@@ -36,14 +36,14 @@ export default function LoginPage() {
               className="h-8 w-auto"
             />
           </Link>
-          <nav className="hidden lg:flex items-center gap-16 text-[24px] tracking-tight text-black/85">
+          <nav className="hidden lg:flex items-center gap-12 text-lg font-medium tracking-tight text-black/85">
             <Link to="/">Explore</Link>
             <Link to="/">Community</Link>
             <Link to="/">Resources</Link>
           </nav>
           <div className="hidden sm:flex items-center gap-6">
-            <Link to="/login" className="text-lg font-medium text-black/90">Login</Link>
-            <Link to="/signup" className="rounded-full px-7 py-2.5 text-lg font-semibold text-white bg-[#a84d0d] border border-black/25 shadow-sm hover:brightness-110 transition">Join Us</Link>
+            <Link to="/login" className="text-base font-semibold text-black/90">Login</Link>
+            <Link to="/signup" className="rounded-full px-6 py-2 text-base font-semibold text-white bg-[#a84d0d] border border-black/20 shadow-sm hover:brightness-110 transition">Join Us</Link>
           </div>
           <button className="sm:hidden p-2 rounded-lg border border-black/15 bg-white/70" aria-label="Open menu">
             <span className="block w-5 h-0.5 bg-black mb-1"></span>
@@ -66,7 +66,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="w-full max-w-md sm:max-w-[480px] mt-8 sm:mt-10 bg-white/48 backdrop-blur-2xl rounded-[2rem] shadow-[0_18px_50px_rgba(61,35,112,0.24)] p-5 sm:p-8 border border-white/60">
+        <div className="w-full max-w-md sm:max-w-[480px] mt-8 sm:mt-10 bg-white/55 backdrop-blur-2xl rounded-[2rem] shadow-[0_20px_60px_rgba(61,35,112,0.20)] p-5 sm:p-8 border border-white/70">
           <Login />
         </div>
 
@@ -83,13 +83,13 @@ export default function LoginPage() {
         </div>
       </main>
 
-      <footer className="relative z-10 mt-10 border-t border-black/10 bg-white/55 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <footer className="relative z-10 mt-10 border-t border-black/10 bg-white/60 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
             <img src={UnivyxLogo} alt="Univyx logo" className="h-6 w-auto mb-3" />
-            <p className="text-3xl text-black/60">© 2024 Univyx. The Digital Campus.</p>
+            <p className="text-base text-black/60">© 2024 Univyx. The Digital Campus.</p>
           </div>
-          <div className="flex flex-wrap gap-8 text-xl text-black/80">
+          <div className="flex flex-wrap gap-6 text-sm font-medium text-black/80">
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Service</a>
             <a href="#">Help Center</a>

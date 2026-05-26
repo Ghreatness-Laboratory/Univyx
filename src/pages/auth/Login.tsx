@@ -75,7 +75,7 @@ export default function Login() {
               },
             })}
             placeholder="you@school.edu"
-            className="h-14 w-full rounded-2xl border border-black/10 bg-white/55 px-4 text-lg transition-all focus:border-violet-300 focus:outline-none focus:ring-4 focus:ring-violet-200/70"
+            className="h-14 w-full rounded-2xl border border-black/10 bg-white/70 px-4 text-base text-gray-900 placeholder:text-gray-400 transition-all focus:border-violet-300 focus:outline-none focus:ring-4 focus:ring-violet-200/70"
           />
           {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
         </div>
@@ -95,7 +95,7 @@ export default function Login() {
               required: "Password is required",
             })}
             placeholder="••••••••"
-            className="h-14 w-full rounded-2xl border border-black/10 bg-white/55 px-4 text-lg transition-all focus:border-violet-300 focus:outline-none focus:ring-4 focus:ring-violet-200/70"
+            className="h-14 w-full rounded-2xl border border-black/10 bg-white/70 px-4 text-base text-gray-900 placeholder:text-gray-400 transition-all focus:border-violet-300 focus:outline-none focus:ring-4 focus:ring-violet-200/70"
           />
           {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
         </div>
@@ -105,7 +105,7 @@ export default function Login() {
         <button
           type="submit"
           disabled={isLoading}
-          className="mt-2 h-14 w-full rounded-2xl border border-white/30 bg-gradient-to-r from-[#f27d45] via-[#cc4ca0] to-[#7e2bd0] font-bold text-white transition-all hover:scale-[1.01] hover:shadow-[0_12px_30px_rgba(143,52,205,0.35)] disabled:opacity-50"
+          className="mt-2 h-14 w-full rounded-2xl border border-white/30 bg-gradient-to-r from-[#f27d45] via-[#cc4ca0] to-[#7e2bd0] font-bold text-white transition-all hover:scale-[1.01] hover:shadow-[0_12px_30px_rgba(143,52,205,0.35)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-violet-200/80 disabled:opacity-50"
         >
           {isLoading ? "Logging in..." : "Enter Hub →"}
         </button>
@@ -131,14 +131,14 @@ export default function Login() {
 
       <div className="flex items-center justify-center gap-[13px] text-sm font-semibold leading-4 text-[#FCFCFC] max-sm:flex-col">
         <button
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-700 bg-gray-900 py-3.5 text-[#FCFCFC] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] transition-colors hover:bg-black"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-700 bg-gray-900 py-3.5 text-[#FCFCFC] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] transition-all hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400"
           aria-label="Login with google"
           data-testid="login-link"
         >
           <span>Google</span>
         </button>
         <button
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-700 bg-gray-900 py-3.5 text-[#FCFCFC] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] transition-colors hover:bg-black"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-700 bg-gray-900 py-3.5 text-[#FCFCFC] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] transition-all hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400"
           aria-label="Login with apple"
           data-testid="login-link"
         >
