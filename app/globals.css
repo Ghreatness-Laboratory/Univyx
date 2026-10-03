@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+* { -webkit-tap-highlight-color: transparent; }
+html { background: #f0edec; }
+body { margin: 0; color: #1c1b1b; background: #fcf9f8; font-family: var(--font-jakarta), sans-serif; }
+button, input { font: inherit; }
+.material-symbols-outlined { font-family: 'Material Symbols Outlined'; font-weight: 500; font-style: normal; font-size: 22px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; word-wrap: normal; direction: ltr; -webkit-font-smoothing: antialiased; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }.hide-scrollbar { scrollbar-width: none; }
